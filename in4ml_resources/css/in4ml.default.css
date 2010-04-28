@@ -1,0 +1,95 @@
+form.in4ml,
+form.in4ml fieldset
+{
+	border: none;
+	padding: 0px;
+	margin: 0px;
+}
+form.in4ml label{
+	display: block;
+	width: 200px;
+	float: left;
+}
+form.in4ml div.notes{
+	padding-left: 200px;
+}
+form.in4ml div.container,
+form.in4ml input.submit
+{
+	display: block;
+	clear: both;
+	position: relative;
+}
+form.in4ml div.container.radio label.element,
+form.in4ml div.container.checkbox label.element
+{
+	display: block;
+	width: auto;
+	float: left;
+}
+form.in4ml div.container.radio input.radiobutton,
+form.in4ml div.container.checkbox input.checkbox
+{
+	float: left;
+}
+form.in4ml div.container.invalid div.error{
+	border: 1px solid red;
+	background: #fee;
+	display: block;
+}
+form.in4ml fieldset.group
+{
+	border: none;
+}
+form.in4ml div.fieldset
+{
+	position: relative;
+	border-top: 1px solid #ccc;
+	padding: 10px 0px;
+	margin: 30px 0px;
+}
+form.in4ml fieldset.set legend{
+	padding: 0px;
+	margin: 0px;
+}
+form.in4ml div.fieldset.set fieldset legend span
+{
+	position: absolute;
+	top: -20px;
+	clear: both;
+	display: block;
+	padding: 0px;
+	margin: 0px;
+	font-weight:bold;
+}
+
+form.in4ml input.text,
+form.in4ml input.email,
+form.in4ml input.password
+{
+	width:200px;
+}
+form.in4ml select{
+	width:206px;
+}
+
+form.in4ml div.group div.container{
+	display: inline;
+	clear: none;
+	float: left;
+}
+
+form.in4ml div.group div.container label{
+	display: inline;
+	width: auto;
+}
+form.in4ml div.group input.text,
+form.in4ml div.group input.email,
+form.in4ml div.group input.password,
+form.in4ml div.group select
+{
+	width:auto;
+}
+form.in4ml div.invalid label{
+	font-weight: bold;
+}

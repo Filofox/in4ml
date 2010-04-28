@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * Copyright (c) 2010 Pat Fox
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL (http://www.gnu.org/licenses/gpl.html) licenses
+ */
+
+require_once( in4ml::GetPathCore() . 'in4mlField.class.php' );
+
+/**
+ * File upload field
+ */
+class in4mlFieldFile extends in4mlField{
+	public $type = 'File';
+
+	protected $container_type = 'Container';
+	
+	public $files = array();
+	
+	public function AddFile( $name, $temp_name, $mime_type, $file_size, $error_number ){
+		$this->files[] = array
+		(
+			'name' => $name,
+			'temp_name' => $temp_name,
+			'mime_type' => $mime_type,
+			'file_size' => $file_size,
+			'error_number' => $error_number
+		);
+	}
+}
+?>

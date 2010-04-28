@@ -1,0 +1,10 @@
+<?php
+
+// Path to local files
+$config[ 'path_local' ] = './in4ml_local/';
+
+// Prefix for form class name
+$config[ 'form_prefix' ] = 'MyForm';
+
+
+?>
