@@ -97,7 +97,9 @@ class in4mlFieldRadio extends in4mlField{
 		// Just add the error to the first option
 		// Not the most elegant approach, but it works
 		// FIXME: better way to do this?
-		$this->options_elements[ 0 ]->SetError( $error );
+		if( count( $this->options_elements ) > 0 ){
+			$this->options_elements[ 0 ]->SetError( $error );
+		}
 	}
 }
 
