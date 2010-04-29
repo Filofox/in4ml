@@ -20,6 +20,7 @@ class In4mlElement{
 	protected $template;
 	
 	protected $class = array();
+	protected $container_class = array();
 	
 	protected $container_type = null;
 
@@ -64,7 +65,32 @@ class In4mlElement{
 	 * Catch invalid property set
 	 */
 	public function __set( $property, $value ){
-		throw new Exception( "Field property '" . $property . "' not valid for " . get_class( $this ) );
+		
+		switch( $property ){
+			case 'class':{
+				if( is_array( $value ) ){
+					foreach( $value as $class ){
+						$this->AddClass( $class );
+					}
+				} else {
+					$this->AddClass( $value );
+				}
+				break;
+			}
+			case 'container_class':{
+				if( is_array( $value ) ){
+					foreach( $value as $class ){
+						$this->AddContainerClass( $class );
+					}
+				} else {
+					$this->AddContainerClass( $value );
+				}
+				break;
+			}
+			default:{
+				throw new Exception( "Field property '" . $property . "' not valid for " . get_class( $this ) );
+			}
+		}
 	}
 
 	/**
@@ -74,10 +100,34 @@ class In4mlElement{
 		throw new Exception( "Field property '" . $property . "' not valid for " . get_class( $this ) );
 	}
 	
+	/**
+	 * Add a class to the element
+	 *
+	 * @param		string		$class
+	 */
 	public function AddClass( $class ){
 		$this->class[] = $class;
 	}
+	/**
+	 * Add a class to the element container
+	 *
+	 * @param		string		$class
+	 */
+	public function AddContainerClass( $class ){
+		$this->container_class[] = $class;
+	}
+	/**
+	 * Get a list of container classes
+	 *
+	 * @return		array
+	 */
+	public function GetContainerClasses(){
+		return $this->container_class;
+	}
 	
+	/**
+	 * Override this to perform direct modification on the element before rendering
+	 */
 	public function Modify(){
 		return $this;
 	}

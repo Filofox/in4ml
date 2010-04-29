@@ -193,6 +193,10 @@ class In4mlFormPHP extends In4mlForm{
 					$container->AddClass( $validator_class );
 				}
 			}
+			// Checl for validator classes
+			foreach( $element->GetContainerClasses() as $class ){
+				$container->AddClass( $class );
+			}
 			
 			// Set some values
 			$container->label = $element->GetLabel();
