@@ -57,7 +57,21 @@ class in4mlElementRenderValues{
 	 */
 	public function GetAttributes(){
 		
-		$attributes = $this->attributes;
+		$attributes = array();
+		foreach( $this->attributes as $key => $value ){
+			switch( $key ){
+				case 'name':
+				{
+					if( $value ){
+						$attributes[ $key ] = $value;
+					}
+					break;
+				}
+				default:{
+					$attributes[ $key ] = $value;
+				}
+			}
+		}
 		$attributes[ 'class' ] = implode( ' ', $this->GetClasses() );
 		
 		return $attributes;

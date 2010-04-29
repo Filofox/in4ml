@@ -12,6 +12,7 @@ form.in4ml label{
 }
 form.in4ml div.notes{
 	padding-left: 200px;
+	clear: both;
 }
 form.in4ml div.container,
 form.in4ml input.submit
@@ -36,6 +37,7 @@ form.in4ml div.container.invalid div.error{
 	border: 1px solid red;
 	background: #fee;
 	display: block;
+	clear: both;
 }
 form.in4ml fieldset.group
 {

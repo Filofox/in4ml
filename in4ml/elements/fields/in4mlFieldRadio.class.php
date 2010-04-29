@@ -18,6 +18,11 @@ class in4mlFieldRadio extends in4mlField{
 	private $options = array();
 	private $options_elements = array();
 	
+	public function __construct(){
+		// Automatically validates options
+		$this->AddValidator( in4ml::CreateValidator( 'Options' ) );		
+	}
+
 	/**
 	 * Add an option
 	 *
@@ -65,6 +70,7 @@ class in4mlFieldRadio extends in4mlField{
 			$radio_button->form_id = $this->form_id;
 			$radio_button->index = $index;
 			
+			
 			$this->options_elements[] = $radio_button;
 			
 			$element->AddElement( $radio_button );
@@ -72,10 +78,26 @@ class in4mlFieldRadio extends in4mlField{
 
 		return $element;
 	}
+
+	/**
+	 * Set parsed value for this field
+	 */
 	public function SetValue( $value ){
+		parent::SetValue( $value );
+		// Pass value to options in case re-rendering
 		foreach( $this->options_elements as $element ){
 			$element->SetValue( $value );
 		}
+	}
+
+	/**
+	 * Set error on this field
+	 */
+	 public function SetError( $error ){
+		// Just add the error to the first option
+		// Not the most elegant approach, but it works
+		// FIXME: better way to do this?
+		$this->options_elements[ 0 ]->SetError( $error );
 	}
 }
 

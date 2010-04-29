@@ -18,7 +18,6 @@ class in4mlBlockInlineLabel extends in4mlBlock{
 	public $prefix;
 	public $suffix;
 	public $notes;
-	public $errors;
 
 	public function __construct(){
 		parent::__construct();
@@ -39,7 +38,6 @@ class in4mlBlockInlineLabel extends in4mlBlock{
 		$values->prefix = $this->prefix;
 		$values->suffix = $this->suffix;
 		$values->notes = $this->notes;
-		$values->errors = $this->errors;
 		
 		return $values;
 	}
