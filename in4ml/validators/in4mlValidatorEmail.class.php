@@ -24,7 +24,7 @@ class in4mlValidatorEmail extends in4mlValidatorRegex{
 	public function ValidateField( in4mlField $field ){
 		
 		// Check for non-match
-		if( !$output = $this->DoRegex( $field ) ){
+		if( $output = $this->DoRegex( $field ) ){
 			$field->SetError( $this->GetErrorText( "email" ) );
 		}
 		

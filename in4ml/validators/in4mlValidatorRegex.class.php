@@ -27,9 +27,11 @@ class in4mlValidatorRegex extends in4mlValidator{
 	 */
 	public function ValidateField( in4mlField $field ){
 		
-		if( $output = $this->DoRegex( $field ) ){
+		$output = $this->DoRegex( $field );
+		if( !$output ){
 			$field->SetError( $this->GetErrorText( 'regex' ) );
 		}
+
 		return $output;
 	}
 	protected function DoRegex( in4mlField $field ){
@@ -47,7 +49,7 @@ class in4mlValidatorRegex extends in4mlValidator{
 			if( $this->ignore_case ){
 				$pattern .= 'i';
 			}
-			$output = preg_match( $pattern, $value );
+			$output = !( preg_match( $pattern, $value ) );
 		}		
 		
 		return $output;

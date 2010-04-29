@@ -33,12 +33,11 @@ class in4mlValidatorURL extends in4mlValidator{
 				$field->SetError( $this->GetErrorText( 'url:protocol' ) );
 				$output = false;
 			// Check well-formedness
-			} elseif( !preg_match( "~^(http|https)://([\da-zA-z0-9-]+\.)+[a-zA-z0-9]{1,3}~Ui", $value ) ) {
+			} elseif( !preg_match( "~^(http|https)://([\dA-Z0-9-]+\.)+[a-zA-z0-9]{1,3}~Ui", $value ) ) {
 				$field->SetError( $this->GetErrorText( 'url:invalid' ) );
 				$output = false;
 			}
 		}
-
 		return $output;
 	}
 }
