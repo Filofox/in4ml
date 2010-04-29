@@ -57,6 +57,11 @@ class in4mlFieldRadio extends in4mlField{
 
 		$element = in4ml::CreateElement( 'Block:' . $this->container_type );
 		$element->AddClass( $this->type );
+		
+		foreach( $this->container_class as $class ){
+			$element->AddClass( $class );
+		}
+		
 		$element->label = $this->label;
 
 		foreach( $this->options as $index => $option ){
