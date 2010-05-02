@@ -31,6 +31,16 @@ class In4mlFormPHP extends In4mlForm{
 		}
 
 		$this->form_element = $this->LoadElement( $this->definition );
+
+		// Add script element?
+		if( $this->use_javascript ){
+			
+			$element = in4ml::CreateElement( 'General:Script' );
+			$element->code = '$$.Ready( function(){ in4ml.RegisterForm( ' . $this->GetDefinitionAsJSON() . ' ); } )';
+			
+			$this->form_element->AddElement( $element );
+		}
+
 		// Set automatically when file element is present
 		$this->form_element->enctype = $this->enctype;
 

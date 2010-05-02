@@ -27,7 +27,7 @@ class in4mlValidatorURL extends in4mlValidator{
 		
 		$value = $field->GetValue();
 		
-		if( $value !== null ){
+		if( $value !== null && $value !== '' ){
 			// Check protocol
 			if( !preg_match( "~^(http|https)://~i", $value ) ){
 				$field->SetError( $this->GetErrorText( 'url:protocol' ) );

@@ -5,10 +5,10 @@
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL (http://www.gnu.org/licenses/gpl.html) licenses
  */
 
-require_once( in4ml::GetPathCore() . 'in4mlField.class.php' );
+require_once( in4ml::GetPathCore() . 'in4mlElement.class.php' );
 
 /**
- * Hidden field
+ * Error block
  */
 class in4mlElementError extends in4mlElement{
 	public $type = 'Error';

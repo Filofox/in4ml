@@ -33,7 +33,8 @@ $this->templates = array
 	),
 	'general' => array
 	(
-		'error' => '<li>[[value]]</li>'
+		'error' => '<li>[[value]]</li>',
+		'script' => '<script type="text/javascript">[[code]]</script>'
 	)
 );
 

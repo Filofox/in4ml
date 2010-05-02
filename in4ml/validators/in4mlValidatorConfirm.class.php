@@ -28,6 +28,7 @@ class in4mlValidatorConfirm extends in4mlValidator{
 		if( $field->confirm_field ){
 			if( $field->GetValue() != $field->confirm_field->GetValue() ){
 				$field->SetError( $this->GetErrorText( "confirm" ) );
+				$output = false;
 			}
 		}
 		
@@ -37,7 +38,7 @@ class in4mlValidatorConfirm extends in4mlValidator{
 	/**
 	 * Return appropriate class according to whether this is the confirm field or the original field
 	 *
-	 * @param		in4mlField		$field`
+	 * @param		in4mlField		$field
 	 *
 	 * @return		string
 	 */
@@ -51,7 +52,7 @@ class in4mlValidatorConfirm extends in4mlValidator{
 	/**
 	 * Modify field -- adds a clone 'confirm' field
 	 * 
-	 * @param		in4mlField		$field`
+	 * @param		in4mlField		$field
 	 *
 	 * @return		array
 	 */

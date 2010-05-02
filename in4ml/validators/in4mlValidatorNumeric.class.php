@@ -34,17 +34,20 @@ class in4mlValidatorNumeric extends in4mlValidator{
 			if( !is_numeric( $value ) ){
 				// Not a number
 				$field->SetError( "numeric:nan" );
+				$output = false;
 			} else {
 
 				// Minimum?
 				if( $this->min !== null && $value < $this->min ){
 					// Too big
 					$field->SetError( $this->GetErrorText( "numeric:min", array( 'value' => $this->min ) ) );
+					$output = false;
 				}
 				// Maximum?
 				if( $this->max !== null && $value > $this->max ){
 					// Too long
 					$field->SetError( $this->GetErrorText( "numeric:max", array( 'value' => $this->max ) ) );
+					$output = false;
 				}
 			}
 		}		

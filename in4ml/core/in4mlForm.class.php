@@ -42,6 +42,8 @@ class In4mlForm{
 	
 	public $form_id;
 	
+	public $use_javascript = true;
+	
 	const BUTTON_TYPE_SUBMIT = 'submit';
 	const BUTTON_TYPE_RESET = 'reset';
 	const BUTTON_TYPE_BUTTON = 'button';
@@ -220,6 +222,83 @@ class In4mlForm{
 		foreach( $this->fields as $field ){
 			$field->Filter();
 		}
+	}
+	
+	/**
+	 * Return a JSON-endoded summary of this form
+	 *
+	 * @return		string
+	 */
+	public function GetDefinitionAsJson(){
+
+		$definition = array
+		(
+			'id' => $this->form_id,
+			'fields' => array()
+		);
+		
+		foreach( $this->fields as $field ){
+			$validators = array();
+			foreach( $field->GetValidators() as $validator ){
+
+				$validator_properties = array
+				(
+					'type' => get_class( $validator )
+				);
+
+				foreach( $validator as $property => $value ){
+					switch( $property ){
+						case 'error_message':{
+							if( $value ){
+								if( is_array( $value ) ){
+									$error_messages = array();
+									foreach( $value as $error_type => $error_value ){
+										// If this is an array, it must have i18n values
+										if( is_array( $error_value ) ){
+											// Only encode language-specific values
+											$validator_properties[ $property ][ $error_type ] = $error_value[ in4ml::Config( 'lang' ) ];
+										} else {
+											$validator_properties[ $property ][ $error_type ] = $error_value;
+										}
+									}
+								} else {
+									$validator_properties[ $property ] = $value;
+								}
+							}
+							break;
+						}
+						default:{
+							$validator_properties[ $property ] = $value;
+							break;
+						}
+					}
+				}
+				array_push
+				(
+					$validators,
+					$validator_properties
+				);
+			}
+
+			// Field
+			$field_properties = array
+			(
+				'type' => $field->type,
+				'name' => $field->name,
+				'validators' => $validators
+			);
+			if( $field->confirm_field ){
+				$field_properties[ 'has_confirm' ] = true;
+			}
+
+			array_push
+			(
+				$definition[ 'fields' ],
+				$field_properties
+			);
+		}
+		
+		return json_encode( $definition );
 	}
 }
 ?>

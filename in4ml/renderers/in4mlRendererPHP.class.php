@@ -41,8 +41,7 @@ class in4mlRendererPHP extends in4mlRenderer{
 		// These are the values that will be parsed into the template
 		$keys = array();
 		$values = array();
-
-
+		
 		// Elements
 		$elements = array();
 		if( isset( $element->elements ) ){

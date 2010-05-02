@@ -389,6 +389,11 @@ class in4ml{
 		return $text;
 	}
 	
+	public static function GetTextNamespace( $namespace = false ){
+		$text = self::GetText();
+		return $text->GetNamespace( $namespace );
+	}
+	
 }
 
 /**
@@ -426,15 +431,12 @@ class in4mlConfig{
 class in4mlText{
 	private $text_namespaces;
 
+	/**
+	 * Get a text snippet
+	 */
 	public function Get( $namespace, $item, $parameters = array() ){
-		if( !isset( $this->text_namespaces[ $namespace ] ) ){
-			// Attempt to load text
-			$file_path = in4ml::GetPathi18n() . strtolower( $namespace ) . '/' . in4ml::Config( 'lang' ) . '.inc.php';
 
-			include( $file_path );
-			
-			$this->text_namespaces[ $namespace ] = $text;
-		}
+		$this->LoadNamespace( $namespace );
 		
 		if( strpos( $item, ':' ) !== false ){
 			list( $item, $sub_item ) = explode( ':', $item );
@@ -450,6 +452,26 @@ class in4mlText{
 
 		
 		return $item_text;
+	}
+	
+	private function LoadNamespace( $namespace ){
+		if( !isset( $this->text_namespaces[ $namespace ] ) ){
+			// Attempt to load text
+			$file_path = in4ml::GetPathi18n() . strtolower( $namespace ) . '/' . in4ml::Config( 'lang' ) . '.inc.php';
+
+			include( $file_path );
+			
+			$this->text_namespaces[ $namespace ] = $text;
+		}
+	}
+	
+	public function GetNamespace( $namespace = false ){
+		if( $namespace ){
+			$this->LoadNameSpace( $namespace );
+			return $this->text_namespaces[ $namespace ];
+		} else {
+			return $this->text_namespaces;
+		}
 	}
 	
 	/**
