@@ -34,6 +34,9 @@ class in4mlValidatorRegex extends in4mlValidator{
 
 		return $output;
 	}
+	/**
+	 * Perform regex
+	 */
 	protected function DoRegex( in4mlField $field ){
 
 		$output = true;

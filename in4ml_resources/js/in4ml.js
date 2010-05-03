@@ -21,7 +21,6 @@ var in4ml = {
 	 * @param		JSON		form_definition
 	 */
 	RegisterForm:function( form_definition ){
-console.log( form_definition );
 		this.forms[ form_definition.id ] = new in4mlForm( form_definition );
 	},
 	
@@ -144,9 +143,9 @@ in4mlForm = function( form_definition ){
 	this.element = $$.Find( 'form#' + form_definition.id ).pop();
 
 	// Build fields list	
-	this.fields = [];
+	this.fields = {};
 	for( var i = 0; i < form_definition.fields.length; i++ ){
-		this.fields.push( new in4mlField( this, form_definition.fields[ i ] ) );
+		this.fields[ form_definition.fields[ i ].name ] = new in4mlField( this, form_definition.fields[ i ] );
 	}
 
 	// Bind submit event
@@ -162,6 +161,13 @@ in4mlForm = function( form_definition ){
 	);
 }
 /**
+ * Return a field by its name
+ */
+in4mlForm.prototype.GetField = function( field_name ){
+	// Form will submit itself automatically if validation is successful
+	return this.fields[ field_name ];
+}
+/**
  * Catch form submit event and do validation
  */
 in4mlForm.prototype.HandleSubmit = function(){
@@ -174,8 +180,8 @@ in4mlForm.prototype.HandleSubmit = function(){
 in4mlForm.prototype.Validate = function( form ){
 
 	is_valid = true;
-	for( var i = 0; i < this.fields.length; i++ ){
-		if( !this.fields[ i ].Validate() ){
+	for( var index in this.fields ){
+		if( !this.fields[ index ].Validate() ){
 			is_valid = false;
 		}
 	}
@@ -193,11 +199,11 @@ in4mlField = function( form, definition ){
 	this.validators = definition.validators;
 	this.name = definition.name;
 	this.errors = [];
+	this.form = form;
 
 	this.element = $$.Find( in4ml.GetFieldSelector( this.type, this.name ), form.form_element );
 	this.container = $$.FindParent( this.element, '.container' );
 	
-	this.has_confirm = ( definition.has_confirm ) ? true : false;
 }
 in4mlField.prototype.GetValue = function(){
 	return $$.GetValue( this.element );
@@ -240,7 +246,6 @@ return false;
 }
 in4mlField.prototype.SetError = function( error ){
 	this.errors.push( error );
-	console.log( error );
 }
 in4mlField.prototype.ClearErrors = function(){
 	if( this.error_element ){
@@ -263,8 +268,47 @@ in4mlField.prototype.ShowErrors = function(){
 }
 
 
+/**************
+ * Validators *
+ **************/
 /**
- * Validators
+ * Check confirm field matches
+ */
+in4mlValidatorConfirm = function(){
+}
+in4mlValidatorConfirm.prototype.ValidateField = function( field ){
+	var output = true;
+
+	var value = field.GetValue();
+	var confirm_field = field.form.GetField( field.name + '_confirm' );
+
+	if( confirm_field && value && value != confirm_field.GetValue() ){
+		field.SetError( in4ml.GetErrorText( 'confirm' ), null, this.error_messages );
+		output = false;
+	}
+	
+	return output;
+}
+/**
+ * Check for valid email address
+ */
+in4mlValidatorEmail = function(){
+}
+in4mlValidatorEmail.prototype.ValidateField = function( field ){
+
+	var output = true;
+
+	var value = field.GetValue();
+
+	if( value && !Utilities.CheckRegexp( value, this.pattern, ['i'] ) ){
+		field.SetError( in4ml.GetErrorText( 'email' ), null, this.error_messages );
+		output = false;
+	}
+	
+	return output;
+}
+/**
+ * Check string length
  */
 in4mlValidatorLength = function(){
 }
@@ -275,11 +319,11 @@ in4mlValidatorLength.prototype.ValidateField = function( field ){
 	var value = field.GetValue();
 
 	if( this.min !== null && value !== '' && value.length < this.min ){
-		field.SetError( in4ml.GetErrorText( 'length:min', { 'min': this.min } ) );
+		field.SetError( in4ml.GetErrorText( 'length:min', { 'min': this.min }, this.error_messages ) );
 		output = false;
 	}
 	if( this.max !== null && value !== '' && value.length > this.max ){
-		field.SetError( in4ml.GetErrorText( 'length:max', { 'max': this.max } ) );
+		field.SetError( in4ml.GetErrorText( 'length:max', { 'max': this.max }, this.error_messages ) );
 		output = false;
 	}
 	
@@ -295,25 +339,74 @@ in4mlValidatorNumeric.prototype.ValidateField = function( field ){
 	if( value ){
 		if( isNaN( value ) ){
 			// Not a number
-			field.SetError( in4ml.GetErrorText( "numeric:nan", { 'value' : this.min } ) );
+			field.SetError( in4ml.GetErrorText( "numeric:nan", { 'value' : this.min }, this.error_messages ) );
 			output = false;
 		} else {
 			// Minimum?
 			if( this.min && value < this.min ){
 			// Too big
-				field.SetError( in4ml.GetErrorText( "numeric:min", { 'value' : this.min } ) );
+				field.SetError( in4ml.GetErrorText( "numeric:min", { 'value' : this.min }, this.error_messages ) );
 				output = false;
 			}
 			// Maximum?
 			if( this.max && value > this.max ){
 				// Too small
-				field.SetError( in4ml.GetErrorText( "numeric:max", { 'value' : this.max } ) );
+				field.SetError( in4ml.GetErrorText( "numeric:max", { 'value' : this.max }, this.error_messages ) );
 				output = false;
 			}
 		}
 	}		
 	return output;
 }
+/**
+ * Check against a regular expression
+ */
+in4mlValidatorRegex = function(){
+}
+in4mlValidatorRegex.prototype.ValidateField = function( field ){
+	var output = true;
+
+	var value = field.GetValue();
+
+	if( value ){
+		var modifiers = [];
+		if( this.ignore_case ){
+			modifiers.push( 'i' );
+		}
+		
+		// Run the regex
+		if ( Utilities.CheckRegexp( value, this.pattern, modifiers ) ){
+			field.SetError( in4ml.GetErrorText( "regex", null, this.error_messages ) );
+			output = false;
+		}
+	}
+	
+	return output;
+}
+/**
+ * Check against a list of values
+ */
+in4mlValidatorRejectValues = function(){
+}
+in4mlValidatorRejectValues.prototype.ValidateField = function( field ){
+	var output = true;
+
+	var value = field.GetValue();
+
+	if( value ){
+		for( var i = 0; i < this.values.length; i++ ){
+			if( this.values[ i ] == value ){
+				field.SetError( in4ml.GetErrorText( "reject_value", null, this.error_messages ) );
+				output = false;
+			}
+		}
+	}
+	
+	return output;
+}
+/**
+ * Field must have a value
+ */
 in4mlValidatorRequired = function(){
 }
 in4mlValidatorRequired.prototype.ValidateField = function( field ){
@@ -327,10 +420,35 @@ in4mlValidatorRequired.prototype.ValidateField = function( field ){
 	
 	return output;
 }
-
 /**
- * Standardised interface for dealing DOM elements
+ * Check for valid URL
  */
+in4mlValidatorURL = function(){
+}
+in4mlValidatorURL.prototype.ValidateField = function( field ){
+
+	var output = true;
+
+	var value = field.GetValue();
+
+	if( value ){
+		// Check protocol
+		if( !Utilities.CheckRegexp( value, "^(http|https)://", [ 'i' ]  ) ){
+			field.SetError( in4ml.GetErrorText( 'url:protocol', null, this.error_messages ) );
+			output = false;
+		// Check well-formedness
+		} else if( !Utilities.CheckRegexp( value, "^(http|https)://([\dA-Z0-9-]+\.)+[a-zA-z0-9]{1,3}", [ 'i' ] ) ) {
+			field.SetError( in4ml.GetErrorText( 'url:invalid', null, this.error_messages ) );
+			output = false;
+		}
+	}
+	
+	return output;
+}
+
+/***************************************************
+ * Standardised interface for dealing DOM elements *
+ ***************************************************/
 JSLibInterface_jQuery = function(){
 }
 /**
@@ -588,6 +706,23 @@ Utilities = {
 		};
 
 		return sa ? s : s[0];
+	},
+	/**
+	 * Evaluate a regular expression match
+	 *
+	 * @param		string		field				The field to check
+	 * @param		string		pattern				Regexp pattern
+	 * @param		array		modifiers			Any modifiers to use
+	 *
+	 * @return		boolean							Success -- ie. did it match?
+	 */
+	CheckRegexp:function( value, pattern, modifiers ){
+
+		var output = true;
+		
+		var regex = new RegExp( pattern, modifiers.join() );
+
+		return regex.test( value );
 	}
 }
 
