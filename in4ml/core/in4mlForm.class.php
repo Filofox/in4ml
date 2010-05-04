@@ -192,6 +192,44 @@ class In4mlForm{
 	}
 	
 	/**
+	 * Get a field's value
+	 *
+	 * @param		string		$field_name
+	 * 
+	 * @return		mixed
+	 */
+	public function GetValue( $field_name ){
+		foreach( $this->fields as $field ){
+			return $field->value;
+		}
+	}
+	/**
+	 * Set a field's default value
+	 *
+	 * @param		string		$field_name
+	 * @param		mixed		$value
+	 */
+	public function SetFieldDefault( $field_name, $value ){
+		if( $field = $this->GetField( $field_name ) ){
+			$field->SetDefault( $value );
+		}
+	}
+	/**
+	 * Get a field
+	 *
+	 * @param		string		$field_name
+	 * 
+	 * @return		in4mlField
+	 */
+	public function GetField( $field_name ){
+		foreach( $this->fields as $field ){
+			if( $field->name == $field_name ){
+				return  $field;
+			}
+		}
+	}
+	
+	/**
 	 * Validate all fields
 	 *
 	 * @return		boolean
@@ -300,5 +338,6 @@ class In4mlForm{
 		
 		return json_encode( $definition );
 	}
+
 }
 ?>

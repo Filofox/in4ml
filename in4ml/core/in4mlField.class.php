@@ -118,6 +118,13 @@ class In4mlField extends in4mlElement{
 	public function SetValue( $value ){
 		$this->value = $value;
 	}
+
+	/**
+	 * Set field default value
+	 */
+	public function SetDefault( $value ){
+		$this->default = $value;
+	}
 	
 	/**
 	 * Get field value

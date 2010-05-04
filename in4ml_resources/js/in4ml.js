@@ -179,7 +179,7 @@ in4mlForm.prototype.HandleSubmit = function(){
  */
 in4mlForm.prototype.Validate = function( form ){
 
-	is_valid = true;
+	var is_valid = true;
 	for( var index in this.fields ){
 		if( !this.fields[ index ].Validate() ){
 			is_valid = false;
@@ -203,7 +203,14 @@ in4mlField = function( form, definition ){
 
 	this.element = $$.Find( in4ml.GetFieldSelector( this.type, this.name ), form.form_element );
 	this.container = $$.FindParent( this.element, '.container' );
-	
+
+	if( this.container ){
+		var error_element = $$.Find( 'div.error', this.container )
+		if( error_element.length ){
+			this.error_element = error_element[ 0 ];
+		}
+	}
+
 }
 in4mlField.prototype.GetValue = function(){
 	return $$.GetValue( this.element );
@@ -240,8 +247,7 @@ in4mlField.prototype.Validate = function(){
 		$$.AddClass( this.container, 'invalid' );
 		this.ShowErrors();
 	}
-	
-return false;
+
 	return is_valid;
 }
 in4mlField.prototype.SetError = function( error ){
