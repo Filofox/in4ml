@@ -99,6 +99,7 @@ class in4mlFieldRadio extends in4mlField{
 	 * Set error on this field
 	 */
 	 public function SetError( $error ){
+		parent::SetError( $error );
 		// Just add the error to the first option
 		// Not the most elegant approach, but it works
 		// FIXME: better way to do this?
