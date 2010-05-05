@@ -33,7 +33,6 @@ var in4ml = {
 	 */
 	GetErrorText:function( error_type, parameters, error_messages ){
 
-console.log( error_messages );
 		// Is there a custom error message (from definition)?
 		if( typeof error_messages != 'undefined' ){
 			
