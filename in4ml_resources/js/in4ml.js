@@ -735,10 +735,3 @@ Utilities = {
 
 // This is the wrapper interface for the Javascript library
 var $$ = new JSLibInterface_jQuery();
-
-// Initiliase in4ml
-$$.Ready(
-	function(){
-		in4ml.Init();
-	}
-);
