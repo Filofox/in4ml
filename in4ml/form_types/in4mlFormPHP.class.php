@@ -24,6 +24,9 @@ class In4mlFormPHP extends In4mlForm{
 			$this->definition[ 'type' ] = 'Block:Form';
 		}
 		$this->submit_method = $this->definition[ 'submit_method' ];
+		if( isset( $this->definition[ 'form_id' ] ) ){
+			$this->form_id = $this->definition[ 'form_id' ];
+		}
 
 		foreach( $this->buttons as $button ){
 			$button[ 'type' ] = 'Button';

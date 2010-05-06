@@ -9,7 +9,7 @@ $this->templates = array
 (
 	'block' => array
 	(
-		'form'			=> '<form [[attributes]]><fieldset>[[elements]]</fieldset></form>',
+		'form'			=> '<form [[attributes]]><fieldset>[[legend]][[elements]]</fieldset></form>',
 		'group'			=> '<div [[attributes]]><label>[[label]]</label>[[elements]]</div>',
 		'inlinelabel'	=> '<div [[attributes]]><label>[[label]]</label>[[elements]]<div class="notes">[[notes]]</div>[[error]]</div>',
 		// Extra <div> around fieldset to allow consistent styling (see http://www.tyssendesign.com.au/articles/css/legends-of-style/)
