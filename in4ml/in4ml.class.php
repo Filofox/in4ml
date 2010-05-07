@@ -29,6 +29,8 @@ class in4ml{
 	 */
 	public static function Init( $config_path ){
 		$config_object = self::GetConfig();
+		
+		$config_object->path_local = $config_path;
 		// Read config file into config object
 		$config = array();
 
@@ -335,7 +337,7 @@ class in4ml{
 			if( file_exists( $file_path ) ){
 				require_once( $file_path );
 			} else {
-				throw new Exception( 'Form ' . $form_name . ' not found' );
+				throw new Exception( 'Form ' . $form_name . ' not found [' . $file_path . ']' );
 			}
 		}
 
