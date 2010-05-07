@@ -142,13 +142,12 @@ in4mlText.prototype.Interpolate = function( parameters, template ){
 in4mlForm = function( form_definition ){
 
 	this.element = $$.Find( 'form#' + form_definition.id ).pop();
-
 	// Build fields list	
 	this.fields = {};
 	for( var i = 0; i < form_definition.fields.length; i++ ){
 		this.fields[ form_definition.fields[ i ].name ] = new in4mlField( this, form_definition.fields[ i ] );
 	}
-
+	
 	// Bind submit event
 	$$.AddEvent
 	(
@@ -173,7 +172,57 @@ in4mlForm.prototype.GetField = function( field_name ){
  */
 in4mlForm.prototype.HandleSubmit = function(){
 	// Form will submit itself automatically if validation is successful
-	return this.Validate();
+	var is_valid = this.Validate();
+
+	if( is_valid && this.ajax_submit ){
+		this.AjaxSubmit();
+		is_valid = false;
+	}
+	
+	return is_valid;
+}
+/**
+ * Get all field values
+ *
+ * @return		object
+ */
+in4mlForm.prototype.GetValues = function(){
+	var values = {};
+	for( var index in this.fields ){
+		values[ index ] = this.fields[ index ].GetValue();
+	}
+	return values;
+}
+/**
+ * Submit the form over Ajax
+ */
+in4mlForm.prototype.AjaxSubmit = function(){
+	var values = this.GetValues();
+	
+	$$.JSONRequest
+	(
+		$$.GetAttribute( this.element, 'action' ),
+		'POST',
+		values,
+		$$.Bind
+		(
+			this.HandleAjaxSubmitSuccess,
+			this
+		),
+		$$.Bind
+		(
+			this.HandleAjaxSubmitError,
+			this
+		)
+	);
+}
+in4mlForm.prototype.HandleAjaxSubmitSuccess = function( data, request_object ){
+	console.log( 'success' );
+	console.log( arguments );
+}
+in4mlForm.prototype.HandleAjaxSubmitError = function( request_object, error_code  ){
+	console.log( 'error' );
+	console.log( arguments );
 }
 /**
  * Do validation
@@ -534,6 +583,18 @@ JSLibInterface_jQuery.prototype.GetAttribute = function( element, attribute ){
 	return jQuery( element ).attr( attribute );
 }
 /**
+ * Set an attribute of an element
+ *
+ * @param		HTMLElement		element
+ * @param		string			attribute
+ * @param		mixed			value
+ *
+ * @return		mixed
+ */
+JSLibInterface_jQuery.prototype.SetAttribute = function( element, attribute, value ){
+	return jQuery( element ).attr( attribute, value );
+}
+/**
  * Bind a callback function to an event
  *
  * @param		HTMLElement		element
@@ -680,6 +741,29 @@ JSLibInterface_jQuery.prototype.Ready = function( callback ){
 	jQuery( document ).ready
 	(
 		callback
+	);
+}
+	
+	/**
+	 * Send a JSON request
+	 *
+	 * @param		string			url
+	 * @param		string			method					GET or POST
+	 * @param		JSON			data					Key => value pairs
+	 * @param		function		success_callback
+	 * @param		function		error_callback
+	 */
+JSLibInterface_jQuery.prototype.JSONRequest = function( url, method, data, success_callback, error_callback ){
+	jQuery.ajax
+	(
+		{
+			url:url,
+			type:method,
+			dataType:'json',
+			data:data,
+			success:function( request_object, data ){ success_callback( data, request_object ) },
+			error:error_callback
+		}
 	);
 }
 
