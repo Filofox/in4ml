@@ -250,8 +250,7 @@ in4mlField = function( form, definition ){
 	this.name = definition.name;
 	this.errors = [];
 	this.form = form;
-
-	this.element = $$.Find( in4ml.GetFieldSelector( this.type, this.name ), form.form_element );
+	this.element = $$.Find( in4ml.GetFieldSelector( this.type, this.name ), form.element );
 	this.container = $$.FindParent( this.element, '.container' );
 
 	if( this.container ){
