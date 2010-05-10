@@ -200,7 +200,9 @@ class In4mlForm{
 	 */
 	public function GetValue( $field_name ){
 		foreach( $this->fields as $field ){
-			return $field->value;
+			if( $field->name == $field_name ){
+				return $field->value;
+			}
 		}
 	}
 	/**

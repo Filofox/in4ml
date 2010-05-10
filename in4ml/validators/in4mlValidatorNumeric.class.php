@@ -30,7 +30,7 @@ class in4mlValidatorNumeric extends in4mlValidator{
 		
 		$value = $field->GetValue();
 
-		if( $value !== null ){
+		if( $value !== null && $value != '' ){
 			if( !is_numeric( $value ) ){
 				// Not a number
 				$field->SetError( "numeric:nan" );
