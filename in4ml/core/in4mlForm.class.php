@@ -110,6 +110,17 @@ class In4mlForm{
 		}
 	}
 	
+	/**
+	 * Set a button's text
+	 *
+	 * @param		string		$button_id
+	 * @param		string		$label
+	 */
+	public function SetButtonLabel( $button_id, $label ){
+		if( isset( $this->buttons[ $button_id ] ) ){
+			$this->buttons[ $button_id ][ 'label' ] = $label;
+		}
+	}
 	
 	/**
 	 * Return HTML representation of the form

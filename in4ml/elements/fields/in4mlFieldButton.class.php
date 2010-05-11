@@ -14,36 +14,6 @@ class in4mlFieldButton extends in4mlField{
 	public $type = 'Button';
 	public $button_type;
 	
-	public function Render(){
-		$output = parent::Render();
-		
-		$classes = array
-		(
-			'button',
-			$this->button_type,
-			$this->name
-		);
-		
-		$output = str_replace
-		(
-			array
-			(
-				'[[button_type]]',
-				'[[class]]',
-				'[[label]]'
-			),
-			array
-			(
-				$this->button_type,
-				implode( ' ', array_unique( $classes ) ),
-				$this->label
-			),
-			$output
-		);
-		
-		return $output;
-	}
-
 	/**
 	 * Return a list of key/value pairs to be interpolated into template
 	 *
@@ -52,6 +22,8 @@ class in4mlFieldButton extends in4mlField{
 	 * @return		in4mlElementRenderValues object
 	 */
 	public function GetRenderValues( $render_value = false ){
+		$this->AddClass( $this->button_type );
+
 		$values = parent::GetRenderValues();
 		
 		// Checkbox text

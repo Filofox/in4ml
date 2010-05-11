@@ -76,7 +76,9 @@ class In4mlField extends in4mlElement{
 		$values = parent::GetRenderValues();
 
 		$values->SetAttribute( 'name', $this->name );
-		$values->SetAttribute( 'id', $this->form_id . '_' . $this->name );
+		if( $this->name ){
+			$values->SetAttribute( 'id', $this->form_id . '_' . $this->name );
+		}
 
 		return $values;
 	}

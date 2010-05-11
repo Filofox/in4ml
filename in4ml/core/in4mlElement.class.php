@@ -44,9 +44,11 @@ class In4mlElement{
 		require_once( in4ml::GetPathCore() . 'in4mlElementRenderValues.class.php' );
 		
 		$values = new in4mlElementRenderValues( $this->category, $this->type );
-		
+
 		foreach( $this->class as $class ){
-			$values->AddClass( $class );
+			if( $class ){
+				$values->AddClass( $class );
+			}
 		}
 		
 		return $values;
