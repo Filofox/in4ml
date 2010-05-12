@@ -41,6 +41,14 @@ class in4mlFieldCheckbox extends in4mlField{
 		
 		return $values;
 	}
+	/**
+	 * Get field value
+	 *
+	 * @return mixed
+	 */
+	public function GetValue(){
+		return ( $this->value )?true:false;
+	}
 }
 
 ?>
