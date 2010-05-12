@@ -5,6 +5,7 @@ var in4ml = {
 
 	// Lookup for forms (by ID)
 	forms:{},
+	ready_events:{},
 
 	/**
 	 * Initialise in4ml
@@ -21,7 +22,7 @@ var in4ml = {
 	 * @param		JSON		form_definition
 	 */
 	RegisterForm:function( form_definition ){
-		this.forms[ form_definition.id ] = new in4mlForm( form_definition );
+		this.forms[ form_definition.id ] = new in4mlForm( form_definition, this.ready_events[ form_definition.id ] );
 	},
 	
 	/**
@@ -81,6 +82,15 @@ var in4ml = {
 			}
 		}
 		return selector;
+	},
+	GetForm:function( form_id ){
+		return this.forms[ form_id ];
+	},
+	onFormReady:function( form_id, callback ){
+		if( typeof this.ready_events[ form_id ] == 'undefined' ){
+			this.ready_events[ form_id ] = [];
+		}
+		this.ready_events[ form_id ].push( callback );
 	}
 }
 
@@ -139,7 +149,9 @@ in4mlText.prototype.Interpolate = function( parameters, template ){
 /**
  * Form item
  */
-in4mlForm = function( form_definition ){
+in4mlForm = function( form_definition, ready_events ){
+	
+	this.events = {};
 
 	this.element = $$.Find( 'form#' + form_definition.id ).pop();
 	// Build fields list	
@@ -159,13 +171,31 @@ in4mlForm = function( form_definition ){
 			this
 		)
 	);
+	if( ready_events ){
+		for( var i = 0; i < ready_events.length; i++ ){
+			this.BindEvent( 'ready', ready_events[ i ] );
+		}
+	}
+	
+	this.TriggerEvent( 'ready' );
 }
 /**
  * Return a field by its name
+ *
+ * @param		field_name
+ *
+ * @return 		in4mlField
  */
 in4mlForm.prototype.GetField = function( field_name ){
-	// Form will submit itself automatically if validation is successful
 	return this.fields[ field_name ];
+}
+/**
+ * Return all fields
+ *
+ * @return		object
+ */
+in4mlForm.prototype.GetFields = function(){
+	return this.fields;
 }
 /**
  * Catch form submit event and do validation
@@ -238,7 +268,29 @@ in4mlForm.prototype.Validate = function( form ){
 
 	return is_valid;
 }
+in4mlForm.prototype.BindEvent = function( event, func ){
 
+	$$.AddEvent
+	(
+		this.element,
+		event,
+		func
+	);
+	if( typeof this.events[ event ] == 'undefined' ){
+		this.events[ event ] = [];
+	}
+	this.events[ event ].push( func );
+}
+in4mlForm.prototype.TriggerEvent = function( event ){
+	if( typeof this.events[ event ] != 'undefined' ){
+		for( var i = 0; i < this.events[ event ].length; i++ ){
+			this.events[ event ][ i ]( this, event );
+		}
+	}
+}
+in4mlForm.prototype.BindFieldEvent = function( field_name, event, func ){
+	this.fields[ field_name ].BindEvent( event, func );
+}
 
 /**
  * Field
@@ -321,7 +373,22 @@ in4mlField.prototype.ShowErrors = function(){
 	
 	$$.SetHTML( this.error_element, html );
 }
-
+in4mlField.prototype.BindEvent = function( event, func ){
+	$$.AddEvent
+	(
+		this.element,
+		event,
+		$$.Bind
+		(
+			function( func, event ){
+				func( this, event );
+			},
+			this,
+			[ func, event ],
+			true
+		)
+	);
+}
 
 /**************
  * Validators *
@@ -604,7 +671,15 @@ JSLibInterface_jQuery.prototype.AddEvent = function( element, event, callback ){
 	return jQuery( element ).bind
 	(
 		event,
-		callback
+		this.Bind(
+			function(){
+				return callback( event, element );
+			
+			},
+			this,
+			[ callback, element, event ],
+			true
+		)
 	);
 }
 /**
