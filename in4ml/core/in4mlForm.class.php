@@ -351,6 +351,8 @@ class In4mlForm{
 		
 		return json_encode( $definition );
 	}
-
+	public function SetFormError( $error ){
+		$this->form_element->SetError( $error );
+	}
 }
 ?>

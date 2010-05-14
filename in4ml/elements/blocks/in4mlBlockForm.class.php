@@ -18,6 +18,8 @@ class in4mlBlockForm extends in4mlBlock{
 	public $enctype;
 	public $form_id;
 	public $label;
+
+	public $errors = array();
 	
 	/**
 	 * Return a list of key/value pairs to be interpolated into template
@@ -47,6 +49,24 @@ class in4mlBlockForm extends in4mlBlock{
 		}
 		
 		return $values;
+	}
+	
+	/**
+	 * Add an error for this field
+	 *
+	 * @param		string		$error_message
+	 */
+	public function SetError( $error_message ){
+		$this->errors[] = $error_message;
+	}
+	
+	/**
+	 * Return a list of errors for this field
+	 *
+	 * @return		array
+	 */
+	public function GetErrors(){
+		return $this->errors;
 	}
 }
 

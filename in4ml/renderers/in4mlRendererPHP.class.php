@@ -23,7 +23,7 @@ class in4mlRendererPHP extends in4mlRenderer{
 			throw new Exception( "Form template '$template' ($template_path) not found" );
 		}
 		include( $template_path );
-
+		
 		$html = $this->RenderElement( $form->form_element, $form->is_populated );
 
 		return $html;
@@ -63,6 +63,21 @@ class in4mlRendererPHP extends in4mlRenderer{
 				}
 
 			}
+
+			if( $element->category == 'Block' && $element->type == 'Form' ){
+				$errors = $element->GetErrors();
+				if( count( $errors ) ){
+					$error_container = in4ml::CreateElement( 'Block:Error' );
+					$element->AddClass( 'invalid' );
+					foreach( $errors as $error ){
+						$error_element = in4ml::CreateElement( 'General:Error' );
+						$error_element->SetErrorType( $error );
+						$error_container->AddElement( $error_element );
+					}
+					$error_html = $this->RenderElement( $error_container, $render_values );
+				}
+			}
+
 			$keys[] = '[[elements]]';
 			$values[] = implode( '', $elements );
 			$keys[] = '[[error]]';
@@ -79,11 +94,14 @@ class in4mlRendererPHP extends in4mlRenderer{
 		$keys[] = '[[attributes]]';
 		$values[] = implode( ' ', $attributes );
 
-
-
 		// Everything else
 		foreach( $element_render_values as $key => $value ){
-			
+
+			// To preserve label width
+			if( $key == 'label' && ( $value === '' || $value === null )){
+				$value = '&nbsp;';
+			}
+
 			$keys[] = '[[' . $key . ']]';
 			
 			switch( $key ){

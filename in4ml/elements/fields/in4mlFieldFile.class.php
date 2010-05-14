@@ -17,6 +17,9 @@ class in4mlFieldFile extends in4mlField{
 	
 	public $files = array();
 	
+	/**
+	 * Add a file
+	 */
 	public function AddFile( $name, $temp_name, $mime_type, $file_size, $error_number ){
 		$this->files[] = array
 		(
@@ -26,6 +29,10 @@ class in4mlFieldFile extends in4mlField{
 			'file_size' => $file_size,
 			'error_number' => $error_number
 		);
+	}
+	
+	public function GetFiles(){
+		return $this->files;
 	}
 }
 ?>
