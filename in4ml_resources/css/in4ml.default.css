@@ -33,11 +33,14 @@ form.in4ml div.container.checkbox input.checkbox
 {
 	float: left;
 }
-form.in4ml div.container.invalid div.error{
+form.in4ml div.container.invalid div.error,
+form.in4ml.invalid div.error
+{
 	border: 1px solid red;
 	background: #fee;
 	display: block;
 	clear: both;
+	margin:0px 10px;
 }
 form.in4ml fieldset.group
 {
