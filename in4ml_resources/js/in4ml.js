@@ -1,3 +1,65 @@
+// Class support
+// http://ejohn.org/blog/simple-javascript-inheritance/
+// Inspired by base2 and Prototype
+(function(){
+  var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
+  // The base Class implementation (does nothing)
+  this.Class = function(){};
+  
+  // Create a new Class that inherits from this class
+  Class.extend = function(prop) {
+    var _super = this.prototype;
+    
+    // Instantiate a base class (but only create the instance,
+    // don't run the init constructor)
+    initializing = true;
+    var prototype = new this();
+    initializing = false;
+    
+    // Copy the properties over onto the new prototype
+    for (var name in prop) {
+      // Check if we're overwriting an existing function
+      prototype[name] = typeof prop[name] == "function" && 
+        typeof _super[name] == "function" && fnTest.test(prop[name]) ?
+        (function(name, fn){
+          return function() {
+            var tmp = this._super;
+            
+            // Add a new ._super() method that is the same method
+            // but on the super-class
+            this._super = _super[name];
+            
+            // The method only need to be bound temporarily, so we
+            // remove it when we're done executing
+            var ret = fn.apply(this, arguments);        
+            this._super = tmp;
+            
+            return ret;
+          };
+        })(name, prop[name]) :
+        prop[name];
+    }
+    
+    // The dummy class constructor
+    function Class() {
+      // All construction is actually done in the init method
+      if ( !initializing && this.init )
+        this.init.apply(this, arguments);
+    }
+    
+    // Populate our constructed prototype object
+    Class.prototype = prototype;
+    
+    // Enforce the constructor to be what we expect
+    Class.constructor = Class;
+
+    // And make this class extendable
+    Class.extend = arguments.callee;
+    
+    return Class;
+  };
+})();
+
 /**
  * Singleton class that handles in4ml functionality
  */
@@ -12,8 +74,9 @@ var in4ml = {
 	 *
 	 * @param		JSON		text		List of all dynamic text
 	 */
-	Init:function( text ){
+	Init:function( text, resources_path ){
 		this.text = new in4mlText( text );
+		this.resources_path = resources_path;
 	},
 	
 	/**
@@ -71,6 +134,7 @@ var in4ml = {
 				var selector = 'select[name=' + field_name + '\\[\\]]';
 				break;
 			}
+			case 'RichText':
 			case 'Textarea':
 			{
 				var selector = 'textarea[name=' + field_name + ']';
@@ -157,7 +221,19 @@ in4mlForm = function( form_definition, ready_events ){
 	// Build fields list	
 	this.fields = {};
 	for( var i = 0; i < form_definition.fields.length; i++ ){
-		this.fields[ form_definition.fields[ i ].name ] = new in4mlField( this, form_definition.fields[ i ] );
+		
+		switch( form_definition.fields[ i ].type ){
+			case 'RichText':{
+				var field = new in4mlFieldRichText( this, form_definition.fields[ i ] );
+				break;
+			}
+			default:{
+				var field = new in4mlField( this, form_definition.fields[ i ] );
+				break;
+			}
+		}
+
+		this.fields[ form_definition.fields[ i ].name ] = field;
 	}
 	
 	// Bind submit event
@@ -295,100 +371,117 @@ in4mlForm.prototype.BindFieldEvent = function( field_name, event, func ){
 /**
  * Field
  */
-in4mlField = function( form, definition ){
-
-	this.type = definition.type;
-	this.validators = definition.validators;
-	this.name = definition.name;
-	this.errors = [];
-	this.form = form;
-	this.element = $$.Find( in4ml.GetFieldSelector( this.type, this.name ), form.element );
-	this.container = $$.FindParent( this.element, '.container' );
-
-	if( this.container ){
-		var error_element = $$.Find( 'div.error', this.container )
-		if( error_element.length ){
-			this.error_element = error_element[ 0 ];
+var in4mlField = Class.extend({
+	init:	function( form, definition ){
+		this.type = definition.type;
+		this.validators = definition.validators;
+		this.name = definition.name;
+		this.errors = [];
+		this.form = form;
+		this.element = $$.Find( in4ml.GetFieldSelector( this.type, this.name ), form.element );
+		this.container = $$.FindParent( this.element, '.container' );
+	
+		if( this.container ){
+			var error_element = $$.Find( 'div.error', this.container )
+			if( error_element.length ){
+				this.error_element = error_element[ 0 ];
+			}
 		}
-	}
-
-}
-in4mlField.prototype.GetValue = function(){
-	return $$.GetValue( this.element );
-}
-in4mlField.prototype.Validate = function(){
-
-	// Reset errors
-	this.errors = [];
-
-	var value = this.GetValue();
 	
-	is_valid = true;
+	},
+	GetValue:function(){
+		return $$.GetValue( this.element );
+	},
+	Validate:function(){
 	
-	for( var i = 0; i < this.validators.length; i++ ){
+		// Reset errors
+		this.errors = [];
+	
+		var value = this.GetValue();
 		
-		if( window[this.validators[i].type] ){
-			// Instantiate validator object			
-			var validator = new window[this.validators[i].type]();
-			for( var index in this.validators[i] ){
-				validator[ index ] = this.validators[i][ index ];
+		is_valid = true;
+		
+		for( var i = 0; i < this.validators.length; i++ ){
+			
+			if( window[this.validators[i].type] ){
+				// Instantiate validator object			
+				var validator = new window[this.validators[i].type]();
+				for( var index in this.validators[i] ){
+					validator[ index ] = this.validators[i][ index ];
+				}
+				if( !validator.ValidateField( this ) ){
+					is_valid = false;
+				}
+			} else {
+	//			console.log( 'Validator not defined ' + this.validators[i].type );
 			}
-			if( !validator.ValidateField( this ) ){
-				is_valid = false;
-			}
-		} else {
-//			console.log( 'Validator not defined ' + this.validators[i].type );
 		}
-	}
+		
+		if( is_valid ){
+			$$.RemoveClass( this.container, 'invalid' );
+			this.ClearErrors();
+		} else {
+			$$.AddClass( this.container, 'invalid' );
+			this.ShowErrors();
+		}
 	
-	if( is_valid ){
-		$$.RemoveClass( this.container, 'invalid' );
+		return is_valid;
+	},
+	SetError:function( error ){
+		this.errors.push( error );
+	},
+	ClearErrors:function(){
+		if( this.error_element ){
+			$$.Empty( this.error_element );
+		}
+	},
+	ShowErrors: function(){
 		this.ClearErrors();
-	} else {
-		$$.AddClass( this.container, 'invalid' );
-		this.ShowErrors();
-	}
-
-	return is_valid;
-}
-in4mlField.prototype.SetError = function( error ){
-	this.errors.push( error );
-}
-in4mlField.prototype.ClearErrors = function(){
-	if( this.error_element ){
-		$$.Empty( this.error_element );
-	}
-}
-in4mlField.prototype.ShowErrors = function(){
-	this.ClearErrors();
-	if( !this.error_element ){
-		this.error_element = $$.Create( 'div', { 'class':'error' } );
-		$$.Append( this.container, this.error_element );
-	}
-	var html = '<ul>';
-	for( var i = 0; i < this.errors.length; i++ ){
-		html += '<li>' + this.errors[ i ] + '</li>';
-	}
-	html += '</ul>';
-	
-	$$.SetHTML( this.error_element, html );
-}
-in4mlField.prototype.BindEvent = function( event, func ){
-	$$.AddEvent
-	(
-		this.element,
-		event,
-		$$.Bind
+		if( !this.error_element ){
+			this.error_element = $$.Create( 'div', { 'class':'error' } );
+			$$.Append( this.container, this.error_element );
+		}
+		var html = '<ul>';
+		for( var i = 0; i < this.errors.length; i++ ){
+			html += '<li>' + this.errors[ i ] + '</li>';
+		}
+		html += '</ul>';
+		
+		$$.SetHTML( this.error_element, html );
+	},
+	BindEvent:function( event, func ){
+		$$.AddEvent
 		(
-			function( func, event ){
-				func( this, event );
-			},
-			this,
-			[ func, event ],
-			true
-		)
-	);
-}
+			this.element,
+			event,
+			$$.Bind
+			(
+				function( func, event ){
+					func( this, event );
+				},
+				this,
+				[ func, event ],
+				true
+			)
+		);
+	}
+});
+var in4mlFieldRichText = in4mlField.extend({
+	init:function( form, definition ){
+		this._super( form, definition );
+		
+		var options =
+		{
+		};
+		
+		$$.ConvertToRichText
+		(
+			this.element,
+			options
+		);
+	}
+});
+
 
 /**************
  * Validators *
@@ -817,6 +910,36 @@ JSLibInterface_jQuery.prototype.Ready = function( callback ){
 		callback
 	);
 }
+/**
+ * Convert a textarea element to a rich text field
+ *
+ * @param		function		callback
+ */
+JSLibInterface_jQuery.prototype.ConvertToRichText = function( element, options ){
+	var defaults = {
+		// Location of TinyMCE script
+		script_url : in4ml.resources_path + 'js/lib/tiny_mce/tiny_mce.js',
+
+		// General options
+		theme : "advanced",
+		plugins : "safari,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template",
+
+		// Theme options
+		theme_advanced_buttons1 : "bold,italic,underline,strikethrough,|,formatselect,|,cut,copy,paste,|,search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink",
+		theme_advanced_buttons2 : "",
+		theme_advanced_buttons3 : "",
+		theme_advanced_buttons4 : "",
+		theme_advanced_toolbar_location : "top",
+		theme_advanced_toolbar_align : "left",
+		theme_advanced_statusbar_location : "bottom",
+		theme_advanced_resizing : true
+	};
+
+	var settings = $.extend(true, defaults, options)
+	
+	$( element ).tinymce( settings );
+}
+
 	
 	/**
 	 * Send a JSON request
@@ -893,3 +1016,4 @@ Utilities = {
 
 // This is the wrapper interface for the Javascript library
 var $$ = new JSLibInterface_jQuery();
+(function(b){var e,d,a=[],c=window;b.fn.tinymce=function(j){var p=this,g,k,h,m,i,l="",n="";if(!p.length){return p}if(!j){return tinyMCE.get(p[0].id)}function o(){var r=[],q=0;if(f){f();f=null}p.each(function(t,u){var s,w=u.id,v=j.oninit;if(!w){u.id=w=tinymce.DOM.uniqueId()}s=new tinymce.Editor(w,j);r.push(s);if(v){s.onInit.add(function(){var x,y=v;if(++q==r.length){if(tinymce.is(y,"string")){x=(y.indexOf(".")===-1)?null:tinymce.resolve(y.replace(/\.\w+$/,""));y=tinymce.resolve(y)}y.apply(x||tinymce,r)}})}});b.each(r,function(t,s){s.render()})}if(!c.tinymce&&!d&&(g=j.script_url)){d=1;h=g.substring(0,g.lastIndexOf("/"));if(/_(src|dev)\.js/g.test(g)){n="_src"}m=g.lastIndexOf("?");if(m!=-1){l=g.substring(m+1)}c.tinyMCEPreInit=c.tinyMCEPreInit||{base:h,suffix:n,query:l};if(g.indexOf("gzip")!=-1){i=j.language||"en";g=g+(/\?/.test(g)?"&":"?")+"js=true&core=true&suffix="+escape(n)+"&themes="+escape(j.theme)+"&plugins="+escape(j.plugins)+"&languages="+i;if(!c.tinyMCE_GZ){tinyMCE_GZ={start:function(){tinymce.suffix=n;function q(r){tinymce.ScriptLoader.markDone(tinyMCE.baseURI.toAbsolute(r))}q("langs/"+i+".js");q("themes/"+j.theme+"/editor_template"+n+".js");q("themes/"+j.theme+"/langs/"+i+".js");b.each(j.plugins.split(","),function(s,r){if(r){q("plugins/"+r+"/editor_plugin"+n+".js");q("plugins/"+r+"/langs/"+i+".js")}})},end:function(){}}}}b.ajax({type:"GET",url:g,dataType:"script",cache:true,success:function(){tinymce.dom.Event.domLoaded=1;d=2;if(j.script_loaded){j.script_loaded()}o();b.each(a,function(q,r){r()})}})}else{if(d===1){a.push(o)}else{o()}}return p};b.extend(b.expr[":"],{tinymce:function(g){return g.id&&!!tinyMCE.get(g.id)}});function f(){function i(l){if(l==="remove"){this.each(function(n,o){var m=h(o);if(m){m.remove()}})}this.find("span.mceEditor,div.mceEditor").each(function(n,o){var m=tinyMCE.get(o.id.replace(/_parent$/,""));if(m){m.remove()}})}function k(n){var m=this,l;if(n!==e){i.call(m);m.each(function(p,q){var o;if(o=tinyMCE.get(q.id)){o.setContent(n)}})}else{if(m.length>0){if(l=tinyMCE.get(m[0].id)){return l.getContent()}}}}function h(m){var l=null;(m)&&(m.id)&&(c.tinymce)&&(l=tinyMCE.get(m.id));return l}function g(l){return !!((l)&&(l.length)&&(c.tinymce)&&(l.is(":tinymce")))}var j={};b.each(["text","html","val"],function(n,l){var o=j[l]=b.fn[l],m=(l==="text");b.fn[l]=function(s){var p=this;if(!g(p)){return o.apply(p,arguments)}if(s!==e){k.call(p.filter(":tinymce"),s);o.apply(p.not(":tinymce"),arguments);return p}else{var r="";var q=arguments;(m?p:p.eq(0)).each(function(u,v){var t=h(v);r+=t?(m?t.getContent().replace(/<(?:"[^"]*"|'[^']*'|[^'">])*>/g,""):t.getContent()):o.apply(b(v),q)});return r}}});b.each(["append","prepend"],function(n,m){var o=j[m]=b.fn[m],l=(m==="prepend");b.fn[m]=function(q){var p=this;if(!g(p)){return o.apply(p,arguments)}if(q!==e){p.filter(":tinymce").each(function(s,t){var r=h(t);r&&r.setContent(l?q+r.getContent():r.getContent()+q)});o.apply(p.not(":tinymce"),arguments);return p}}});b.each(["remove","replaceWith","replaceAll","empty"],function(m,l){var n=j[l]=b.fn[l];b.fn[l]=function(){i.call(this,l);return n.apply(this,arguments)}});j.attr=b.fn.attr;b.fn.attr=function(n,q,o){var m=this;if((!n)||(n!=="value")||(!g(m))){return j.attr.call(m,n,q,o)}if(q!==e){k.call(m.filter(":tinymce"),q);j.attr.call(m.not(":tinymce"),n,q,o);return m}else{var p=m[0],l=h(p);return l?l.getContent():j.attr.call(b(p),n,q,o)}}}})(jQuery);
