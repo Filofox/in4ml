@@ -87,7 +87,55 @@ var in4ml = {
 	RegisterForm:function( form_definition ){
 		this.forms[ form_definition.id ] = new in4mlForm( form_definition, this.ready_events[ form_definition.id ] );
 	},
+	/**
+	 * Load a form via ajax
+	 */
+	LoadForm:function( form_name, parameters, callback ){
+		
+		var form_parameters = {
+			'__form_name': form_name
+		}
+		
+		if( typeof parameters == 'object' ){
+			for( var index in parameters ){
+				form_parameters[ index ] = parameters[ index ];
+			}
+		}
+
+		$$.JSONRequest
+		(
+			'/form/load',
+			'POST',
+			form_parameters,
+			$$.Bind
+			(
+				this.LoadFormSuccess,
+				this,
+				callback
+			),
+			$$.Bind
+			(
+				this.LoadFormError,
+				this,
+				callback
+			)
+		);
+	},
 	
+	LoadFormSuccess:function( status, response, callback ){
+		// Create a temporary DIV to attach it to
+		var div = $$.Create( 'div', {css:{'display':'none'}} );
+		$$.Append( document.body, div );
+		$( div ).html( response.form_html );
+		
+		callback( this.forms[ response.form_id ] );
+
+	},
+	LoadFormError:function(){
+		console.log( 'error' );
+		console.log( arguments );
+	},
+
 	/**
 	 * Generate error text using dynamic text strings
 	 *
@@ -218,12 +266,17 @@ in4mlForm = function( form_definition, ready_events ){
 	this.events = {};
 
 	this.element = $$.Find( 'form#' + form_definition.id ).pop();
+	this.error_element = $$.Find( this.element, '> div.error' ).pop();
+
+	this.errors = [];
+	this.ajax_submit = form_definition.ajax_submit;
+	
 	// Build fields list	
 	this.fields = {};
 	for( var i = 0; i < form_definition.fields.length; i++ ){
-		
 		switch( form_definition.fields[ i ].type ){
 			case 'RichText':{
+//				var field = new in4mlField( this, form_definition.fields[ i ] );
 				var field = new in4mlFieldRichText( this, form_definition.fields[ i ] );
 				break;
 			}
@@ -235,7 +288,7 @@ in4mlForm = function( form_definition, ready_events ){
 
 		this.fields[ form_definition.fields[ i ].name ] = field;
 	}
-	
+
 	// Bind submit event
 	$$.AddEvent
 	(
@@ -247,12 +300,15 @@ in4mlForm = function( form_definition, ready_events ){
 			this
 		)
 	);
+
 	if( ready_events ){
 		for( var i = 0; i < ready_events.length; i++ ){
 			this.BindEvent( 'ready', ready_events[ i ] );
 		}
 	}
-	
+}
+
+in4mlForm.prototype.Init=function(){
 	this.TriggerEvent( 'ready' );
 }
 /**
@@ -273,6 +329,9 @@ in4mlForm.prototype.GetField = function( field_name ){
 in4mlForm.prototype.GetFields = function(){
 	return this.fields;
 }
+in4mlForm.prototype.Submit = function(){
+	$$.Trigger( this.element, 'submit' );
+}
 /**
  * Catch form submit event and do validation
  */
@@ -281,11 +340,29 @@ in4mlForm.prototype.HandleSubmit = function(){
 	var is_valid = this.Validate();
 
 	if( is_valid && this.ajax_submit ){
-		this.AjaxSubmit();
+		// This prevents the form being submitted accidentally due to javascript error
+		setTimeout
+		(
+			$$.Bind
+			(
+				this.AjaxSubmit,
+				this
+			),
+			0
+		);
 		is_valid = false;
 	}
 	
 	return is_valid;
+}
+/**
+ * Get all field values
+ *
+ * @return		object
+ */
+in4mlForm.prototype.GetValue = function( field_name ){
+	var field = this.GetField( field_name );
+	return field.GetValue();
 }
 /**
  * Get all field values
@@ -298,6 +375,16 @@ in4mlForm.prototype.GetValues = function(){
 		values[ index ] = this.fields[ index ].GetValue();
 	}
 	return values;
+}
+/**
+ * Set a field value
+ *
+ * @param		string		field_name
+ * @param		mixed		value
+ */
+in4mlForm.prototype.SetValue = function( field_name, value ){
+	var field = this.GetField( field_name );
+	field.SetValue( value );
 }
 /**
  * Submit the form over Ajax
@@ -322,18 +409,47 @@ in4mlForm.prototype.AjaxSubmit = function(){
 		)
 	);
 }
-in4mlForm.prototype.HandleAjaxSubmitSuccess = function( data, request_object ){
-	console.log( 'success' );
-	console.log( arguments );
+/**
+ * Catch successful AJAX submit
+ *
+ * @param		string		status		Indicates success or failure
+ * @param		object		response	JSON object with details of server response
+ */
+in4mlForm.prototype.HandleAjaxSubmitSuccess = function( status, response ){
+	if( response.success == true ){
+		this.TriggerEvent( 'SubmitSuccess' );
+	} else {
+		// Form errors
+		for( var i = 0; i < response.form_errors.length; i++ ){
+			this.SetFormError( response.form_errors[ i ] );
+		}
+		this.ShowErrors();
+		// Field errors
+		for( var field_name in response.field_errors ){
+			var field = this.GetField( field_name );
+			for( var i = 0; i < response.field_errors[ field_name ].length; i++ ){
+				field.SetError( response.field_errors[ field_name ][ i ] );
+			}
+			field.ShowErrors();
+		}
+		this.TriggerEvent( 'SubmitError' );
+	}
 }
+/**
+ * Catch successful AJAX submit
+ *
+ * @param		object		request_object		XMLHTTP request object
+ * @param		string		error_code			Code indicating error
+ */
 in4mlForm.prototype.HandleAjaxSubmitError = function( request_object, error_code  ){
 	console.log( 'error' );
 	console.log( arguments );
+	this.TriggerEvent( 'SubmitError' );
 }
 /**
  * Do validation
  */
-in4mlForm.prototype.Validate = function( form ){
+in4mlForm.prototype.Validate = function(){
 
 	var is_valid = true;
 	for( var index in this.fields ){
@@ -343,6 +459,43 @@ in4mlForm.prototype.Validate = function( form ){
 	}
 
 	return is_valid;
+}
+in4mlForm.prototype.SetFormError = function( error ){
+	this.errors.push( error );
+}
+in4mlForm.prototype.ClearErrors = function(){
+	$$.RemoveClass( this.element, 'invalid' );
+	if( this.error_element ){
+		$$.Empty( this.error_element );
+	}
+	// Clear field errors
+	for( var index in this.fields ){
+		this.fields[ index ].ClearErrors();
+	}
+}
+in4mlForm.prototype.ShowErrors = function(){
+	
+	this.ClearErrors();
+	if( this.errors.length ){
+		$$.AddClass( this.element, 'invalid' );
+
+	}
+	
+	if( !this.error_element ){
+		this.error_element = $$.Create( 'div', { 'class':[ 'error', 'default' ] } );
+		$$.Prepend
+		(
+			$$.Find( '> fieldset', this.element ).pop(),
+			this.error_element
+		);
+	}
+	var html = '<ul>';
+	for( var i = 0; i < this.errors.length; i++ ){
+		html += '<li>' + this.errors[ i ] + '</li>';
+	}
+	html += '</ul>';
+	
+	$$.SetHTML( this.error_element, html );
 }
 in4mlForm.prototype.BindEvent = function( event, func ){
 
@@ -366,6 +519,9 @@ in4mlForm.prototype.TriggerEvent = function( event ){
 }
 in4mlForm.prototype.BindFieldEvent = function( field_name, event, func ){
 	this.fields[ field_name ].BindEvent( event, func );
+}
+in4mlForm.prototype.AppendTo = function( element ){
+	$$.Append( element, this.element );
 }
 
 /**
@@ -391,6 +547,14 @@ var in4mlField = Class.extend({
 	},
 	GetValue:function(){
 		return $$.GetValue( this.element );
+	},
+	/**
+	 * Set the value of the field
+	 *
+	 * @param		mixed		value
+	 */
+	SetValue:function( value ){
+		return $$.SetValue( this.element, value );
 	},
 	Validate:function(){
 	
@@ -431,12 +595,15 @@ var in4mlField = Class.extend({
 		this.errors.push( error );
 	},
 	ClearErrors:function(){
+		$$.RemoveClass( this.container, 'invalid' );
 		if( this.error_element ){
 			$$.Empty( this.error_element );
 		}
 	},
 	ShowErrors: function(){
 		this.ClearErrors();
+		$$.AddClass( this.container, 'invalid' );
+	
 		if( !this.error_element ){
 			this.error_element = $$.Create( 'div', { 'class':'error' } );
 			$$.Append( this.container, this.error_element );
@@ -466,6 +633,9 @@ var in4mlField = Class.extend({
 		);
 	}
 });
+/**
+ * Rich text (WYSIWYG) element
+ */
 var in4mlFieldRichText = in4mlField.extend({
 	init:function( form, definition ){
 		this._super( form, definition );
@@ -481,7 +651,6 @@ var in4mlFieldRichText = in4mlField.extend({
 		);
 	}
 });
-
 
 /**************
  * Validators *
@@ -714,6 +883,23 @@ JSLibInterface_jQuery.prototype.Append = function( parent_element, child_element
 	jQuery( parent_element ).append( child_element );
 }
 /**
+ * Append an element inside another element
+ *
+ * @param		HTMLElement			parent_element			Element to prepend to
+ * @param		HTMLElement			child_element			Element to be prepended
+ */
+JSLibInterface_jQuery.prototype.Prepend = function( parent_element, child_element ){
+	jQuery( parent_element ).prepend( child_element );
+}
+/**
+ * Remove an element from the DOM
+ *
+ * @param		HTMLElement			element			Element to be removed
+ */
+JSLibInterface_jQuery.prototype.Remove = function( element ){
+	jQuery( element ).remove();
+}
+/**
  * Set the HTML text for an element
  *
  * @param		HTMLElement			element			Element to set HTML for
@@ -804,7 +990,7 @@ JSLibInterface_jQuery.prototype.RemoveClass = function( element, css_class ){
 JSLibInterface_jQuery.prototype.Create = function( type, properties ){
 	var element = jQuery( document.createElement( type ) );
 
-	if(  typeof properties == 'object' ){
+	if( typeof properties == 'object' ){
 		for( var name in properties ){
 			var value = properties[ name ];
 			switch( name ){
@@ -829,6 +1015,14 @@ JSLibInterface_jQuery.prototype.Create = function( type, properties ){
 						element.bind( event, value[ event ] );
 					 }
 					 break;
+				}
+				case 'class':{
+					// Convert array to string
+					if( typeof value == 'object' ){
+						value = value.join( ' ' );
+					}
+					element.addClass( value );
+					break;
 				}
 				default:{
 					element.attr( name, value )
@@ -869,6 +1063,15 @@ JSLibInterface_jQuery.prototype.Bind = function( fn, scope, args, override ) {
 		};
 },
 /**
+ * Trigger a behaviour/handler of an element
+ *
+ * @param		HTMLElement		element
+ * @param		string			event
+ */
+JSLibInterface_jQuery.prototype.Trigger = function( element, event ){
+	$( element ).trigger( event );
+}
+/**
  * Get the value of a form element
  *
  * @param		HTMLElement		element
@@ -900,6 +1103,35 @@ JSLibInterface_jQuery.prototype.GetValue = function( element ){
 	return value;
 }
 /**
+ * Set the value of a form element
+ *
+ * @param		HTMLElement		element
+ * @param		mixed			value
+ *
+ * @return		mixed
+ */
+JSLibInterface_jQuery.prototype.SetValue = function( element, value ){
+	$( element ).val( value );
+
+	//switch( $$.GetAttribute( element, 'type' ) ){
+	//	case 'checkbox':{
+	//		value = $$.GetAttribute( element, 'checked' );
+	//		break;
+	//	}
+	//	case 'radio':{
+	//		for( var i = 0; i < element.length; i++ ){
+	//			if( jQuery( element[ i ] ).attr( 'checked' ) ){
+	//				value = jQuery( element[ i ] ).val();
+	//			}
+	//		}
+	//		break;
+	//	}
+	//	default:{
+	//		value = jQuery( element ).val();
+	//	}
+	//}
+}
+/**
  * Call a function when document is ready
  *
  * @param		function		callback
@@ -916,6 +1148,7 @@ JSLibInterface_jQuery.prototype.Ready = function( callback ){
  * @param		function		callback
  */
 JSLibInterface_jQuery.prototype.ConvertToRichText = function( element, options ){
+
 	var defaults = {
 		// Location of TinyMCE script
 		script_url : in4ml.resources_path + 'js/lib/tiny_mce/tiny_mce.js',
@@ -936,20 +1169,19 @@ JSLibInterface_jQuery.prototype.ConvertToRichText = function( element, options )
 	};
 
 	var settings = $.extend(true, defaults, options)
-	
+
 	$( element ).tinymce( settings );
 }
-
 	
-	/**
-	 * Send a JSON request
-	 *
-	 * @param		string			url
-	 * @param		string			method					GET or POST
-	 * @param		JSON			data					Key => value pairs
-	 * @param		function		success_callback
-	 * @param		function		error_callback
-	 */
+/**
+ * Send a JSON request
+ *
+ * @param		string			url
+ * @param		string			method					GET or POST
+ * @param		JSON			data					Key => value pairs
+ * @param		function		success_callback
+ * @param		function		error_callback
+ */
 JSLibInterface_jQuery.prototype.JSONRequest = function( url, method, data, success_callback, error_callback ){
 	jQuery.ajax
 	(
@@ -1013,6 +1245,9 @@ Utilities = {
 		return regex.test( value );
 	}
 }
+
+// This is the wrapper interface for the Javascript library
+var $$ = new JSLibInterface_jQuery();
 
 // This is the wrapper interface for the Javascript library
 var $$ = new JSLibInterface_jQuery();
