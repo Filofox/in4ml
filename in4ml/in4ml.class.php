@@ -187,6 +187,14 @@ class in4ml{
 		return self::Config( 'path_local' );
 	}
 	/**
+	 * Convenience function for retrieving resources (CSS, JavaScript) path
+	 * 
+	 * @return		string
+	 */
+	public function GetPathResources(){
+		return self::Config( 'path_resources' );
+	}
+	/**
 	 * Convenience function for retrieving forms
 	 * 
 	 * @return		string
@@ -358,6 +366,32 @@ class in4ml{
 		
 		return $instance;
 	}
+	
+	/**
+	 * Write required setup into page header
+	 */
+	public function GetInitCode(){
+
+		$output = '<script type="text/javascript" src="' . self::GetPathResources() . 'js/in4ml.js"></script>' . "\n";
+
+		//foreach( in4ml::GetRequiredJavaScript() as $path ){
+		//	$output .= ('<script type="text/javascript" src="' . $path . '"></script>');
+		//}
+
+		$output .= '<script type="text/javascript" >
+			$$.Ready
+			(
+				function(){
+					in4ml.Init({"Error":' . json_encode( self::GetTextNamespace( 'Error' ) ) . '},"' .  self::GetPathResources() . '" );
+				}
+			)
+		</script>
+		<link rel="stylesheet" type="text/css" href="' . in4ml::GetPathResources() . 'css/in4ml.default.css"/>
+		';
+
+		return $output;
+		
+	}
 
 	/**
 	 * Get config settings object
@@ -404,6 +438,7 @@ class in4ml{
 class in4mlConfig{
 	public $path_base;
 	public $path_local;
+	public $path_resources = 'in4ml_resources/';
 	public $form_prefix;
 
 	// Override these settings in config file if necessary 

@@ -24,6 +24,7 @@ $this->templates = array
 		'password'			=> '<input type="password" [[attributes]]/>',
 		// 'rows' and 'cols' attributes are required for valid XHTML -- these can be overridden with CSS
 		'textarea'			=> '<textarea [[attributes]] rows="2" cols="20">[[value]]</textarea>',
+		'richtext'			=> '<textarea [[attributes]] rows="2" cols="20">[[value]]</textarea>',
 		'select'			=> '<select [[attributes]]>[[options]]</select>',
 		'selectmultiple'	=> '<select multiple="multiple" [[attributes]]>[[options]]</select>',
 		'radiobutton'		=> '<input type="radio" [[attributes]]/><label for="[[element_id]]" class="element">[[label]]</label>',
