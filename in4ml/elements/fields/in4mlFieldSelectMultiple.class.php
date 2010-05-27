@@ -52,7 +52,7 @@ class in4mlFieldSelectMultiple extends in4mlFieldSelect{
 					),
 					array
 					(
-						$option[ 'value' ],
+						htmlentities( $option[ 'value' ] ),
 						$option[ 'text' ],
 						( ( is_array( $this->value ) && in_array( $option[ 'value' ], $this->value ) )?' selected="selected"':'' )
 					),
