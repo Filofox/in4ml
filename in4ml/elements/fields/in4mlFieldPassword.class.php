@@ -36,7 +36,7 @@ class in4mlFieldPassword extends in4mlField{
 		} else {
 			// Use default value?
 			if( isset( $this->default ) ){
-				$values->SetAttribute( 'value', $this->default );
+				$values->SetAttribute( 'value', htmlentities( $this->default ) );
 			}
 		}
 		

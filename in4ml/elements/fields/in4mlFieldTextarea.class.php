@@ -32,7 +32,7 @@ class in4mlFieldTextarea extends in4mlField{
 		} else {
 			// Use default value?
 			if( isset( $this->default ) ){
-				$value = $this->default;
+				$value = htmlentities( $this->default );
 			}
 		}
 		$values->value = $value;
