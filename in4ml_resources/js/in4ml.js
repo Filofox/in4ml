@@ -86,6 +86,7 @@ var in4ml = {
 	 */
 	RegisterForm:function( form_definition ){
 		this.forms[ form_definition.id ] = new in4mlForm( form_definition, this.ready_events[ form_definition.id ] );
+		this.forms[ form_definition.id ].Init();
 	},
 	/**
 	 * Load a form via ajax
