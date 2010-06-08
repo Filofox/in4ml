@@ -98,3 +98,12 @@ form.in4ml div.group select
 form.in4ml div.invalid label{
 	font-weight: bold;
 }
+form.in4ml input.date{
+	float:left;
+}
+form.in4ml button.ui-datepicker-trigger{
+	border: 0px;
+	background: none;
+	padding: 0px;
+	margin: 0px;
+}

@@ -92,7 +92,6 @@ var in4ml = {
 	 * Load a form via ajax
 	 */
 	LoadForm:function( form_name, parameters, callback ){
-		
 		var form_parameters = {
 			'__form_name': form_name
 		}
@@ -183,6 +182,11 @@ var in4ml = {
 				var selector = 'select[name=' + field_name + '\\[\\]]';
 				break;
 			}
+			case 'Date':
+			{
+				var selector = 'input[type=hidden][name=' + field_name + ']';
+				break;
+			}
 			case 'RichText':
 			case 'Textarea':
 			{
@@ -271,13 +275,16 @@ in4mlForm = function( form_definition, ready_events ){
 
 	this.errors = [];
 	this.ajax_submit = form_definition.ajax_submit;
-	
+
 	// Build fields list	
 	this.fields = {};
 	for( var i = 0; i < form_definition.fields.length; i++ ){
 		switch( form_definition.fields[ i ].type ){
+			case 'Date':{
+				var field = new in4mlFieldDate( this, form_definition.fields[ i ] );
+				break;
+			}
 			case 'RichText':{
-//				var field = new in4mlField( this, form_definition.fields[ i ] );
 				var field = new in4mlFieldRichText( this, form_definition.fields[ i ] );
 				break;
 			}
@@ -650,6 +657,84 @@ var in4mlFieldRichText = in4mlField.extend({
 			this.element,
 			options
 		);
+	}
+});
+/**
+ * Datepicker element
+ */
+var in4mlFieldDate = in4mlField.extend({
+	init:function( form, definition ){
+		this._super( form, definition );
+		var options =
+		{
+			'format': definition.format,
+			'min_date': new Date( definition.min_date.year, definition.min_date.month - 1, definition.min_date.day ),
+			'max_date': new Date( definition.max_date.year, definition.max_date.month - 1, definition.max_date.day ),
+			'change': $$.Bind
+			(
+				this.onUpdate,
+				this
+			)
+		};
+		
+		// Set default date
+		if( definition[ 'default' ] ){
+			options.default_date = new Date( definition[ 'default' ].year, definition[ 'default' ].month-1, definition[ 'default' ].day );
+		}
+	
+		this.element = $$.ConvertToDatePicker
+		(
+			this.element,
+			options
+		);
+		
+		// Create hidden fields to store
+		this.hidden_element_day = $$.Create
+		(
+			'input',
+			{
+				'type':'hidden',
+				'name': this.name + '[day]',
+				value: definition[ 'default' ].day
+			}
+		);
+		this.hidden_element_month = $$.Create
+		(
+			'input',
+			{
+				'type':'hidden',
+				'name': this.name + '[month]',
+				value: definition[ 'default' ].month
+			}
+		);
+		this.hidden_element_year = $$.Create
+		(
+			'input',
+			{
+				'type':'hidden',
+				'name': this.name + '[year]',
+				value: definition[ 'default' ].year
+			}
+		);
+		$$.Append(
+			this.container,[ this.hidden_element_day, this.hidden_element_month, this.hidden_element_year ] );
+	},
+	/**
+	 * Called when field is updated. Updates hidden field values
+	 *
+	 * @param		Date		date		A JavaScript date object
+	 */
+	onUpdate:function( date ){
+		$$.SetValue( this.hidden_element_day, date.getDate() );
+		$$.SetValue( this.hidden_element_month, date.getMonth() + 1 );
+		$$.SetValue( this.hidden_element_year, date.getFullYear() );
+	},
+	GetValue:function(){
+		return {
+			day:$$.GetValue( this.hidden_element_day ),
+			month:$$.GetValue( this.hidden_element_month ),
+			year:$$.GetValue( this.hidden_element_year )
+		}
 	}
 });
 
@@ -1146,7 +1231,8 @@ JSLibInterface_jQuery.prototype.Ready = function( callback ){
 /**
  * Convert a textarea element to a rich text field
  *
- * @param		function		callback
+ * @param		HTMLElement		element
+ * @param		JSON			options
  */
 JSLibInterface_jQuery.prototype.ConvertToRichText = function( element, options ){
 
@@ -1173,6 +1259,74 @@ JSLibInterface_jQuery.prototype.ConvertToRichText = function( element, options )
 
 	$( element ).tinymce( settings );
 }
+/**
+ * Convert a set of date selectors to a date picker
+ *
+ * @param		HTMLElement		element
+ * @param		JSON			options
+ */
+JSLibInterface_jQuery.prototype.ConvertToDatePicker = function( element, options ){
+	element = $( element );
+	
+	var new_element = $( this.Create
+		(
+			'input',
+			{
+				'name':element.attr( 'name' ),
+				'id':element.attr( 'id' ),
+				'class': 'date text'
+			}
+		)
+	);
+
+	element.replaceWith( new_element );
+
+	var settings =
+	{
+		'dateFormat': options.format,
+		'minDate': options.min_date,
+		'maxDate': options.max_date,
+		'showOn': 'both',
+		'buttonImage': in4ml.resources_path + 'img/calendar_icon.png'
+	};
+	
+	// Interpolate settings
+	for( var property in options ){
+		var value = options[ property ];
+		switch( property ){
+			case 'button':{
+				settings.showOn = ( value ) ? 'both':'focus';
+				break;
+			}
+			case 'button_image':{
+				settings.buttonImage = value;
+				break;
+			}
+			case 'change':{
+				settings.onSelect = this.Bind(
+					function( date_string, date_picker, callback ){
+						callback( date_picker.input.datepicker( 'getDate' ) );
+					},
+					this,
+					value
+				);
+				break;
+			}
+		}
+	}
+	
+	new_element.datepicker
+	(
+		settings
+	);
+	
+	// Only seems to work after instantiation, for some reason
+	if( options.default_date ){
+		new_element.datepicker( 'setDate', options.default_date );
+	}
+	
+	return new_element;
+}
 	
 /**
  * Send a JSON request
@@ -1196,6 +1350,69 @@ JSLibInterface_jQuery.prototype.JSONRequest = function( url, method, data, succe
 		}
 	);
 }
+// Replaces the native jQuery param() method to support sending nested objects
+jQuery.extend
+(
+	{
+		// Serialize an array of form elements or a set of
+		// key/values into a query string
+		param: function( data, name ) {
+
+			var s = [];
+
+			switch( Utilities.GetType(data) ){
+				case 'array':{
+					// Serialize the form elements
+					for( var key = 0; key < data.length; key++ ){
+						if( name ){
+							fullkey = name + '[' + key + ']';
+						} else {
+							fullkey = key;
+						}
+						if( Utilities.GetType( data[ key ] ) == 'array' || Utilities.GetType( data[ key ] ) == 'object' ){
+							s.push( jQuery.param( data[ key ], fullkey ) );
+						} else {
+							if( data[key] === null ){
+								data[key] = '';
+							}
+							s.push( fullkey + "=" + encodeURIComponent( jQuery.isFunction(data[ key ]) ? data[ key ] : data[ key ] ) );
+						}
+					}
+					break;
+				}
+				case 'object':{
+					// Serialize the form elements
+					for( var key in data ){
+						if( name ){
+							fullkey = name + '[' + key + ']';
+						} else {
+							fullkey = key;
+						}
+						if( Utilities.GetType( data[ key ] ) == 'array' || Utilities.GetType( data[ key ] ) == 'object' ){
+							s.push( jQuery.param( data[ key ], fullkey ) );
+						} else {
+							if( data[key] === null ){
+								data[key] = '';
+							}
+							s.push( fullkey + "=" + encodeURIComponent( jQuery.isFunction(data[ key ]) ? data[ key ] : data[ key ] ) );
+						}
+					}
+					break;
+				}
+				default:{
+					if( data === null ){
+						data = '';
+					}
+					s.push( encodeURIComponent(name) + "=" + encodeURIComponent( jQuery.isFunction(data) ? data() : data ) );
+					break;
+				}
+			}
+
+			// Return the resulting serialization
+			return s.join("&").replace(/%20/g, "+");
+		}
+	}
+);
 
 /**
  * Useful utility functions
@@ -1228,6 +1445,20 @@ Utilities = {
 
 		return sa ? s : s[0];
 	},
+	GetType:function(obj){
+		if (obj == undefined) return false;
+		if (obj.constructor == Array) return 'array';
+		if (obj.nodeName){
+			switch (obj.nodeType){
+				case 1: return 'element';
+				case 3: return (/\S/).test(obj.nodeValue) ? 'textnode' : 'whitespace';
+			}
+		} else if (typeof obj.length == 'number'){
+			if (obj.callee) return 'arguments';
+			else if (obj.item) return 'collection';
+		}
+		return typeof obj;
+	},
 	/**
 	 * Evaluate a regular expression match
 	 *
@@ -1250,6 +1481,4 @@ Utilities = {
 // This is the wrapper interface for the Javascript library
 var $$ = new JSLibInterface_jQuery();
 
-// This is the wrapper interface for the Javascript library
-var $$ = new JSLibInterface_jQuery();
 (function(b){var e,d,a=[],c=window;b.fn.tinymce=function(j){var p=this,g,k,h,m,i,l="",n="";if(!p.length){return p}if(!j){return tinyMCE.get(p[0].id)}function o(){var r=[],q=0;if(f){f();f=null}p.each(function(t,u){var s,w=u.id,v=j.oninit;if(!w){u.id=w=tinymce.DOM.uniqueId()}s=new tinymce.Editor(w,j);r.push(s);if(v){s.onInit.add(function(){var x,y=v;if(++q==r.length){if(tinymce.is(y,"string")){x=(y.indexOf(".")===-1)?null:tinymce.resolve(y.replace(/\.\w+$/,""));y=tinymce.resolve(y)}y.apply(x||tinymce,r)}})}});b.each(r,function(t,s){s.render()})}if(!c.tinymce&&!d&&(g=j.script_url)){d=1;h=g.substring(0,g.lastIndexOf("/"));if(/_(src|dev)\.js/g.test(g)){n="_src"}m=g.lastIndexOf("?");if(m!=-1){l=g.substring(m+1)}c.tinyMCEPreInit=c.tinyMCEPreInit||{base:h,suffix:n,query:l};if(g.indexOf("gzip")!=-1){i=j.language||"en";g=g+(/\?/.test(g)?"&":"?")+"js=true&core=true&suffix="+escape(n)+"&themes="+escape(j.theme)+"&plugins="+escape(j.plugins)+"&languages="+i;if(!c.tinyMCE_GZ){tinyMCE_GZ={start:function(){tinymce.suffix=n;function q(r){tinymce.ScriptLoader.markDone(tinyMCE.baseURI.toAbsolute(r))}q("langs/"+i+".js");q("themes/"+j.theme+"/editor_template"+n+".js");q("themes/"+j.theme+"/langs/"+i+".js");b.each(j.plugins.split(","),function(s,r){if(r){q("plugins/"+r+"/editor_plugin"+n+".js");q("plugins/"+r+"/langs/"+i+".js")}})},end:function(){}}}}b.ajax({type:"GET",url:g,dataType:"script",cache:true,success:function(){tinymce.dom.Event.domLoaded=1;d=2;if(j.script_loaded){j.script_loaded()}o();b.each(a,function(q,r){r()})}})}else{if(d===1){a.push(o)}else{o()}}return p};b.extend(b.expr[":"],{tinymce:function(g){return g.id&&!!tinyMCE.get(g.id)}});function f(){function i(l){if(l==="remove"){this.each(function(n,o){var m=h(o);if(m){m.remove()}})}this.find("span.mceEditor,div.mceEditor").each(function(n,o){var m=tinyMCE.get(o.id.replace(/_parent$/,""));if(m){m.remove()}})}function k(n){var m=this,l;if(n!==e){i.call(m);m.each(function(p,q){var o;if(o=tinyMCE.get(q.id)){o.setContent(n)}})}else{if(m.length>0){if(l=tinyMCE.get(m[0].id)){return l.getContent()}}}}function h(m){var l=null;(m)&&(m.id)&&(c.tinymce)&&(l=tinyMCE.get(m.id));return l}function g(l){return !!((l)&&(l.length)&&(c.tinymce)&&(l.is(":tinymce")))}var j={};b.each(["text","html","val"],function(n,l){var o=j[l]=b.fn[l],m=(l==="text");b.fn[l]=function(s){var p=this;if(!g(p)){return o.apply(p,arguments)}if(s!==e){k.call(p.filter(":tinymce"),s);o.apply(p.not(":tinymce"),arguments);return p}else{var r="";var q=arguments;(m?p:p.eq(0)).each(function(u,v){var t=h(v);r+=t?(m?t.getContent().replace(/<(?:"[^"]*"|'[^']*'|[^'">])*>/g,""):t.getContent()):o.apply(b(v),q)});return r}}});b.each(["append","prepend"],function(n,m){var o=j[m]=b.fn[m],l=(m==="prepend");b.fn[m]=function(q){var p=this;if(!g(p)){return o.apply(p,arguments)}if(q!==e){p.filter(":tinymce").each(function(s,t){var r=h(t);r&&r.setContent(l?q+r.getContent():r.getContent()+q)});o.apply(p.not(":tinymce"),arguments);return p}}});b.each(["remove","replaceWith","replaceAll","empty"],function(m,l){var n=j[l]=b.fn[l];b.fn[l]=function(){i.call(this,l);return n.apply(this,arguments)}});j.attr=b.fn.attr;b.fn.attr=function(n,q,o){var m=this;if((!n)||(n!=="value")||(!g(m))){return j.attr.call(m,n,q,o)}if(q!==e){k.call(m.filter(":tinymce"),q);j.attr.call(m.not(":tinymce"),n,q,o);return m}else{var p=m[0],l=h(p);return l?l.getContent():j.attr.call(b(p),n,q,o)}}}})(jQuery);
