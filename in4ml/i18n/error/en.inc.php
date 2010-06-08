@@ -6,6 +6,11 @@ $text = array
 	(
 		'default' => 'Confirm field value does not match.'
 	),
+	'date' => array
+	(
+		'min' => 'Date must be no earlier than [[min]]',
+		'max' => 'Date must be no later than [[max]]'
+	),
 	'email' => array
 	(
 		'default' => 'Not a valid email address.'

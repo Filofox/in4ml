@@ -172,6 +172,15 @@ class In4mlField extends in4mlElement{
 	}
 	
 	/**
+	 * Override this to return any 'extra' key/value pairs required when exporting form to JSON
+	 *
+	 * @return		array
+	 */
+	public function GetPropertiesForJSON(){
+		return array();
+	}
+	
+	/**
 	 * Create a deep clone of this field
 	 *
 	 * Usage: $new_field = clone $field;

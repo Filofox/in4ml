@@ -15,7 +15,8 @@ $this->templates = array
 		// Extra <div> around fieldset to allow consistent styling (see http://www.tyssendesign.com.au/articles/css/legends-of-style/)
 		'set'			=> '<div [[attributes]]><fieldset>[[legend]][[elements]]</fieldset></div>',
 		'container'		=> '<div [[attributes]]><label for="[[form_id]]_[[field_name]]">[[label]]</label><span class="prefix">[[prefix]]</span>[[elements]]<span class="suffix">[[suffix]]</span><div class="notes">[[notes]]</div>[[error]]</div>',
-		'error'			=> '<div [[attributes]]><ul>[[elements]]</ul></div>'
+		'error'			=> '<div [[attributes]]><ul>[[elements]]</ul></div>',
+		'noscript'			=> '<noscript [[attributes]]>[[elements]]</noscript>'
 	),
 	'field' => array
 	(

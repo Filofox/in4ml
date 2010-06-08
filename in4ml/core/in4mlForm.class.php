@@ -43,6 +43,7 @@ class In4mlForm{
 	public $form_id;
 	
 	public $use_javascript = true;
+	public $ajax_submit = false;
 	
 	const BUTTON_TYPE_SUBMIT = 'submit';
 	const BUTTON_TYPE_RESET = 'reset';
@@ -285,7 +286,8 @@ class In4mlForm{
 		$definition = array
 		(
 			'id' => $this->form_id,
-			'fields' => array()
+			'fields' => array(),
+			'ajax_submit' => $this->ajax_submit
 		);
 		
 		foreach( $this->fields as $field ){
@@ -341,6 +343,10 @@ class In4mlForm{
 			if( $field->confirm_field ){
 				$field_properties[ 'has_confirm' ] = true;
 			}
+			
+			foreach( $field->GetPropertiesForJSON() as $key => $value ){
+				$field_properties[ $key ] = $value;
+			}
 
 			array_push
 			(
@@ -351,8 +357,70 @@ class In4mlForm{
 		
 		return json_encode( $definition );
 	}
+	
+	/**
+	 * Set a general 'form' error (as opposed to a specific field error)
+	 *
+	 * @param		string		$error
+	 */
 	public function SetFormError( $error ){
 		$this->form_element->SetError( $error );
+	}
+
+	/**
+	 * Get a response object (including all errors etc) that can be encoded (e.g. for AJAX response_
+	 *
+	 * @return		in4mlFormResponse
+	 */
+	public function GetResponse(){
+		
+		$response = new in4mlFormResponse();
+		
+		try{
+			$response->success = $this->is_valid;
+			// Field errors
+			foreach( $this->fields as $field ){
+				foreach( $field->GetErrors() as $error ){
+					$response->SetError( $field->name, $error );
+				}
+			}
+			// Form errors
+			foreach( $this->form_element->GetErrors() as $error ){
+				$response->SetFormError( $error );
+			}
+		} catch( Exception $e ){
+			$response->SetFormError( $e->message );
+		}
+
+		return $response;
+	}
+}
+
+/**
+ * Class for containing data about form response (e.g. for use with Ajax form submit)
+ */
+class in4mlFormResponse{
+	public $success = false;
+	public $form_errors = array();
+	public $field_errors = array();
+	
+	/**
+	 * Add a generic 'form error'
+	 *
+	 * @param		string		$error
+	 */
+	public function SetFormError( $error ){
+		$this->form_errors[] = $error;
+	}
+
+	/**
+	 * Add a field error
+	 *
+	 * @param		string		$field
+	 * @param		string		$error
+	 */
+	public function SetError( $field, $error ){
+		$this->field_errors[ $field ][] = $error;
 	}
 }
 ?>

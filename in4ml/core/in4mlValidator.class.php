@@ -19,6 +19,10 @@ class in4mlValidator
 		throw new Exception( 'Method in4mlValidator::ValidateField() must be overridden' );
 	}
 	
+	public function GetType(){
+		return str_replace( 'in4mlValidator', '', get_class( $this ) );
+ 	}
+	
 	/**
 	 * Return CSS class
 	 *
