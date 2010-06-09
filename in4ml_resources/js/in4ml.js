@@ -280,6 +280,10 @@ in4mlForm = function( form_definition, ready_events ){
 	this.fields = {};
 	for( var i = 0; i < form_definition.fields.length; i++ ){
 		switch( form_definition.fields[ i ].type ){
+			case 'Radio':{
+				var field = new in4mlFieldRadio( this, form_definition.fields[ i ] );
+				break;
+			}
 			case 'Date':{
 				var field = new in4mlFieldDate( this, form_definition.fields[ i ] );
 				break;
@@ -639,6 +643,18 @@ var in4mlField = Class.extend({
 				true
 			)
 		);
+	}
+});
+/**
+ * Rich text (WYSIWYG) element
+ */
+var in4mlFieldRadio = in4mlField.extend({
+	// Set value (i.e. set which one is checked)
+	SetValue:function( value ){
+		// Uncheck all
+		$( this.container ).find( 'input.radiobutton' ).attr( 'checked', false );
+		// Check selected
+		$( $( this.container ).find( 'input.radiobutton[value=' + value + ']' ) ).attr( 'checked', true );
 	}
 });
 /**
