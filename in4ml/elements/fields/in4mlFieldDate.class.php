@@ -140,7 +140,6 @@ class in4mlFieldDate extends in4mlField{
 	 * Return 'extra' key/value pairs required when exporting field to JSON
 	 */
 	public function GetPropertiesForJSON(){
-
 		// Get date range validator details
 		$daterange_validator = false;
 		foreach( $this->validators as $validator ){
@@ -168,6 +167,10 @@ class in4mlFieldDate extends in4mlField{
 			$default_date = new LibDate();
 			$default_date->SetRelativeDateFromString( $this->default );
 			$settings[ 'default' ] = $default_date;
+		}
+
+		if( $this->value ){
+			$settings[ 'value' ] = $this->value;
 		}
 		
 		return $settings;
