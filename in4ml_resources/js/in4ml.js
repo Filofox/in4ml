@@ -692,12 +692,15 @@ var in4mlFieldDate = in4mlField.extend({
 				this
 			)
 		};
-		
+
 		// Set default date
 		if( definition[ 'default' ] ){
 			options.default_date = new Date( definition[ 'default' ].year, definition[ 'default' ].month-1, definition[ 'default' ].day );
 		}
-	
+		if( definition.value ){
+			options.value = new Date( definition.value.year, definition.value.month-1, definition.value.day );
+		}
+		
 		this.element = $$.ConvertToDatePicker
 		(
 			this.element,
@@ -1337,7 +1340,9 @@ JSLibInterface_jQuery.prototype.ConvertToDatePicker = function( element, options
 	);
 	
 	// Only seems to work after instantiation, for some reason
-	if( options.default_date ){
+	if( options.value ){
+		new_element.datepicker( 'setDate', options.value );
+	}else if( options.default_date ){
 		new_element.datepicker( 'setDate', options.default_date );
 	}
 	
