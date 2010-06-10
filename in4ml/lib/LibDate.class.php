@@ -180,6 +180,7 @@ if( !class_exists( 'LibDate' ) ){
 			
 			// First, set date to 'now'
 			$this->SetFromTimestamp( date( 'U' ) );
+			$this->hours = $this->minutes = $this->seconds = 0;
 			
 			$date = array();
 	
