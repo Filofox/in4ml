@@ -38,8 +38,8 @@ class In4mlFormPHP extends In4mlForm{
 		// Add script element?
 		if( $this->use_javascript ){
 			
-			$element = in4ml::CreateElement( 'General:Script' );
-			$element->code = '$$.Ready( function(){ in4ml.RegisterForm( ' . $this->GetDefinitionAsJSON() . ' ); } )';
+			$element = in4ml::CreateElement( 'General:ScriptDefinition' );
+			$element->form = $this;
 			
 			$this->form_element->AddElement( $element );
 		}
