@@ -1378,17 +1378,16 @@ jQuery.extend
 		// Serialize an array of form elements or a set of
 		// key/values into a query string
 		param: function( data, name ) {
-
 			var s = [];
 
 			switch( Utilities.GetType(data) ){
 				case 'array':{
 					// Serialize the form elements
 					for( var key = 0; key < data.length; key++ ){
-						if( name ){
-							fullkey = name + '[' + key + ']';
+						if( typeof name !== 'undefined' ){
+							var fullkey = name + '[' + key + ']';
 						} else {
-							fullkey = key;
+							var fullkey = key;
 						}
 						if( Utilities.GetType( data[ key ] ) == 'array' || Utilities.GetType( data[ key ] ) == 'object' ){
 							s.push( jQuery.param( data[ key ], fullkey ) );
@@ -1404,7 +1403,7 @@ jQuery.extend
 				case 'object':{
 					// Serialize the form elements
 					for( var key in data ){
-						if( name ){
+						if( typeof name !== 'undefined' ){
 							fullkey = name + '[' + key + ']';
 						} else {
 							fullkey = key;
