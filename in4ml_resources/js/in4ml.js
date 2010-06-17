@@ -68,6 +68,8 @@ var in4ml = {
 	// Lookup for forms (by ID)
 	forms:{},
 	ready_events:{},
+	abort_submit: false,
+
 
 	/**
 	 * Initialise in4ml
@@ -269,6 +271,7 @@ in4mlText.prototype.Interpolate = function( parameters, template ){
 in4mlForm = function( form_definition, ready_events ){
 	
 	this.events = {};
+	this.validator_functions = [];
 
 	this.element = $$.Find( 'form#' + form_definition.id ).pop();
 	this.error_element = $$.Find( this.element, '> div.error' ).pop();
@@ -350,22 +353,33 @@ in4mlForm.prototype.Submit = function(){
 in4mlForm.prototype.HandleSubmit = function(){
 	// Form will submit itself automatically if validation is successful
 	var is_valid = this.Validate();
+	
+	this.abort_submit = false;
+	this.TriggerEvent( 'BeforeSubmit' );
 
-	if( is_valid && this.ajax_submit ){
-		// This prevents the form being submitted accidentally due to javascript error
-		setTimeout
-		(
-			$$.Bind
-			(
-				this.AjaxSubmit,
-				this
-			),
-			0
-		);
+	// Check to see if any BeforeSubmit handlers have requested submit abort
+	if( this.abort_submit ){
 		is_valid = false;
+	} else {
+		if( is_valid && this.ajax_submit ){
+			// This prevents the form being submitted accidentally due to javascript error
+			setTimeout
+			(
+				$$.Bind
+				(
+					this.AjaxSubmit,
+					this
+				),
+				0
+			);
+			is_valid = false;
+		}
 	}
 	
 	return is_valid;
+}
+in4mlForm.prototype.AbortSubmit = function(){
+	this.abort_submit = true;
 }
 /**
  * Get all field values
@@ -429,7 +443,7 @@ in4mlForm.prototype.AjaxSubmit = function(){
  */
 in4mlForm.prototype.HandleAjaxSubmitSuccess = function( status, response ){
 	if( response.success == true ){
-		this.TriggerEvent( 'SubmitSuccess' );
+		this.TriggerEvent( 'SubmitSuccess', response );
 	} else {
 		// Form errors
 		for( var i = 0; i < response.form_errors.length; i++ ){
@@ -466,6 +480,15 @@ in4mlForm.prototype.Validate = function(){
 	var is_valid = true;
 	for( var index in this.fields ){
 		if( !this.fields[ index ].Validate() ){
+			is_valid = false;
+		}
+	}
+console.log(1);
+	// Custom validator functions
+	for( var i = 0; i < this.validator_functions.length; i++ ){
+console.log(2);
+		if( !this.validator_functions[ i ]( this ) ){
+console.log(3);
 			is_valid = false;
 		}
 	}
@@ -524,8 +547,14 @@ in4mlForm.prototype.BindEvent = function( event, func ){
 }
 in4mlForm.prototype.TriggerEvent = function( event ){
 	if( typeof this.events[ event ] != 'undefined' ){
+		var args = [ this, event ];
+		if( arguments.length > 1 ){
+			for( var i = 1; i < arguments.length; i++ ){
+				args.push( arguments[ i ] );
+			}
+		}
 		for( var i = 0; i < this.events[ event ].length; i++ ){
-			this.events[ event ][ i ]( this, event );
+			this.events[ event ][ i ].apply( null, args );
 		}
 	}
 }
@@ -534,6 +563,14 @@ in4mlForm.prototype.BindFieldEvent = function( field_name, event, func ){
 }
 in4mlForm.prototype.AppendTo = function( element ){
 	$$.Append( element, this.element );
+}
+/**
+ * Add a custom validation function
+ *
+ * @param		function		The function -- will recieve this (form) as its only parameter. Should return true (is valid) or false (is not valid)
+ */
+in4mlForm.prototype.AddValidator = function( validator_func ){
+	this.validator_functions.push( validator_func );
 }
 
 /**
@@ -594,10 +631,8 @@ var in4mlField = Class.extend({
 		}
 		
 		if( is_valid ){
-			$$.RemoveClass( this.container, 'invalid' );
 			this.ClearErrors();
 		} else {
-			$$.AddClass( this.container, 'invalid' );
 			this.ShowErrors();
 		}
 	
@@ -690,6 +725,11 @@ var in4mlFieldDate = in4mlField.extend({
 			(
 				this.onUpdate,
 				this
+			),
+			'create': $$.Bind
+			(
+				this.onUpdate,
+				this
 			)
 		};
 
@@ -700,12 +740,6 @@ var in4mlFieldDate = in4mlField.extend({
 		if( definition.value ){
 			options.value = new Date( definition.value.year, definition.value.month-1, definition.value.day );
 		}
-		
-		this.element = $$.ConvertToDatePicker
-		(
-			this.element,
-			options
-		);
 		
 		// Create hidden fields to store
 		this.hidden_element_day = $$.Create
@@ -735,8 +769,13 @@ var in4mlFieldDate = in4mlField.extend({
 				value: definition[ 'default' ].year
 			}
 		);
-		$$.Append(
-			this.container,[ this.hidden_element_day, this.hidden_element_month, this.hidden_element_year ] );
+		$$.Append( this.container,[ this.hidden_element_day, this.hidden_element_month, this.hidden_element_year ] );
+
+		this.element = $$.ConvertToDatePicker
+		(
+			this.element,
+			options
+		);
 	},
 	/**
 	 * Called when field is updated. Updates hidden field values
@@ -1344,6 +1383,10 @@ JSLibInterface_jQuery.prototype.ConvertToDatePicker = function( element, options
 		new_element.datepicker( 'setDate', options.value );
 	}else if( options.default_date ){
 		new_element.datepicker( 'setDate', options.default_date );
+	}
+	
+	if( options.create ){
+		options.create( new_element.datepicker( 'getDate' ) );
 	}
 	
 	return new_element;
