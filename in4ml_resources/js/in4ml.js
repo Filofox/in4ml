@@ -257,7 +257,7 @@ in4mlText.prototype.Interpolate = function( parameters, template ){
 		keys.push( '[[' +  key + ']]' );
 		values.push( value );
 	}
-	return Utilities.Replace
+	return in4mlUtilities.Replace
 	(
 		keys,
 		values,
@@ -282,26 +282,28 @@ in4mlForm = function( form_definition, ready_events ){
 	// Build fields list	
 	this.fields = {};
 	for( var i = 0; i < form_definition.fields.length; i++ ){
-		switch( form_definition.fields[ i ].type ){
-			case 'Radio':{
-				var field = new in4mlFieldRadio( this, form_definition.fields[ i ] );
-				break;
+		if( form_definition.fields[ i ].name ){
+			switch( form_definition.fields[ i ].type ){
+				case 'Radio':{
+					var field = new in4mlFieldRadio( this, form_definition.fields[ i ] );
+					break;
+				}
+				case 'Date':{
+					var field = new in4mlFieldDate( this, form_definition.fields[ i ] );
+					break;
+				}
+				case 'RichText':{
+					var field = new in4mlFieldRichText( this, form_definition.fields[ i ] );
+					break;
+				}
+				default:{
+					var field = new in4mlField( this, form_definition.fields[ i ] );
+					break;
+				}
 			}
-			case 'Date':{
-				var field = new in4mlFieldDate( this, form_definition.fields[ i ] );
-				break;
-			}
-			case 'RichText':{
-				var field = new in4mlFieldRichText( this, form_definition.fields[ i ] );
-				break;
-			}
-			default:{
-				var field = new in4mlField( this, form_definition.fields[ i ] );
-				break;
-			}
+	
+			this.fields[ form_definition.fields[ i ].name ] = field;
 		}
-
-		this.fields[ form_definition.fields[ i ].name ] = field;
 	}
 
 	// Bind submit event
@@ -483,12 +485,10 @@ in4mlForm.prototype.Validate = function(){
 			is_valid = false;
 		}
 	}
-console.log(1);
+
 	// Custom validator functions
 	for( var i = 0; i < this.validator_functions.length; i++ ){
-console.log(2);
 		if( !this.validator_functions[ i ]( this ) ){
-console.log(3);
 			is_valid = false;
 		}
 	}
@@ -747,8 +747,7 @@ var in4mlFieldDate = in4mlField.extend({
 			'input',
 			{
 				'type':'hidden',
-				'name': this.name + '[day]',
-				value: definition[ 'default' ].day
+				'name': this.name + '[day]'
 			}
 		);
 		this.hidden_element_month = $$.Create
@@ -756,8 +755,7 @@ var in4mlFieldDate = in4mlField.extend({
 			'input',
 			{
 				'type':'hidden',
-				'name': this.name + '[month]',
-				value: definition[ 'default' ].month
+				'name': this.name + '[month]'
 			}
 		);
 		this.hidden_element_year = $$.Create
@@ -765,8 +763,7 @@ var in4mlFieldDate = in4mlField.extend({
 			'input',
 			{
 				'type':'hidden',
-				'name': this.name + '[year]',
-				value: definition[ 'default' ].year
+				'name': this.name + '[year]'
 			}
 		);
 		$$.Append( this.container,[ this.hidden_element_day, this.hidden_element_month, this.hidden_element_year ] );
@@ -783,9 +780,11 @@ var in4mlFieldDate = in4mlField.extend({
 	 * @param		Date		date		A JavaScript date object
 	 */
 	onUpdate:function( date ){
-		$$.SetValue( this.hidden_element_day, date.getDate() );
-		$$.SetValue( this.hidden_element_month, date.getMonth() + 1 );
-		$$.SetValue( this.hidden_element_year, date.getFullYear() );
+		if( date ){
+			$$.SetValue( this.hidden_element_day, date.getDate() );
+			$$.SetValue( this.hidden_element_month, date.getMonth() + 1 );
+			$$.SetValue( this.hidden_element_year, date.getFullYear() );
+		}
 	},
 	GetValue:function(){
 		return {
@@ -793,7 +792,12 @@ var in4mlFieldDate = in4mlField.extend({
 			month:$$.GetValue( this.hidden_element_month ),
 			year:$$.GetValue( this.hidden_element_year )
 		}
+	},
+	SetValue:function( value ){
+		$$.SetDatePickerValue( this.element, value );
+		this.onUpdate( value );
 	}
+
 });
 
 /**************
@@ -828,7 +832,7 @@ in4mlValidatorEmail.prototype.ValidateField = function( field ){
 
 	var value = field.GetValue();
 
-	if( value && !Utilities.CheckRegexp( value, this.pattern, ['i'] ) ){
+	if( value && !in4mlUtilities.CheckRegexp( value, this.pattern, ['i'] ) ){
 		field.SetError( in4ml.GetErrorText( 'email' ), null, this.error_message );
 		output = false;
 	}
@@ -903,7 +907,7 @@ in4mlValidatorRegex.prototype.ValidateField = function( field ){
 		}
 		
 		// Run the regex
-		if ( Utilities.CheckRegexp( value, this.pattern, modifiers ) ){
+		if ( in4mlUtilities.CheckRegexp( value, this.pattern, modifiers ) ){
 			field.SetError( in4ml.GetErrorText( "regex", null, this.error_message ) );
 			output = false;
 		}
@@ -961,11 +965,11 @@ in4mlValidatorURL.prototype.ValidateField = function( field ){
 
 	if( value ){
 		// Check protocol
-		if( !Utilities.CheckRegexp( value, "^(http|https)://", [ 'i' ]  ) ){
+		if( !in4mlUtilities.CheckRegexp( value, "^(http|https)://", [ 'i' ]  ) ){
 			field.SetError( in4ml.GetErrorText( 'url:protocol', null, this.error_message ) );
 			output = false;
 		// Check well-formedness
-		} else if( !Utilities.CheckRegexp( value, "^(http|https)://([\dA-Z0-9-]+\.)+[a-zA-z0-9]{1,3}", [ 'i' ] ) ) {
+		} else if( !in4mlUtilities.CheckRegexp( value, "^(http|https)://([\dA-Z0-9-]+\.)+[a-zA-z0-9]{1,3}", [ 'i' ] ) ) {
 			field.SetError( in4ml.GetErrorText( 'url:invalid', null, this.error_message ) );
 			output = false;
 		}
@@ -1255,25 +1259,8 @@ JSLibInterface_jQuery.prototype.GetValue = function( element ){
  * @return		mixed
  */
 JSLibInterface_jQuery.prototype.SetValue = function( element, value ){
-	$( element ).val( value );
 
-	//switch( $$.GetAttribute( element, 'type' ) ){
-	//	case 'checkbox':{
-	//		value = $$.GetAttribute( element, 'checked' );
-	//		break;
-	//	}
-	//	case 'radio':{
-	//		for( var i = 0; i < element.length; i++ ){
-	//			if( jQuery( element[ i ] ).attr( 'checked' ) ){
-	//				value = jQuery( element[ i ] ).val();
-	//			}
-	//		}
-	//		break;
-	//	}
-	//	default:{
-	//		value = jQuery( element ).val();
-	//	}
-	//}
+	$( element ).val( value );
 }
 /**
  * Call a function when document is ready
@@ -1391,6 +1378,9 @@ JSLibInterface_jQuery.prototype.ConvertToDatePicker = function( element, options
 	
 	return new_element;
 }
+JSLibInterface_jQuery.prototype.SetDatePickerValue = function( element, value ){
+	$( element ).datepicker( 'setDate', value );
+}
 	
 /**
  * Send a JSON request
@@ -1423,7 +1413,7 @@ jQuery.extend
 		param: function( data, name ) {
 			var s = [];
 
-			switch( Utilities.GetType(data) ){
+			switch( in4mlUtilities.GetType(data) ){
 				case 'array':{
 					// Serialize the form elements
 					for( var key = 0; key < data.length; key++ ){
@@ -1432,7 +1422,7 @@ jQuery.extend
 						} else {
 							var fullkey = key;
 						}
-						if( Utilities.GetType( data[ key ] ) == 'array' || Utilities.GetType( data[ key ] ) == 'object' ){
+						if( in4mlUtilities.GetType( data[ key ] ) == 'array' || in4mlUtilities.GetType( data[ key ] ) == 'object' ){
 							s.push( jQuery.param( data[ key ], fullkey ) );
 						} else {
 							if( data[key] === null ){
@@ -1451,7 +1441,7 @@ jQuery.extend
 						} else {
 							fullkey = key;
 						}
-						if( Utilities.GetType( data[ key ] ) == 'array' || Utilities.GetType( data[ key ] ) == 'object' ){
+						if( in4mlUtilities.GetType( data[ key ] ) == 'array' || in4mlUtilities.GetType( data[ key ] ) == 'object' ){
 							s.push( jQuery.param( data[ key ], fullkey ) );
 						} else {
 							if( data[key] === null ){
@@ -1480,7 +1470,7 @@ jQuery.extend
 /**
  * Useful utility functions
  */
-Utilities = {
+in4mlUtilities = {
 	Replace:function(search, replace, subject) {
 		// http://kevin.vanzonneveld.net
 		// +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
