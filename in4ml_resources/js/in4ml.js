@@ -179,11 +179,6 @@ var in4ml = {
 				var selector = 'select[name=' + field_name + ']';
 				break;
 			}
-			case 'SelectMultiple':
-			{
-				var selector = 'select[name=' + field_name + '\\[\\]]';
-				break;
-			}
 			case 'Date':
 			{
 				var selector = 'input[type=hidden][name=' + field_name + ']';
@@ -284,6 +279,10 @@ in4mlForm = function( form_definition, ready_events ){
 	for( var i = 0; i < form_definition.fields.length; i++ ){
 		if( form_definition.fields[ i ].name ){
 			switch( form_definition.fields[ i ].type ){
+				case 'SelectMultiple':{
+					var field = new in4mlFieldSelectMultiple( this, form_definition.fields[ i ] );
+					break;
+				}
 				case 'Radio':{
 					var field = new in4mlFieldRadio( this, form_definition.fields[ i ] );
 					break;
@@ -583,7 +582,7 @@ var in4mlField = Class.extend({
 		this.name = definition.name;
 		this.errors = [];
 		this.form = form;
-		this.element = $$.Find( in4ml.GetFieldSelector( this.type, this.name ), form.element );
+		this.element = this.FindElement();
 		this.container = $$.FindParent( this.element, '.container' );
 	
 		if( this.container ){
@@ -593,6 +592,9 @@ var in4mlField = Class.extend({
 			}
 		}
 	
+	},
+	FindElement:function(){
+		return $$.Find( in4ml.GetFieldSelector( this.type, this.name ), this.form.element );
 	},
 	GetValue:function(){
 		return $$.GetValue( this.element );
@@ -681,7 +683,7 @@ var in4mlField = Class.extend({
 	}
 });
 /**
- * Rich text (WYSIWYG) element
+ * Radio button(s)
  */
 var in4mlFieldRadio = in4mlField.extend({
 	// Set value (i.e. set which one is checked)
@@ -690,6 +692,21 @@ var in4mlFieldRadio = in4mlField.extend({
 		$( this.container ).find( 'input.radiobutton' ).attr( 'checked', false );
 		// Check selected
 		$( $( this.container ).find( 'input.radiobutton[value=' + value + ']' ) ).attr( 'checked', true );
+	}
+});
+/**
+ * Multiple select element
+ */
+var in4mlFieldSelectMultiple = in4mlField.extend({
+	FindElement:function(){
+		var selectors = $$.Find( 'select', this.form.element );
+		var element = null;
+		for( var i = 0; i < selectors.length; i++ ){
+			if( $$.GetAttribute( selectors[ i ], 'name' ) == this.name + '\[\]' ){
+				var element = selectors[ i ];
+			}
+		}
+		return element;
 	}
 });
 /**
