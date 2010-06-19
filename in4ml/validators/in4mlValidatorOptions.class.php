@@ -22,14 +22,12 @@ class in4mlValidatorOptions extends in4mlValidator{
 	public function ValidateField( in4mlField $field ){
 		
 		$value = $field->GetValue();
-		
+
 		$is_valid = false;
 		
-		if( $value === null ){
+		if( ( $value === null && $field->type == 'Radio' ) || ( $value == '' && $field->type == 'SelectMultiple' ) ){
 			// Radio buttons and multi-selects can have no value (i.e. none selected)
-			if( $field->type == 'Radio' || $field->type == 'SelectMultiple' ){
 				$is_valid = true;
-			}
 		} else {
 
 			// Get a list of all possible values
