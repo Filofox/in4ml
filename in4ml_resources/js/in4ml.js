@@ -93,7 +93,7 @@ var in4ml = {
 	/**
 	 * Load a form via ajax
 	 */
-	LoadForm:function( form_name, parameters, callback ){
+	LoadForm:function( form_path, form_name, parameters, callback ){
 		var form_parameters = {
 			'__form_name': form_name
 		}
@@ -106,7 +106,7 @@ var in4ml = {
 
 		$$.JSONRequest
 		(
-			'/form/load',
+			form_path,
 			'POST',
 			form_parameters,
 			$$.Bind
