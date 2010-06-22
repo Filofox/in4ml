@@ -12,6 +12,12 @@ require_once( in4ml::GetPathCore() . 'in4mlBlock.class.php' );
  */
 class in4mlBlockGroup extends in4mlBlock{
 	public $type = 'Group';
+	public function __construct(){
+		parent::__construct();
+		
+		$this->AddClass( 'clearfix' );
+	}
+
 }
 
 ?>
