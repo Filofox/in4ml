@@ -122,6 +122,17 @@ class In4mlForm{
 			$this->buttons[ $button_id ][ 'label' ] = $label;
 		}
 	}
+	/**
+	 * Set a button's class
+	 *
+	 * @param		string		$button_id
+	 * @param		string		$class
+	 */
+	public function SetButtonClass( $button_id, $class ){
+		if( isset( $this->buttons[ $button_id ] ) ){
+			$this->buttons[ $button_id ][ 'class' ] = $class;
+		}
+	}
 	
 	/**
 	 * Return HTML representation of the form
