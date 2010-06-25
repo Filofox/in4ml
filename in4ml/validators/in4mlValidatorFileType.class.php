@@ -24,9 +24,12 @@ class in4mlValidatorFileType extends in4mlValidator{
 	public function ValidateField( in4mlFieldFile $field ){
 		$output = true;
 		foreach( $field->files as $file ){
-			if( !in_array( $file[ 'mime_type' ], array_keys( $this->types ) ) ){
-				$field->SetError( $this->GetErrorText( 'file:type', array( 'filetype' => $file[ 'mime_type' ], 'filename' => $file[ 'name' ], 'validtypes' => implode( $this->types ) ) ) );
-				$output = false;
+			// Make sure something was submitted
+			if($file[ 'error_number' ] != 4){
+				if( !in_array( $file[ 'mime_type' ], array_keys( $this->types ) ) ){
+					$field->SetError( $this->GetErrorText( 'file:type', array( 'filetype' => $file[ 'mime_type' ], 'filename' => $file[ 'name' ], 'validtypes' => implode( $this->types ) ) ) );
+					$output = false;
+				}
 			}
 		}
 

@@ -24,11 +24,27 @@ class in4mlValidatorRequired extends in4mlValidator{
 	public function ValidateField( in4mlField $field ){
 		
 		$output = true;
+
+		switch( $field->type ){
+			case'File':{
+				$valid = true;
+				foreach( $field->files as $file ){
+					if( $file[ 'error_number' ] == 4 ){
+						$field->SetError( $this->GetErrorText( 'required' ) );
+						$output = false;
+					}
+				}
+				break;
+			}
+			default:{
+				$value = $field->GetValue();
 		
-		$value = $field->GetValue();
-		if( $value === null || $value === '' ){
-			$field->SetError( $this->GetErrorText( 'required' ) );
-			$output = false;
+				if( $value === null || $value === '' ){
+					$field->SetError( $this->GetErrorText( 'required' ) );
+					$output = false;
+				}
+				break;
+			}
 		}
 		
 		return $output;
