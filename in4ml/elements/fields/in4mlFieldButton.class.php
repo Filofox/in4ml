@@ -22,7 +22,7 @@ class in4mlFieldButton extends in4mlField{
 	 * @return		in4mlElementRenderValues object
 	 */
 	public function GetRenderValues( $render_value = false ){
-		$this->AddClass( $this->button_type );
+		$this->AddClass( strtolower( $this->button_type ) );
 
 		$values = parent::GetRenderValues();
 		

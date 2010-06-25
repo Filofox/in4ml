@@ -82,7 +82,7 @@ class In4mlForm{
 		$this->ProcessDefinition();
 		// Add classes to form
 		$this->form_element->AddClass( 'in4ml' );
-		$this->form_element->AddClass( get_class( $this ) );
+		$this->form_element->AddClass( strtolower( get_class( $this ) ) );
 		if( !$this->is_valid ){
 			$this->form_element->AddClass( 'invalid' );
 		}

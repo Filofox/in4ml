@@ -16,7 +16,7 @@ class in4mlElementRenderValues{
 		$this->element_category = $category;
 		$this->element_type = $type;
 		
-		$this->AddClass( $this->element_type );
+		$this->AddClass( strtolower( $this->element_type ) );
 	}
 	
 	/**
@@ -25,7 +25,6 @@ class in4mlElementRenderValues{
 	 * @param		string		$class
 	 */
 	public function AddClass( $class ){
-		$class = strtolower( $class );
 		if( !in_array( $class, $this->classes ) ){
 			array_push( $this->classes, $class );
 		}

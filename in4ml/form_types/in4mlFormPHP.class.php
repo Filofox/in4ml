@@ -203,7 +203,7 @@ class In4mlFormPHP extends In4mlForm{
 			// Checl for validator classes
 			foreach( $element->GetValidators() as $validator ){
 				if( $validator_class = $validator->GetClass( $element ) ){
-					$container->AddClass( $validator_class );
+					$container->AddClass( strtolower( $validator_class ) );
 				}
 			}
 			// Checl for validator classes

@@ -50,7 +50,7 @@ class in4mlFieldDate extends in4mlField{
 	public function Modify(){
 
 		$element = in4ml::CreateElement( 'Block:Group' );
-		$element->AddClass( $this->type );
+		$element->AddClass( strtolower( $this->type ) );
 		
 		foreach( $this->container_class as $class ){
 			$element->AddClass( $class );
