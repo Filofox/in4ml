@@ -96,6 +96,16 @@ class in4mlFieldRadio extends in4mlField{
 	}
 
 	/**
+	 * Set field default value
+	 */
+	public function SetDefault( $value ){
+		// Pass value to options in case re-rendering
+		foreach( $this->options_elements as $element ){
+			$element->SetDefault( $value );
+		}
+	}
+
+	/**
 	 * Set error on this field
 	 */
 	 public function SetError( $error ){
