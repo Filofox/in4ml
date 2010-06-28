@@ -715,11 +715,15 @@ var in4mlFieldSelectMultiple = in4mlField.extend({
 var in4mlFieldRichText = in4mlField.extend({
 	init:function( form, definition ){
 		this._super( form, definition );
-		
-		var options =
-		{
-		};
-		
+
+		var options ={};
+
+		if( typeof definition.custom_params != 'undefined' ){
+			for( var index in definition.custom_params ){
+				options[ index ] = definition.custom_params[ index ];
+			}
+		}
+
 		$$.ConvertToRichText
 		(
 			this.element,

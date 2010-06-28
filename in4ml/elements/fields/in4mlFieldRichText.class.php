@@ -12,6 +12,17 @@ require_once( in4ml::GetPathFieldTypes() . 'in4mlFieldTextarea.class.php' );
  */
 class in4mlFieldRichText extends in4mlFieldTextarea{
 	public $type = 'RichText';
+	public $custom_params = array();
+	/**
+	 * Return 'extra' key/value pairs required when exporting field to JSON
+	 */
+	public function GetPropertiesForJSON(){
+		return array
+		(
+			'custom_params' => $this->custom_params
+		);
+	}
 }
+
 
 ?>
