@@ -87,9 +87,10 @@ var in4ml = {
 	 * @param		JSON		form_definition
 	 */
 	RegisterForm:function( form_definition ){
-console.log( form_definition );
-		this.forms[ form_definition.id ] = new in4mlForm( form_definition, this.ready_events[ form_definition.id ] );
-		this.forms[ form_definition.id ].Init();
+		 var form = new in4mlForm( form_definition, this.ready_events[ form_definition.id ] );
+		form.Init();
+		
+		this.forms[ form_definition.id ] = form;
 	},
 	/**
 	 * Load a form via ajax
