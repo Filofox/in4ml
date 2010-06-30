@@ -87,6 +87,7 @@ var in4ml = {
 	 * @param		JSON		form_definition
 	 */
 	RegisterForm:function( form_definition ){
+console.log( form_definition );
 		this.forms[ form_definition.id ] = new in4mlForm( form_definition, this.ready_events[ form_definition.id ] );
 		this.forms[ form_definition.id ].Init();
 	},
@@ -201,10 +202,14 @@ var in4ml = {
 		return this.forms[ form_id ];
 	},
 	onFormReady:function( form_id, callback ){
-		if( typeof this.ready_events[ form_id ] == 'undefined' ){
-			this.ready_events[ form_id ] = [];
+		if( typeof this.forms[ form_id ] == 'undefined' ){
+			if( typeof this.ready_events[ form_id ] == 'undefined' ){
+				this.ready_events[ form_id ] = [];
+			}
+			this.ready_events[ form_id ].push( callback );
+		} else {
+			callback( this.forms[ form_id ], 'Ready' );
 		}
-		this.ready_events[ form_id ].push( callback );
 	}
 }
 
