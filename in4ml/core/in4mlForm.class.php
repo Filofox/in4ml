@@ -102,9 +102,9 @@ class In4mlForm{
 	{
 		// Check it's a valid type
 		if( $button_type == self::BUTTON_TYPE_SUBMIT || $button_type == self::BUTTON_TYPE_RESET || $button_type == self::BUTTON_TYPE_BUTTON ){
-			$this->buttons[ $name ] = array
+			$this->buttons[ $id ] = array
 			(
-				'type' => $button_type
+				'button_type' => $button_type
 			);
 		} else {
 			throw new Exception( "Button type '$button_type' not valid" );

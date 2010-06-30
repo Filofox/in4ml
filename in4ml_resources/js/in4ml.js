@@ -348,16 +348,31 @@ in4mlForm.prototype.GetFields = function(){
 in4mlForm.prototype.Submit = function(){
 	$$.Trigger( this.element, 'submit' );
 }
+in4mlForm.prototype.Reset = function(){
+	this.ClearErrors();
+	$$.Trigger( this.element, 'reset' );
+}
 /**
  * Catch form submit event and do validation
  */
 in4mlForm.prototype.HandleSubmit = function(){
+
+	this.ClearErrors();
+
+	this.abort_submit = false;
+
+	this.TriggerEvent( 'BeforeValidate' );
+
 	// Form will submit itself automatically if validation is successful
 	var is_valid = this.Validate();
 	
-	this.abort_submit = false;
-	this.TriggerEvent( 'BeforeSubmit' );
-
+	if( !is_valid ){
+		this.ShowErrors();
+		this.TriggerEvent( 'AfterValidateFail' );
+	} else {
+		this.TriggerEvent( 'AfterValidateSuccess' );
+	}
+	
 	// Check to see if any BeforeSubmit handlers have requested submit abort
 	if( this.abort_submit ){
 		is_valid = false;
@@ -499,7 +514,10 @@ in4mlForm.prototype.SetFormError = function( error ){
 }
 in4mlForm.prototype.ClearErrors = function(){
 	$$.RemoveClass( this.element, 'invalid' );
-	if( this.error_element ){
+	
+	this.errors = [];
+
+	if( typeof this.error_element != 'undefined' ){
 		$$.Empty( this.error_element );
 	}
 	// Clear field errors
@@ -509,27 +527,25 @@ in4mlForm.prototype.ClearErrors = function(){
 }
 in4mlForm.prototype.ShowErrors = function(){
 	
-	this.ClearErrors();
 	if( this.errors.length ){
 		$$.AddClass( this.element, 'invalid' );
 
+		if( typeof this.error_element == 'undefined' ){
+			this.error_element = $$.Create( 'div', { 'class':[ 'error', 'default' ] } );
+			$$.Prepend
+			(
+				$$.Find( '> fieldset', this.element ).pop(),
+				this.error_element
+			);
+		}
+		var html = '<ul>';
+		for( var i = 0; i < this.errors.length; i++ ){
+			html += '<li>' + this.errors[ i ] + '</li>';
+		}
+		html += '</ul>';
+		
+		$$.SetHTML( this.error_element, html );
 	}
-	
-	if( !this.error_element ){
-		this.error_element = $$.Create( 'div', { 'class':[ 'error', 'default' ] } );
-		$$.Prepend
-		(
-			$$.Find( '> fieldset', this.element ).pop(),
-			this.error_element
-		);
-	}
-	var html = '<ul>';
-	for( var i = 0; i < this.errors.length; i++ ){
-		html += '<li>' + this.errors[ i ] + '</li>';
-	}
-	html += '</ul>';
-	
-	$$.SetHTML( this.error_element, html );
 }
 in4mlForm.prototype.BindEvent = function( event, func ){
 
