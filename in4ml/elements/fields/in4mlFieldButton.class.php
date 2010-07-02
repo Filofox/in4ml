@@ -12,7 +12,7 @@ require_once( in4ml::GetPathCore() . 'in4mlField.class.php' );
  */
 class in4mlFieldButton extends in4mlField{
 	public $type = 'Button';
-	public $button_type;
+	public $button_type = 'button';
 	
 	/**
 	 * Return a list of key/value pairs to be interpolated into template
