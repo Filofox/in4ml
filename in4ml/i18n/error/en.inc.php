@@ -2,6 +2,10 @@
 
 $text = array
 (
+	'captcha' => array
+	(
+		'default' => 'CAPTCHA field value not valid.'
+	),
 	'confirm' => array
 	(
 		'default' => 'Confirm field value does not match.'

@@ -15,14 +15,26 @@ class in4mlRendererPHP extends in4mlRenderer{
 	/**
 	 * Get form as HTML
 	 */
-	public function RenderForm( in4mlForm $form, $template ){
+	public function RenderForm( in4mlForm $form, $template_path ){
 
 		// Load templates
-		$template_path = in4ml::GetPathRenderers() . 'in4mlRendererPHP_templates/' . $template . '.template.php';
 		if( !file_exists( $template_path ) ){
-			throw new Exception( "Form template '$template' ($template_path) not found" );
+			throw new Exception( "Form template '$template_path' not found" );
 		}
 		include( $template_path );
+		
+		if( $override_template_path = in4ml::Config( 'override_renderer_template' ) ){
+			$override_template_path .= '.template.php';
+			if( !file_exists( $override_template_path ) ){
+				throw new Exception( "Form template override '$override_template_path' not found" );
+			}
+			include( $override_template_path );
+			foreach( $templates as $element_type => $element_types ){
+				foreach( $element_types as $element => $template ){
+					$this->templates[ $element_type ][ $element ] = $template;
+				}
+			}
+		}
 		
 		$html = $this->RenderElement( $form->form_element, $form->is_populated );
 

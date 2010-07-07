@@ -191,7 +191,15 @@ class In4mlField extends in4mlElement{
 				$this->{$key} = unserialize(serialize($val)); 
 			} 
 		} 
-	} 
+	}
+	
+	public function DoValidatorModifications(){
+		$element = $this;
+		foreach( $this->validators as $validator ){
+			$element = $validator->ModifyElement( $element );
+		}
+		return $element;
+	}
 	
 }
 

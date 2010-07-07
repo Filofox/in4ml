@@ -42,6 +42,10 @@ class in4ml{
 		foreach( $config as $key => $value ){
 			$config_object->$key = $value;
 		}
+		
+		if( !$config_object->default_renderer_template ){
+			$config_object->default_renderer_template = self::GetPathRenderers() . 'in4mlRendererPHP_templates/list.template.php';
+		}
 	}
 	
 	/**
@@ -87,7 +91,7 @@ class in4ml{
 	 * 
 	 * @return		string
 	 */
-	public function GetPathBase(){
+	public static function GetPathBase(){
 		return self::Config( 'path_base' );
 	}
 	/**
@@ -95,7 +99,7 @@ class in4ml{
 	 * 
 	 * @return		string
 	 */
-	public function GetPathCore(){
+	public static function GetPathCore(){
 		return self::GetPathBase() . 'core/';
 	}
 	/**
@@ -103,7 +107,7 @@ class in4ml{
 	 * 
 	 * @return		string
 	 */
-	public function GetPathElements(){
+	public static function GetPathElements(){
 		return self::GetPathBase() . 'elements/';
 	}
 	/**
@@ -111,7 +115,7 @@ class in4ml{
 	 * 
 	 * @return		string
 	 */
-	public function GetPathBlocks(){
+	public static function GetPathBlocks(){
 		return self::GetPathElements() . 'blocks/';
 	}
 	/**
@@ -119,7 +123,7 @@ class in4ml{
 	 * 
 	 * @return		string
 	 */
-	public function GetPathFieldTypes(){
+	public static function GetPathFieldTypes(){
 		return self::GetPathElements() . 'fields/';
 	}
 	/**
@@ -127,7 +131,7 @@ class in4ml{
 	 * 
 	 * @return		string
 	 */
-	public function GetPathGeneral(){
+	public static function GetPathGeneral(){
 		return self::GetPathElements() . 'general/';
 	}
 	/**
@@ -135,7 +139,7 @@ class in4ml{
 	 * 
 	 * @return		string
 	 */
-	public function GetPathFilters(){
+	public static function GetPathFilters(){
 		return self::GetPathBase() . 'filters/';
 	}
 	/**
@@ -143,7 +147,7 @@ class in4ml{
 	 * 
 	 * @return		string
 	 */
-	public function GetPathRenderers(){
+	public static function GetPathRenderers(){
 		return self::GetPathBase() . 'renderers/';
 	}
 	/**
@@ -151,7 +155,7 @@ class in4ml{
 	 * 
 	 * @return		string
 	 */
-	public function GetPathValidatorTypes(){
+	public static function GetPathValidatorTypes(){
 		return self::GetPathBase() . 'validators/';
 	}
 	/**
@@ -159,7 +163,7 @@ class in4ml{
 	 * 
 	 * @return		string
 	 */
-	public function GetPathFormTypes(){
+	public static function GetPathFormTypes(){
 		return self::GetPathBase() . 'form_types/';
 	}
 	/**
@@ -167,7 +171,7 @@ class in4ml{
 	 * 
 	 * @return		string
 	 */
-	public function GetPathi18n(){
+	public static function GetPathi18n(){
 		return self::GetPathBase() . 'i18n/';
 	}
 	/**
@@ -175,7 +179,7 @@ class in4ml{
 	 * 
 	 * @return		string
 	 */
-	public function GetPathLibrary(){
+	public static function GetPathLibrary(){
 		return self::GetPathBase() . 'lib/';
 	}
 	/**
@@ -183,7 +187,7 @@ class in4ml{
 	 * 
 	 * @return		string
 	 */
-	public function GetPathLocal(){
+	public static function GetPathLocal(){
 		return self::Config( 'path_local' );
 	}
 	/**
@@ -191,7 +195,7 @@ class in4ml{
 	 * 
 	 * @return		string
 	 */
-	public function GetPathResources(){
+	public static function GetPathResources(){
 		return self::Config( 'path_resources' );
 	}
 	/**
@@ -199,7 +203,7 @@ class in4ml{
 	 * 
 	 * @return		string
 	 */
-	public function GetPathForms(){
+	public static function GetPathForms(){
 		return self::GetPathLocal() . 'forms/';
 	}
 
@@ -430,6 +434,24 @@ class in4ml{
 		return $text->GetNamespace( $namespace );
 	}
 	
+	public static function ShowCaptchaImage(){
+		if( isset( $_GET[ 'f' ] ) && isset( $_GET[ 'c' ] ) && isset( $_GET[ 'e' ] ) ){
+			
+			$pattern = '~[^a-z0-9]*~Ui';
+			
+			$form_name = preg_replace( $pattern, '', $_GET[ 'f' ] );
+			$code = preg_replace( $pattern, '', $_GET[ 'c' ] );
+			$element = preg_replace( $pattern, '', $_GET[ 'e' ] );
+
+			$form = self::GetForm( $form_name );
+
+			$form->RenderCaptchaImage( $code, $element );
+
+		} else {
+			throw new Exception( 'Invalid captcha image request' );
+		}
+
+	}
 }
 
 /**
@@ -443,10 +465,11 @@ class in4mlConfig{
 
 	// Override these settings in config file if necessary 
 	public $default_renderer = 'PHP';
-	public $default_renderer_template = 'list';
+	public $default_renderer_template = false;
+	public $override_renderer_template = false;
 	
 	public $lang = 'en';
-
+	
 	/**
 	 * Catch invalid property set
 	 */

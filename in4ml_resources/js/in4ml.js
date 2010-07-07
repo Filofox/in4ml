@@ -362,7 +362,6 @@ in4mlForm.prototype.Reset = function(){
  * Catch form submit event and do validation
  */
 in4mlForm.prototype.HandleSubmit = function(){
-
 	this.ClearErrors();
 
 	this.abort_submit = false;
@@ -605,7 +604,21 @@ var in4mlField = Class.extend({
 		this.errors = [];
 		this.form = form;
 		this.element = this.FindElement();
-		this.container = $$.FindParent( this.element, '.container' );
+		
+		
+		this.container = null;
+
+		var no_container = false;
+		var element = this.element;
+		while( this.container == null && no_container == false ){
+			element = $$.FindParent( element );
+			var type = $$.GetAttribute( element, 'tagName' );
+			if( $$.HasClass( element, 'container' ) ){
+				this.container = element;
+			}else if( type  == 'FORM' || type == 'BODY' || typeof element == 'undefined' ){
+				no_container = true;
+			}
+		}
 	
 		if( this.container ){
 			var error_element = $$.Find( 'div.error', this.container )
@@ -1169,6 +1182,15 @@ JSLibInterface_jQuery.prototype.AddClass = function( element, css_class ){
  */
 JSLibInterface_jQuery.prototype.RemoveClass = function( element, css_class ){
 	jQuery( element ).removeClass( css_class );
+}
+/**
+ * Check if an element has a class
+ *
+ * @param		HTMLElement		element
+ * @param		string			css_class
+ */
+JSLibInterface_jQuery.prototype.HasClass = function( element, css_class ){
+	return jQuery( element ).hasClass( css_class );
 }
 /**
  * Create an HTML element and populate its properties

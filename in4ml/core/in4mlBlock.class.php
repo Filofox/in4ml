@@ -38,6 +38,7 @@ class In4mlBlock extends in4mlElement{
 		$values->name = $this->name;
 		$values->field_name = $this->field_name;
 		$values->form_id = $this->form_id;
+		$values->form_type = $this->form_type;
 		$values->label = $this->label;
 		
 		return $values;

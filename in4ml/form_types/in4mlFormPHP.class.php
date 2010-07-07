@@ -69,7 +69,9 @@ class In4mlFormPHP extends In4mlForm{
 		
 		$element = in4ml::CreateElement( $definition[ 'type' ] );
 
+		$element->form = $this;
 		$element->form_id = $this->form_id;
+		$element->form_type = $this->form_type;
 
 		// No container by default
 		$container_type = null;
@@ -95,15 +97,6 @@ class In4mlFormPHP extends In4mlForm{
 						$validator = in4ml::CreateValidator( $validator_type );
 						
 						$element->AddValidator( $validator );
-
-						// In case the validator needs to modify the element	
-						$element = $validator->ModifyElement( $element );
-
-						if( is_array( $parameters ) ){
-							foreach( $parameters as $name => $value ){
-								$validator->$name = $value;
-							}
-						}
 					}
 					break;
 				}
@@ -144,6 +137,11 @@ class In4mlFormPHP extends In4mlForm{
 					break;
 				}
 			}
+		}
+		
+		// In case any validators need to modify the element
+		if( $element->category == 'Field' ){
+			$element = $element->DoValidatorModifications();
 		}
 
 		if( is_array( $element ) ){

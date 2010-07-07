@@ -111,6 +111,15 @@ form.in4ml button.ui-datepicker-trigger{
 	padding: 0px;
 	margin: 0px;
 }
+
+form.in4ml div.container.captcha img.captcha{
+	display:block;
+	border:1px solid #999999;
+}
+form.in4ml div.container.captcha div.elements{
+	float:left;
+}
+
 .clearfix:after {
 	content: ".";
 	display: block;

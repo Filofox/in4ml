@@ -15,7 +15,9 @@ class In4mlElement{
 	public $name;
 	public $label;
 
+	public $form;
 	public $form_id;
+	public $form_type;
 
 	protected $template;
 	
@@ -28,6 +30,9 @@ class In4mlElement{
 		$this->AddClass( strtolower( $this->type ) );
 	}
 	
+	public function SetContainerType( $container_type ){
+		$this->container_type = $container_type;
+	}
 	public function GetContainerType(){
 		return $this->container_type;
 	}
@@ -50,6 +55,7 @@ class In4mlElement{
 				$values->AddClass( $class );
 			}
 		}
+		$values->form_type = $this->form_type;
 		
 		return $values;
 	}

@@ -16,6 +16,7 @@ class In4mlForm{
 	
 	// Root element of form
 	public $form_element;
+	protected $form_type;
 	
 	protected $enctype;
 	
@@ -62,6 +63,8 @@ class In4mlForm{
 	);
 	
 	public function __construct(){
+		
+		$this->form_type = substr( get_class( $this ), strlen( in4ml::Config( 'form_prefix' ) ) );
 		
 		// If not overridden in form type defintion
 		if( !$this->renderer_type ){
@@ -405,6 +408,138 @@ class In4mlForm{
 
 		return $response;
 	}
+	
+	/**
+	 * Render an image for Captcha field
+	 */
+	public function RenderCaptchaImage( $uid, $field_name ){
+
+		if( $field = $this->GetField( $field_name ) ){
+
+			// Generate text
+			$characters = str_split( $field->characters );
+			
+			$code = '';
+			$max = count( $characters ) - 1;
+			while( strlen( $code ) < $field->code_length ){
+				$code .= $characters[ rand( 0, $max ) ];
+			}
+			
+			// Write the code to a PHP file using the uid as a file name
+			$files_path = in4ml::GetPathLocal() . 'captcha_codes/';
+			if( !is_dir( $files_path ) ){
+				mkdir( $files_path, 0775, true );
+			}
+			file_put_contents( $files_path . $uid . '.php', "<?php\n" . '$code=\'' . sha1( get_class( $this ) . $code ) . "';\n?>" );
+
+			// Get text size
+			$text_dimensions = $this->CalculateTextBox
+			(
+				$field->font_size,
+				0,
+				$field->font_path,
+				$code
+			);
+
+			$width = $text_dimensions[ 'width' ] + $text_dimensions[ 'left' ] + ( $field->padding * 2 );
+			$height = $text_dimensions[ 'height' ] + ( $field->padding * 2 );
+
+			// Create the image
+			$im = imagecreatetruecolor( $width, $height );
+			
+			// Background colour
+			$background_colour = $this->hexrgb( $field->background_colour );
+			imagefilledrectangle($im, 0, 0, $width, $height, imagecolorallocate($im, $background_colour[ 'r' ], $background_colour[ 'g' ], $background_colour[ 'b' ]));
+			
+			// Create the text
+			$text_colour = $this->hexrgb( $field->text_colour );
+			imagettftext(
+				$im,
+				$field->font_size,
+				0,
+				$field->padding,
+				$field->padding + $text_dimensions[ 'height' ],
+				imagecolorallocate( $im, $text_colour[ 'r' ], $text_colour[ 'g' ], $text_colour[ 'b' ] ),
+				$field->font_path,
+				$code
+			);
+			
+			if( $error = error_get_last() ){
+				throw new Exception( $error[ 'message' ] );
+			} else {
+				// Set the content-type
+				header('Content-type: image/png');
+				// Using imagepng() results in clearer text compared with imagejpeg()
+				imagepng($im);
+				imagedestroy($im);
+			}
+			exit;
+		} else {
+			throw new Exception( 'Invalid field name' );
+		}
+	}
+	
+	public function CheckCaptchaUID( $uid, $user_input ){
+		
+		$output = false;
+		
+		// Try to load file
+		$file_path = in4ml::GetPathLocal() . 'captcha_codes/' . $uid . '.php';
+		if( file_exists( $file_path ) ){
+			include( $file_path );
+			if( $code == sha1( get_class( $this ) . $user_input )  ){
+				$output = true;
+			}
+			unlink( $file_path );
+		}
+		
+		return $output;
+	}
+	
+	/**
+	 * Taken from http://php.net/manual/en/function.hexdec.php
+	 */
+	private function hexrgb($hexstr, $rgb = false) {
+		$int = hexdec($hexstr);
+		switch($rgb) {
+			case "r":
+			return 0xFF & $int >> 0x10;
+				break;
+			case "g":
+			return 0xFF & ($int >> 0x8);
+				break;
+			case "b":
+			return 0xFF & $int;
+				break;
+			default:
+			return array(
+				"r" => 0xFF & $int >> 0x10,
+				"g" => 0xFF & ($int >> 0x8),
+				"b" => 0xFF & $int
+				);
+				break;
+		}    
+	}// END GET Cor Hex => RGB
+	
+	/**
+	 * Taken from http://www.php.net/manual/en/function.imagettfbbox.php
+	 */
+	private function CalculateTextBox($font_size, $font_angle, $font_file, $text) {
+		$box = imagettfbbox($font_size, $font_angle, $font_file, $text);
+	
+		$min_x = min(array($box[0], $box[2], $box[4], $box[6]));
+		$max_x = max(array($box[0], $box[2], $box[4], $box[6]));
+		$min_y = min(array($box[1], $box[3], $box[5], $box[7]));
+		$max_y = max(array($box[1], $box[3], $box[5], $box[7]));
+	
+		return array(
+			'left' => ($min_x >= -1) ? -abs($min_x + 1) : abs($min_x + 2),
+			'top' => abs($min_y),
+			'width' => $max_x - $min_x,
+			'height' => $max_y - $min_y,
+			'box' => $box
+		);
+	}	
 }
 
 /**
