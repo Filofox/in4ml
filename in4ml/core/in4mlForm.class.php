@@ -464,7 +464,7 @@ class In4mlForm{
 				$code
 			);
 			
-			if( $error = error_get_last() ){
+			if( 0 && $error = error_get_last() ){
 				throw new Exception( $error[ 'message' ] );
 			} else {
 				// Set the content-type
@@ -488,9 +488,9 @@ class In4mlForm{
 		if( file_exists( $file_path ) ){
 			include( $file_path );
 			if( $code == sha1( get_class( $this ) . $user_input )  ){
+				unlink( $file_path );
 				$output = true;
 			}
-			unlink( $file_path );
 		}
 		
 		return $output;

@@ -12,7 +12,6 @@ try{
 	}
 } catch( Exception $e ){
 	echo( 'Unable to render captcha image' );
-	echo( $e->getMessage() );
 	error_log( $e->getMessage() );
 }
 ?>

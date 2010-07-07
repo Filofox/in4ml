@@ -285,6 +285,10 @@ in4mlForm = function( form_definition, ready_events ){
 	for( var i = 0; i < form_definition.fields.length; i++ ){
 		if( form_definition.fields[ i ].name ){
 			switch( form_definition.fields[ i ].type ){
+				case 'Captcha':{
+					var field = new in4mlFieldCaptcha( this, form_definition.fields[ i ] );
+					break;
+				}
 				case 'SelectMultiple':{
 					var field = new in4mlFieldSelectMultiple( this, form_definition.fields[ i ] );
 					break;
@@ -357,6 +361,12 @@ in4mlForm.prototype.Submit = function(){
 in4mlForm.prototype.Reset = function(){
 	this.ClearErrors();
 	$$.Trigger( this.element, 'reset' );
+	for( var index in this.fields ){
+		var field = this.fields[ index ];
+		if( typeof field.Reset == 'function' ){
+			field.Reset();
+		}
+	}
 }
 /**
  * Catch form submit event and do validation
@@ -715,6 +725,26 @@ var in4mlField = Class.extend({
 				true
 			)
 		);
+	}
+});
+/**
+ * Captcha field
+ */
+var in4mlFieldCaptcha = in4mlField.extend({
+	// Reset -- i.e. load new Captcha image
+	Reset:function( value ){
+		var img = $$.Find( 'img.captcha', this.container );
+		var src = $$.GetAttribute( img, 'src' );
+		var code = src.match( /(?:&|\?)c=([a-z0-9]*)/i )[ 1 ];
+		
+		var new_code = '';
+		var characters = 'abcdefghijklmnopqrstuvwxyz1234567890';
+		for( var i=0; i < 41; i++ ){
+			new_code += characters.charAt( Math.random() * characters.length );
+		}
+		var src = src.replace( code, new_code );
+		this.form.GetField( this.name + '_uid' ).SetValue( new_code );
+		$$.SetAttribute( img, 'src', src );
 	}
 });
 /**
