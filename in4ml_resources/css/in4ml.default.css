@@ -46,6 +46,10 @@ form.in4ml.invalid div.error
 	clear: both;
 	margin:0px 10px;
 }
+form.in4ml div.error ul{
+	list-style-type: none;
+	margin: 3px;
+}
 form.in4ml fieldset.group
 {
 	border: none;
