@@ -11,7 +11,7 @@ form.in4ml label{
 	float: left;
 }
 form.in4ml div.notes{
-	padding-left: 200px;
+	margin-left: 200px;
 	clear: both;
 }
 form.in4ml div.container,
@@ -21,8 +21,12 @@ form.in4ml input.submit
 	clear: both;
 	position: relative;
 }
+form.in4ml div.container.checkboxmultiple div.inlinelabel label{
+	display: none;
+}
 form.in4ml div.container.radio label.element,
-form.in4ml div.container.checkbox label.element
+form.in4ml div.container.checkbox label.element,
+form.in4ml div.container.checkboxmultiple div.inlinelabel label.element
 {
 	display: block;
 	width: auto;
@@ -44,11 +48,15 @@ form.in4ml.invalid div.error
 	background: #fee;
 	display: block;
 	clear: both;
-	margin:0px 10px;
+	margin: 5px 5px 10px 5px;
 }
 form.in4ml div.error ul{
 	list-style-type: none;
 	margin: 3px;
+	padding: 0px;
+}
+form.in4ml div.error ul li{
+	padding: 0px;
 }
 form.in4ml fieldset.group
 {
@@ -74,6 +82,8 @@ form.in4ml div.fieldset.set fieldset legend span
 	padding: 0px;
 	margin: 0px;
 	font-weight:bold;
+	color: black;
+	*margin-left: -8px; /*FIXME: move this IE style sheet?*/
 }
 
 form.in4ml input.text,

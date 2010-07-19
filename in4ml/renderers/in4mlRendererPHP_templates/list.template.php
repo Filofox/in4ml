@@ -30,6 +30,7 @@ $this->templates = array
 		'selectmultiple'	=> '<select multiple="multiple" [[attributes]]>[[options]]</select>',
 		'radiobutton'		=> '<input type="radio" [[attributes]]/><label for="[[element_id]]" class="element">[[label]]</label>',
 		'checkbox'			=> '<input type="checkbox" [[attributes]]/><label for="[[form_id]]_[[name]]" class="element">[[text]]</label>',
+		'checkboxmultiple'	=> '<input type="checkboxmutliple" [[attributes]]/><label for="[[form_id]]_[[name]]" class="element">[[text]]</label>',
 		'file'				=> '<input type="file" [[attributes]]/>',
 		'button'			=> '<input [[attributes]]/>',
 		'captcha'			=> '<div class="elements"><img src="[[image_path]]?f=[[form_type]]&e=[[name]]&c=[[uid]]" class="captcha"/><input type="text" [[attributes]]/></div>'
