@@ -95,8 +95,14 @@ class In4mlFormPHP extends In4mlForm{
 					foreach( $definition[ 'validators' ] as $validator_type => $parameters ){
 
 						$validator = in4ml::CreateValidator( $validator_type );
-						
+
 						$element->AddValidator( $validator );
+
+						if( is_array( $parameters ) ){
+							foreach( $parameters as $name => $value ){
+								$validator->$name = $value;
+							}
+						}
 					}
 					break;
 				}

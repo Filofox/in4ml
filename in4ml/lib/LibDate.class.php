@@ -188,9 +188,9 @@ if( !class_exists( 'LibDate' ) ){
 			preg_match( '/(\+|-|)(\d*)\/(\+|-|)(\d*)\/(\+|-|)(\d*)/', $date_string, $matches );
 	
 			$current_date = date_create();
-	
+
 			// Convert to numbers
-			$day =(int) $matches[2];
+			$day = (int) $matches[2];
 			$month = (int) $matches[4];
 			$year = (int) $matches[6];
 
@@ -256,6 +256,18 @@ if( !class_exists( 'LibDate' ) ){
 			$week_start = date('U', mktime(1, 0, 0, date('m', $date_timestamp), date('d', $date_timestamp)-(date('w', $date_timestamp)-$start_day), date('Y', $date_timestamp)) - 3600 );
 			
 			return $week_start;
+		}
+		
+		/**
+		 * Return difference (in days) between two dates
+		 *
+		 * @param		LibDate
+		 *
+		 * @return		int
+		 */
+		public function Diff( LibDate $date ){
+			$result = floor( ( $date->Format( 'U' ) - $this->Format( 'U' ) ) / (60 * 60 * 24) );
+			return $result;
 		}
 	} // END class LibDate
 }
