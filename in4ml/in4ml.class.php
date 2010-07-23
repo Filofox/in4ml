@@ -458,7 +458,7 @@ class in4ml{
 	//  - $encodeTags:  booloean. TRUE will convert "<" to "&lt;"
 	//  - return:       returns the converted HTML-string
 	// taken from http://php.net/manual/en/function.htmlentities.php;
-	public static function Escape( $utf8, $encodeTags ) {
+	public static function Escape( $utf8, $encodeTags = true ) {
 		$result = '';
 		for ($i = 0; $i < strlen($utf8); $i++) {
 			$char = $utf8[$i];
