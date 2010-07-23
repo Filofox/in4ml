@@ -27,7 +27,7 @@ class in4mlFieldButton extends in4mlField{
 		$values = parent::GetRenderValues();
 		
 		// Checkbox text
-		$values->setAttribute( 'value', htmlentities( $this->label ) );
+		$values->setAttribute( 'value', in4ml::Escape( $this->label ) );
 		$values->setAttribute( 'type', $this->button_type );
 
 		return $values;

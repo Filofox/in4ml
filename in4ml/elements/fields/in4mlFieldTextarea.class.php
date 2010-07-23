@@ -28,11 +28,11 @@ class in4mlFieldTextarea extends in4mlField{
 		$value = "";
 		if( $render_value ){
 			// Use submitted value
-			$value = htmlentities( $this->value );
+			$value = in4ml::Escape( $this->value );
 		} else {
 			// Use default value?
 			if( isset( $this->default ) ){
-				$value = htmlentities( $this->default );
+				$value = in4ml::Escape( $this->default );
 			}
 		}
 		$values->value = $value;

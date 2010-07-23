@@ -28,11 +28,11 @@ class in4mlFieldText extends in4mlField{
 		$value = "";
 		if( $render_value ){
 			// Use submitted value
-			$values->SetAttribute( 'value', htmlentities( $this->value ) );
+			$values->SetAttribute( 'value', in4ml::Escape( $this->value, true ) );
 		} else {
 			// Use default value?
 			if( isset( $this->default ) ){
-				$values->SetAttribute( 'value', htmlentities( $this->default ) );
+				$values->SetAttribute( 'value', in4ml::Escape( $this->default, true ) );
 			}
 		}
 		

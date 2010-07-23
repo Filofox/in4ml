@@ -107,7 +107,7 @@ class in4mlFieldSelect extends in4mlField{
 					),
 					array
 					(
-						htmlentities( $option[ 'value' ] ),
+						in4ml::Escape( $option[ 'value' ] ),
 						$option[ 'text' ],
 						( ( $option[ 'value' ] == $this->value )?' selected="selected"':'' )
 					),

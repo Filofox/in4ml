@@ -29,7 +29,7 @@ class in4mlFieldDate extends in4mlField{
 		$value = "";
 		if( $render_value ){
 			// Use submitted value
-			$values->SetAttribute( 'value', htmlentities( $this->value ) );
+			$values->SetAttribute( 'value', in4ml::Escape( $this->value ) );
 		} else {
 			// Use default value?
 			if( isset( $this->default ) ){
