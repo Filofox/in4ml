@@ -460,6 +460,9 @@ class in4ml{
 	// taken from http://php.net/manual/en/function.htmlentities.php;
 	public static function Escape( $utf8, $encodeTags = true ) {
 		$result = '';
+		if(is_numeric( $utf8 )){
+			return $utf8;
+		}
 		for ($i = 0; $i < strlen($utf8); $i++) {
 			$char = $utf8[$i];
 			$ascii = ord($char);
