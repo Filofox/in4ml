@@ -31,6 +31,15 @@ class In4mlBlock extends in4mlElement{
 		$this->elements[] = $element;
 	}
 
+	/**
+	 * Add a new child element
+	 *
+	 * @param		in4mlElement		$element
+	 */
+	public function PrependElement( in4mlElement $element ){
+		array_unshift( $this->elements, $element );
+	}
+	
 	public function GetRenderValues(){
 		
 		$values = parent::GetRenderValues();

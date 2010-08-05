@@ -21,6 +21,15 @@ class in4mlBlockForm extends in4mlBlock{
 
 	public $errors = array();
 	
+	public function Modify(){
+		if( $this->label ){
+			$legend = in4ml::CreateElement( 'General:Legend' );
+			$legend->label = $this->label;
+			$this->PrependElement( $legend );
+		}
+		return $this;
+	}
+
 	/**
 	 * Return a list of key/value pairs to be interpolated into template
 	 *
@@ -32,13 +41,6 @@ class in4mlBlockForm extends in4mlBlock{
 		$values = parent::GetRenderValues();
 		
 		$values->AddClass( 'in4ml' );
-		
-		if( $this->label ){
-			// Extra <span> in fieldset to allow consistent styling (see http://www.tyssendesign.com.au/articles/css/legends-of-style/)
-			$values->legend = ( $this->label )?'<legend><span>' . $this->label . '</span></legend>':'';
-		} else {
-			$values->legend = '';
-		}
 		
 		$values->SetAttribute( 'action', $this->action );
 		$values->SetAttribute( 'method', $this->submit_method );

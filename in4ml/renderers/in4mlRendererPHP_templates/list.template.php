@@ -9,11 +9,11 @@ $this->templates = array
 (
 	'block' => array
 	(
-		'form'			=> '<form [[attributes]]><fieldset>[[legend]][[error]][[elements]]</fieldset></form>',
+		'form'			=> '<form [[attributes]]><fieldset>[[error]][[elements]]</fieldset></form>',
 		'group'			=> '<div [[attributes]]><label>[[label]]</label>[[elements]]</div>',
 		'inlinelabel'	=> '<div [[attributes]]><label>[[label]]</label>[[elements]]<div class="notes">[[notes]]</div>[[error]]</div>',
 		// Extra <div> around fieldset to allow consistent styling (see http://www.tyssendesign.com.au/articles/css/legends-of-style/)
-		'set'			=> '<div [[attributes]]><fieldset>[[legend]][[elements]]</fieldset></div>',
+		'set'			=> '<div [[attributes]]><fieldset>[[elements]]</fieldset></div>',
 		'container'		=> '<div [[attributes]]><label for="[[form_id]]_[[field_name]]">[[label]]</label><span class="prefix">[[prefix]]</span>[[elements]]<span class="suffix">[[suffix]]</span><div class="notes">[[notes]]</div>[[error]]</div>',
 		'error'			=> '<div [[attributes]]><ul>[[elements]]</ul></div>',
 		'noscript'			=> '<noscript [[attributes]]>[[elements]]</noscript>'
@@ -37,6 +37,8 @@ $this->templates = array
 	),
 	'general' => array
 	(
+		// Extra <span> in fieldset to allow consistent styling (see http://www.tyssendesign.com.au/articles/css/legends-of-style/)
+		'legend' => '<legend><span>[[label]]</span></legend>',
 		'error' => '<li>[[value]]</li>',
 		'script' => '<script type="text/javascript">[[code]]</script>'
 	)

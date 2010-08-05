@@ -19,6 +19,14 @@ class in4mlBlockSet extends in4mlBlock{
 		
 		$this->AddClass( 'fieldset' );
 	}
+	public function Modify(){
+		if( $this->label ){
+			$legend = in4ml::CreateElement( 'General:Legend' );
+			$legend->label = $this->label;
+			$this->PrependElement( $legend );
+		}
+		return $this;
+	}
 
 	/**
 	 * Return a list of key/value pairs to be interpolated into template
@@ -27,7 +35,7 @@ class in4mlBlockSet extends in4mlBlock{
 	 *
 	 * @return		in4mlElementRenderValues object
 	 */
-	public function GetRenderValues(){
+	public function _GetRenderValues(){
 		$values = parent::GetRenderValues();
 		
 		// Extra <span> in fieldset to allow consistent styling (see http://www.tyssendesign.com.au/articles/css/legends-of-style/)
