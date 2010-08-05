@@ -60,6 +60,7 @@ class in4mlValidatorConfirm extends in4mlValidator{
 		$confirm_field = clone $element;
 		$confirm_field->name .= '_confirm';
 		$confirm_field->label = 'Confirm ' . $confirm_field->label;
+		$confirm_field->notes = '';
 
 		$element->confirm_field = $confirm_field;
 		
