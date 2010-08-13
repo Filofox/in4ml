@@ -596,6 +596,7 @@ class in4mlFormResponse{
 	 */
 	public function SetFormError( $error ){
 		$this->form_errors[] = $error;
+		$this->success = false;
 	}
 
 	/**
@@ -606,6 +607,7 @@ class in4mlFormResponse{
 	 */
 	public function SetError( $field, $error ){
 		$this->field_errors[ $field ][] = $error;
+		$this->success = false;
 	}
 }
 ?>
