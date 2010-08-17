@@ -36,6 +36,8 @@ class In4mlForm{
 	// Use GET (URL parameters) or POST submit [default = GET]]
 	public $submit_method;
 
+	// Has been processed
+	public $is_processed = false;
 	// Either hasn't been validated, or has been validated and failed
 	public $is_valid = true;
 	// Has been set with submitted values
@@ -45,6 +47,9 @@ class In4mlForm{
 	
 	public $use_javascript = true;
 	public $ajax_submit = false;
+	
+	// Allows for 'automatic' processing of the form
+	protected $allow_auto_process = false;
 	
 	const BUTTON_TYPE_SUBMIT = 'submit';
 	const BUTTON_TYPE_RESET = 'reset';
@@ -88,6 +93,14 @@ class In4mlForm{
 		$this->form_element->AddClass( strtolower( get_class( $this ) ) );
 		if( !$this->is_valid ){
 			$this->form_element->AddClass( 'invalid' );
+		}
+		// Allow 'automatic' form processing?
+		if( $this->allow_auto_process ){
+			// Add hidden field with form id
+			$form_id_field = in4ml::CreateElement( 'hidden' );
+			$form_id_field->name = '__form_id';
+			$form_id_field->default = $this->form_id;
+			$this->form_element->AddElement( $form_id_field );
 		}
 	}
 	
@@ -258,6 +271,38 @@ class In4mlForm{
 	}
 	
 	/**
+	 * If the form has been submitted, do validation
+	 *
+	 * @return		NULL if not submitted, else boolean value for success/fail validation
+	 */
+	public function Process(){
+		
+		// Check that allow_auto_process boolean is true
+		if( !$this->allow_auto_process ){
+			throw new Exception( 'To use the in4mlForm::Process() method you must first enable the in4mlForm::allow_auto_process property in your form definition' );
+		}
+
+		$form_id = false;
+		if( $this->submit_method == in4ml::SUBMIT_METHOD_GET ){
+			if( isset( $_GET[ '__form_id' ] ) ){
+				$form_id = $_GET[ '__form_id' ];
+			}
+		} else {
+			if( isset( $_POST[ '__form_id' ] ) ){
+				$form_id = $_POST[ '__form_id' ];
+			}
+		}
+
+		if( $form_id && $form_id == $this->form_id ){
+			$this->is_processed = true;
+			return $this->Validate();		
+		} else {
+			return null;
+		}
+
+	}
+	
+	/**
 	 * Validate all fields
 	 *
 	 * @return		boolean
@@ -379,6 +424,7 @@ class In4mlForm{
 	 */
 	public function SetFormError( $error ){
 		$this->form_element->SetError( $error );
+		$this->is_valid = false;
 	}
 
 	/**
