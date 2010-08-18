@@ -101,6 +101,7 @@ class In4mlForm{
 			$form_id_field->name = '__form_id';
 			$form_id_field->default = $this->form_id;
 			$this->form_element->AddElement( $form_id_field );
+			$this->fields[] = $form_id_field;
 		}
 	}
 	
@@ -317,6 +318,7 @@ class In4mlForm{
 
 		// Do validation
 		foreach( $this->fields as $field ){
+error_log( '*' . $field->name . ':' . $field->value );
 			if( !$field->Validate() ){
 				$this->is_valid = false;
 			}
