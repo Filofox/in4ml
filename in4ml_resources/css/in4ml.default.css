@@ -26,14 +26,15 @@ form.in4ml div.container.checkboxmultiple div.inlinelabel label{
 }
 form.in4ml div.container.radio label.element,
 form.in4ml div.container.checkbox label.element,
-form.in4ml div.container.checkboxmultiple div.inlinelabel label.element
+form.in4ml div.container.checkboxmultiple.inlinelabel label.element
 {
 	display: block;
 	width: auto;
 	float: left;
 }
 form.in4ml div.container.radio input.radiobutton,
-form.in4ml div.container.checkbox input.checkbox
+form.in4ml div.container.checkbox input.checkbox,
+form.in4ml div.container.checkboxmultiple input.checkbox
 {
 	float: left;
 }

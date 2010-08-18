@@ -36,7 +36,6 @@ class in4mlFieldSelectMultiple extends in4mlFieldSelect{
 	 * Take a list of options and render them as HTML
 	 */
 	protected function BuildOptions( $options ){
-
 		$output = '';
 		foreach( $options as $option ){
 			

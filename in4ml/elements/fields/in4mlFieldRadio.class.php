@@ -17,10 +17,16 @@ class in4mlFieldRadio extends in4mlField{
 
 	private $options = array();
 	private $options_elements = array();
+	private $options_element = null;
 	
 	public function __construct(){
 		// Automatically validates options
-		$this->AddValidator( in4ml::CreateValidator( 'Options' ) );		
+		$this->AddValidator( in4ml::CreateValidator( 'Options' ) );
+		
+		$element = in4ml::CreateElement( 'Block:' . $this->container_type );
+		$element->AddClass( strtolower( $this->type ) );
+		
+		$this->options_element = $element;
 	}
 
 	/**
@@ -35,7 +41,24 @@ class in4mlFieldRadio extends in4mlField{
 			'value' => $value,
 			'text' => $text
 		);
+
+		$radio_button = in4ml::CreateElement( 'Field:RadioButton' );
+
+		$radio_button->name = $this->name;
+		$radio_button->label = $text;
+		$radio_button->field_value = $value;
+
+		if( $this->default == $value ){
+			$radio_button->default = $value;
+		}
+		$radio_button->form_id = $this->form_id;
+		$radio_button->index = $index;
+		
+		$this->options_elements[] = $radio_button;
+		
+		$this->options_element->AddElement( $radio_button );
 	}
+		
 	
 	/**
 	 * Return list of options
@@ -55,33 +78,13 @@ class in4mlFieldRadio extends in4mlField{
 	 */
 	public function Modify(){
 
-		$element = in4ml::CreateElement( 'Block:' . $this->container_type );
-		$element->AddClass( strtolower( $this->type ) );
-		
+		$this->options_element->label = $this->label;
+
 		foreach( $this->container_class as $class ){
-			$element->AddClass( $class );
-		}
-		
-		$element->label = $this->label;
-
-		foreach( $this->options as $index => $option ){
-
-			$radio_button = in4ml::CreateElement( 'Field:RadioButton' );
-
-			$radio_button->default = $this->default;
-			$radio_button->name = $this->name;
-			$radio_button->label = $option[ 'text' ];
-			$radio_button->field_value = $option[ 'value' ];
-			$radio_button->form_id = $this->form_id;
-			$radio_button->index = $index;
-			
-			
-			$this->options_elements[] = $radio_button;
-			
-			$element->AddElement( $radio_button );
+			$this->options_element->AddClass( $class );
 		}
 
-		return $element;
+		return $this->options_element;
 	}
 
 	/**

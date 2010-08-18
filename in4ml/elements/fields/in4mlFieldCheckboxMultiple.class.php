@@ -21,6 +21,13 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 	
 	private $options = array();
 	private $options_elements = array();
+	private $options_element = null;
+
+	public function __construct(){
+		$element = in4ml::CreateElement( 'Block:' . $this->container_type );
+		$element->AddClass( strtolower( $this->type ) );
+		$this->options_element = $element;
+	}
 
 
 	/**
@@ -55,33 +62,13 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 	 */
 	public function Modify(){
 
-		$element = in4ml::CreateElement( 'Block:' . $this->container_type );
-		$element->AddClass( strtolower( $this->type ) );
-		
+		$this->options_element->label = $this->label;
+
 		foreach( $this->container_class as $class ){
-			$element->AddClass( $class );
-		}
-		
-		$element->label = $this->label;
-
-		foreach( $this->options as $index => $option ){
-
-			$checkbox = in4ml::CreateElement( 'Field:Checkbox' );
-
-			$checkbox->default = $this->default;
-			$checkbox->name = $this->name.'[' . $index . ']';
-			$checkbox->text = $option[ 'text' ];
-			if( isset( $this->value[ $index ] ) ){
-				$checkbox->value = 1;
-			}
-			$checkbox->form_id = $this->form_id;
-			
-			$this->options_elements[] = $checkbox;
-			
-			$element->AddElement( $checkbox );
+			$this->options_element->AddClass( $class );
 		}
 
-		return $element;
+		return $this->options_element;
 	}
 
 
@@ -107,10 +94,10 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 		
 		foreach( $this->options as $index => $option ){
 			if( isset( $this->value[ $index ] ) ){
-				$values[ $index ] = $this->options[ $index ][ 'value' ];
+				$values[] = $this->options[ $index ][ 'value' ];
 			}
 		}
-		
+
 		return $values;
 	}
 	
@@ -126,6 +113,23 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 			'value' => $value,
 			'text' => $text
 		);
+
+		$index = count( $this->options ) - 1;
+		$checkbox = in4ml::CreateElement( 'Field:Checkbox' );
+
+		$checkbox->name = $this->name.'[' . $index . ']';
+		$checkbox->text = $text;
+
+		if( is_array( $this->value ) && in_array( $this->value[ $index ] ) ){
+			$checkbox->value = 1;
+		}
+		if( isset( $this->default[ $index ] ) ){
+			$checkbox->default = 1;
+		}
+		$checkbox->form_id = $this->form_id;
+		
+		$this->options_elements[] = $checkbox;
+		$this->options_element->AddElement( $checkbox );
 	}
 	
 	/**

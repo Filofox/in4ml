@@ -210,7 +210,8 @@ class In4mlFormPHP extends In4mlForm{
 					$container->AddClass( strtolower( $validator_class ) );
 				}
 			}
-			// Checl for validator classes
+
+			// Check for container classes
 			foreach( $element->GetContainerClasses() as $class ){
 				$container->AddClass( $class );
 			}
