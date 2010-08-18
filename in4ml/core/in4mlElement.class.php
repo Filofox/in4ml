@@ -122,7 +122,6 @@ class In4mlElement{
 	 * @param		string		$class
 	 */
 	public function AddContainerClass( $class ){
-error_log( '=' . $class );
 		$this->container_class[] = $class;
 	}
 	/**

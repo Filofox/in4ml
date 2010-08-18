@@ -318,7 +318,6 @@ class In4mlForm{
 
 		// Do validation
 		foreach( $this->fields as $field ){
-error_log( '*' . $field->name . ':' . $field->value );
 			if( !$field->Validate() ){
 				$this->is_valid = false;
 			}
