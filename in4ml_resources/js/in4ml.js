@@ -449,6 +449,9 @@ in4mlForm.prototype.SetValue = function( field_name, value ){
 in4mlForm.prototype.AjaxSubmit = function(){
 	var values = this.GetValues();
 	
+	// Pass values array for pre-submission alterations
+	this.TriggerEvent( 'BeforeAjaxSubmit', values );
+	
 	$$.JSONRequest
 	(
 		$$.GetAttribute( this.element, 'action' ),
@@ -1524,6 +1527,12 @@ jQuery.extend
 							if( data[key] === null ){
 								data[key] = '';
 							}
+							if( data[key] === true ){
+								data[key] = 1;
+							}
+							if( data[key] === false ){
+								data[key] = 0;
+							}
 							s.push( fullkey + "=" + encodeURIComponent( jQuery.isFunction(data[ key ]) ? data[ key ] : data[ key ] ) );
 						}
 					}
@@ -1543,6 +1552,12 @@ jQuery.extend
 							if( data[key] === null ){
 								data[key] = '';
 							}
+							if( data[key] === true ){
+								data[key] = 1;
+							}
+							if( data[key] === false ){
+								data[key] = 0;
+							}
 							s.push( fullkey + "=" + encodeURIComponent( jQuery.isFunction(data[ key ]) ? data[ key ] : data[ key ] ) );
 						}
 					}
@@ -1551,6 +1566,12 @@ jQuery.extend
 				default:{
 					if( data === null ){
 						data = '';
+					}
+					if( data === true ){
+						data = 1;
+					}
+					if( data === false ){
+						data = 0;
 					}
 					s.push( encodeURIComponent(name) + "=" + encodeURIComponent( jQuery.isFunction(data) ? data() : data ) );
 					break;
