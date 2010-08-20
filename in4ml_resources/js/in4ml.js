@@ -131,8 +131,8 @@ var in4ml = {
 		var div = $$.Create( 'div', {css:{'display':'none'}} );
 		$$.Append( document.body, div );
 		$( div ).html( response.form_html );
-		
-		callback( this.forms[ response.form_id ] );
+
+		this.onFormReady( response.form_id, callback );
 
 	},
 	LoadFormError:function(){
