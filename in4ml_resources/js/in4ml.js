@@ -186,6 +186,14 @@ var in4ml = {
 				var selector = 'input[type=hidden][name=' + field_name + ']';
 				break;
 			}
+			case 'CheckboxMultiple':{
+				var selector = "input.checkbox[name^='" + field_name + "[']";
+				break;
+			}
+			case 'SelectMultiple':{
+				var selector = "select.selectmultiple[name='" + field_name + "[]']";
+				break;
+			}
 			case 'RichText':
 			case 'Textarea':
 			{
@@ -287,10 +295,6 @@ in4mlForm = function( form_definition, ready_events ){
 			switch( form_definition.fields[ i ].type ){
 				case 'Captcha':{
 					var field = new in4mlFieldCaptcha( this, form_definition.fields[ i ] );
-					break;
-				}
-				case 'SelectMultiple':{
-					var field = new in4mlFieldSelectMultiple( this, form_definition.fields[ i ] );
 					break;
 				}
 				case 'Radio':{
@@ -760,21 +764,6 @@ var in4mlFieldRadio = in4mlField.extend({
 		$( this.container ).find( 'input.radiobutton' ).attr( 'checked', false );
 		// Check selected
 		$( $( this.container ).find( 'input.radiobutton[value=' + value + ']' ) ).attr( 'checked', true );
-	}
-});
-/**
- * Multiple select element
- */
-var in4mlFieldSelectMultiple = in4mlField.extend({
-	FindElement:function(){
-		var selectors = $$.Find( 'select', this.form.element );
-		var element = null;
-		for( var i = 0; i < selectors.length; i++ ){
-			if( $$.GetAttribute( selectors[ i ], 'name' ) == this.name + '\[\]' ){
-				var element = selectors[ i ];
-			}
-		}
-		return element;
 	}
 });
 /**
