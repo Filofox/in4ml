@@ -22,7 +22,7 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 	private $options = array();
 	private $options_elements = array();
 	private $options_element = null;
-
+	
 	public function __construct(){
 		$element = in4ml::CreateElement( 'Block:' . $this->container_type );
 		$element->AddClass( strtolower( $this->type ) );
@@ -126,6 +126,7 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 		if( isset( $this->default[ $index ] ) ){
 			$checkbox->default = 1;
 		}
+		$checkbox->field_value = $value;
 		$checkbox->form_id = $this->form_id;
 		
 		$this->options_elements[] = $checkbox;

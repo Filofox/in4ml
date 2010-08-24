@@ -18,6 +18,7 @@ class in4mlFieldCheckbox extends in4mlField{
 	
 	public $text = '';
 	public $checked = "";
+	public $field_value = 'on';
 
 	/**
 	 * Return a list of key/value pairs to be interpolated into template
@@ -38,6 +39,8 @@ class in4mlFieldCheckbox extends in4mlField{
 		if( ( $render_value && $this->value ) || ( !$render_value && isset( $this->default ) && $this->default ) ){
 			$values->SetAttribute( 'checked', 'checked' );
 		}
+		
+		$values->SetAttribute( 'value', $this->field_value );
 		
 		return $values;
 	}
