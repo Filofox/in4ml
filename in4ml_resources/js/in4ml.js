@@ -297,6 +297,10 @@ in4mlForm = function( form_definition, ready_events ){
 					var field = new in4mlFieldCaptcha( this, form_definition.fields[ i ] );
 					break;
 				}
+				case 'CheckboxMultiple':{
+					var field = new in4mlFieldCheckboxMultiple( this, form_definition.fields[ i ] );
+					break;
+				}
 				case 'Radio':{
 					var field = new in4mlFieldRadio( this, form_definition.fields[ i ] );
 					break;
@@ -752,6 +756,22 @@ var in4mlFieldCaptcha = in4mlField.extend({
 		var src = src.replace( code, new_code );
 		this.form.GetField( this.name + '_uid' ).SetValue( new_code );
 		$$.SetAttribute( img, 'src', src );
+	}
+});
+/**
+ * Multiple checkboxes
+ */
+var in4mlFieldCheckboxMultiple = in4mlField.extend({
+	// Set value (i.e. set which one is checked)
+	GetValue:function(){
+		var values = [];
+		for( var i = 0; i < this.element.length; i++ ){
+			if( $$.GetValue( this.element[ i ] ) == true ){
+				values.push( $$.GetAttribute( this.element[ i ], 'value' ) );
+			}
+		}
+
+		return values;
 	}
 });
 /**
