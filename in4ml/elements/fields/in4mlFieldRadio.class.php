@@ -52,7 +52,7 @@ class in4mlFieldRadio extends in4mlField{
 			$radio_button->default = $value;
 		}
 		$radio_button->form_id = $this->form_id;
-		$radio_button->index = $index;
+		$radio_button->index = count( $this->options_elements );
 		
 		$this->options_elements[] = $radio_button;
 		
