@@ -93,7 +93,7 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 		$values = array();
 		
 		foreach( $this->options as $index => $option ){
-			if( isset( $this->value[ $index ] ) ){
+			if( in_array( $option[ 'value' ], $this->value ) ){
 				$values[] = $this->options[ $index ][ 'value' ];
 			}
 		}
