@@ -178,12 +178,12 @@ var in4ml = {
 		switch( field_type ){
 			case 'Select':
 			{
-				var selector = 'select[name=' + field_name + ']';
+				var selector = 'select[name="' + field_name + '"]';
 				break;
 			}
 			case 'Date':
 			{
-				var selector = 'input[type=hidden][name=' + field_name + ']';
+				var selector = 'input[type=hidden][name="' + field_name + '"]';
 				break;
 			}
 			case 'CheckboxMultiple':{
@@ -197,11 +197,11 @@ var in4ml = {
 			case 'RichText':
 			case 'Textarea':
 			{
-				var selector = 'textarea[name=' + field_name + ']';
+				var selector = 'textarea[name="' + field_name + '"]';
 				break;
 			}
 			default:{
-				var selector = 'input[name=' + field_name + ']';
+				var selector = 'input[name="' + field_name + '"]';
 				break;
 			}
 		}
