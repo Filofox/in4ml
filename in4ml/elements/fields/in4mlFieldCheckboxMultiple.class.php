@@ -77,9 +77,11 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 	 */
 	public function SetValue( $value ){
 		parent::SetValue( $value );
-		// Pass value to options in case re-rendering
-		foreach( $value as $index => $value ){
-			$this->options_elements[ $index ]->value = 1;
+		if( is_array( $value ) ){
+			// Pass value to options in case re-rendering
+			foreach( $value as $index => $value ){
+				$this->options_elements[ $index ]->value = 1;
+			}
 		}
 	}
 	
@@ -93,7 +95,7 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 		$values = array();
 		
 		foreach( $this->options as $index => $option ){
-			if( in_array( $option[ 'value' ], $this->value ) ){
+			if( is_array( $this->value ) && in_array( $option[ 'value' ], $this->value ) ){
 				$values[] = $this->options[ $index ][ 'value' ];
 			}
 		}
