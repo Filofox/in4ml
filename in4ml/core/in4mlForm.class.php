@@ -97,7 +97,7 @@ class In4mlForm{
 		// Allow 'automatic' form processing?
 		if( $this->allow_auto_process ){
 			// Add hidden field with form id
-			$form_id_field = in4ml::CreateElement( 'hidden' );
+			$form_id_field = in4ml::CreateElement( 'Hidden' );
 			$form_id_field->name = '__form_id';
 			$form_id_field->default = $this->form_id;
 			$this->form_element->AddElement( $form_id_field );
