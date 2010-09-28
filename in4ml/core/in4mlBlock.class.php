@@ -19,6 +19,7 @@ class In4mlBlock extends in4mlElement{
 	public $field_name;
 	public $form_id;
 	public $label;
+	public $id = false;
 	
 	public $elements = array();
 
@@ -49,6 +50,9 @@ class In4mlBlock extends in4mlElement{
 		$values->form_id = $this->form_id;
 		$values->form_type = $this->form_type;
 		$values->label = $this->label;
+		if( $this->id !== false ){
+			$values->setAttribute( 'id', $this->id );
+		}
 		
 		return $values;
 	}
