@@ -847,7 +847,7 @@ var in4mlFieldDate = in4mlField.extend({
 				this
 			)
 		};
-
+		
 		// Set default date
 		if( definition[ 'default' ] ){
 			options.default_date = new Date( definition[ 'default' ].year, definition[ 'default' ].month-1, definition[ 'default' ].day );
@@ -899,6 +899,10 @@ var in4mlFieldDate = in4mlField.extend({
 			$$.SetValue( this.hidden_element_day, date.getDate() );
 			$$.SetValue( this.hidden_element_month, date.getMonth() + 1 );
 			$$.SetValue( this.hidden_element_year, date.getFullYear() );
+		} else {
+			$$.SetValue( this.hidden_element_day, 0 );
+			$$.SetValue( this.hidden_element_month, 0 );
+			$$.SetValue( this.hidden_element_year, 0 );
 		}
 	},
 	GetValue:function(){
@@ -1060,7 +1064,7 @@ in4mlValidatorRequired.prototype.ValidateField = function( field ){
 
 	var output = true;
 
-	if( field.GetValue() == null || field.GetValue() == '' || typeof field.GetValue() == 'undefined' ){
+	if( field.GetValue() == null || field.GetValue() == '' || typeof field.GetValue() == 'undefined' || ( field.type == 'Date' && field.GetValue().year == 0 ) ){
 		field.SetError( in4ml.GetErrorText( 'required', null, this.error_message ) );
 		output = false;
 	}
@@ -1473,7 +1477,7 @@ JSLibInterface_jQuery.prototype.ConvertToDatePicker = function( element, options
 				break;
 			}
 			case 'change':{
-				settings.onSelect = this.Bind(
+				settings.onClose = this.Bind(
 					function( date_string, date_picker, callback ){
 						callback( date_picker.input.datepicker( 'getDate' ) );
 					},
