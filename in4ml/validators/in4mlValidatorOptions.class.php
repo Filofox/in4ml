@@ -33,14 +33,14 @@ class in4mlValidatorOptions extends in4mlValidator{
 			// Get a list of all possible values
 			$values = array();
 			foreach( $field->GetOptions() as $option ){
-				if( isset( $option[ 'value' ] ) ){
-					// Option
-					$values[] = $option[ 'value' ];
-				} else {
+				if( isset( $option[ 'label' ] ) ){
 					// Option group
 					foreach( $option[ 'options' ] as $group_option ){
 						$values[] = $group_option[ 'value' ];
 					}
+				} else {
+					// Option
+					$values[] = $option[ 'value' ];
 				}
 			}
 
