@@ -96,7 +96,9 @@ class in4mlFieldSelect extends in4mlField{
 		foreach( $options as $option ){
 			
 			// Check to see if it's a group
-			if( isset( $option[ 'value' ] ) ){
+			if( isset( $option[ 'label' ] ) ){
+				$output .= '<optgroup label="' . $option[ 'label' ] . '">' . $this->BuildOptions( $option[ 'options' ] ) . '</optgroup>';
+			} else {
 				$output .= str_replace
 				(
 					array
@@ -113,8 +115,6 @@ class in4mlFieldSelect extends in4mlField{
 					),
 					$this->option_template
 				);
-			} else {
-				$output .= '<optgroup label="' . $option[ 'label' ] . '">' . $this->BuildOptions( $option[ 'options' ] ) . '</optgroup>';
 			}
 		}
 		
