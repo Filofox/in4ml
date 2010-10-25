@@ -164,12 +164,12 @@ class in4mlFieldDate extends in4mlField{
 		);
 		
 		if( $this->default ){
-			if( get_class( $this->default ) == 'LibDate' ){
+			if( is_object( $this->default ) ){
 				$settings[ 'default' ] = $this->default;
 			} else {
 				// It's a string
 				$default_date = new LibDate();
-				$default_date->SetRelativeDateFromString(  );
+				$default_date->SetRelativeDateFromString( $this->default );
 				$settings[ 'default' ] = $default_date;
 			}
 		}
