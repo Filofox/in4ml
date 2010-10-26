@@ -279,6 +279,8 @@ in4mlText.prototype.Interpolate = function( parameters, template ){
  */
 in4mlForm = function( form_definition, ready_events ){
 	
+	this.id = form_definition.id;
+	
 	this.events = {};
 	this.validator_functions = [];
 
