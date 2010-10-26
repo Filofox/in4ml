@@ -21,7 +21,7 @@ class in4mlValidatorFileType extends in4mlValidator{
 	 *
 	 * @return		boolean						False if the field is not valid
 	 */
-	public function ValidateField( in4mlFieldFile $field ){
+	public function ValidateField( in4mlField $field ){
 		$output = true;
 		foreach( $field->files as $file ){
 			// Make sure something was submitted
