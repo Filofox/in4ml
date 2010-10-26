@@ -69,7 +69,7 @@ class in4ml{
 		return $output;
 	}
 	
-	public function Text( $namespace, $item, $parameters = null ){
+	public static function Text( $namespace, $item, $parameters = null ){
 		$text = self::GetText();
 		
 		return $text->Get( $namespace, $item, $parameters );
@@ -78,7 +78,7 @@ class in4ml{
 	/**
 	 * Return server operating system
 	 */
-	public function GetServerOS(){
+	public static function GetServerOS(){
 		if( stristr( PHP_OS, self::SERVER_OS_WINDOWS ) ){
 			return self::SERVER_OS_WINDOWS;
 		} else {
@@ -372,9 +372,56 @@ class in4ml{
 	}
 	
 	/**
+	 * Load a form definition directly from a path rather than from default location set in the config
+	 *
+	 * @param		string		$form_type
+	 * @param		string		$path
+	 * @param		string		$prefix			[optional] A prefix to use (defaul;t = false, i.e. use default prefix)
+	 *
+	 * @return		in4mlForm					A form instance
+	 */
+	public static function GetFormFromPath( $form_type, $path, $prefix = false ){
+		if( $prefix === false ){
+			$prefix = self::Config( 'form_prefix' );
+		}
+		$form_name = $prefix . $form_type;
+
+		// Only include it once
+		if( !class_exists( $form_name ) ){
+			$file_path = $path .  $form_name . '.class.php';
+			if( file_exists( $file_path ) ){
+				require_once( $file_path );
+			} else {
+				throw new Exception( 'Form ' . $form_name . ' not found [' . $file_path . ']' );
+			}
+		}
+
+		// Check for optional arguments
+		$arguments = func_get_args();
+		if( count( $arguments ) > 3 ){		
+			// Drop form name
+			$arguments = array_slice( $arguments, 3 );
+		} else {
+			$arguments = array();
+		}
+		
+		// Are there any arguments?
+		if( count( $arguments ) > 0 ){
+			// Yes
+			$ref = new ReflectionClass( $form_name );
+			$instance = $ref->newInstanceArgs( $arguments );
+		} else {
+			// No
+			$instance = new $form_name();
+		}
+		
+		return $instance;
+	}
+	
+	/**
 	 * Write required setup into page header
 	 */
-	public function GetInitCode(){
+	public static function GetInitCode(){
 
 		$output = '<script type="text/javascript" src="' . self::GetPathResources() . 'js/in4ml.js"></script>' . "\n";
 
