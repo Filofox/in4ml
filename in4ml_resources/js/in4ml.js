@@ -319,6 +319,10 @@ in4mlForm = function( form_definition, ready_events ){
 					var field = new in4mlFieldRichText( this, form_definition.fields[ i ] );
 					break;
 				}
+				case 'Select':{
+					var field = new in4mlFieldSelect( this, form_definition.fields[ i ] );
+					break;
+				}
 				default:{
 					var field = new in4mlField( this, form_definition.fields[ i ] );
 					break;
@@ -825,6 +829,18 @@ var in4mlFieldRichText = in4mlField.extend({
 			this.element,
 			options
 		);
+	}
+});
+/**
+ * Select element
+ */
+var in4mlFieldSelect = in4mlField.extend({
+	AddOption:function( value, text ){
+	  var option = $$.Create( 'option', { value: value, text:text } );
+	  $$.Append( this.element, option );
+	},
+	ClearOptions:function(){
+	  $$.Empty( this.element );
 	}
 });
 /**
