@@ -270,6 +270,14 @@ class In4mlForm{
 			}
 		}
 	}
+	/**
+	 * Get all fields
+	 *
+	 * @return		array
+	 */
+	public function GetFields(){
+		return $this->fields;
+	}
 	
 	/**
 	 * If the form has been submitted, do validation
