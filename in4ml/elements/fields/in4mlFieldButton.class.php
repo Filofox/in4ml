@@ -12,6 +12,7 @@ require_once( in4ml::GetPathCore() . 'in4mlField.class.php' );
  */
 class in4mlFieldButton extends in4mlField{
 	public $type = 'Button';
+	public $id;
 	public $button_type = 'button';
 	
 	/**
@@ -29,6 +30,7 @@ class in4mlFieldButton extends in4mlField{
 		// Checkbox text
 		$values->setAttribute( 'value', in4ml::Escape( $this->label ) );
 		$values->setAttribute( 'type', $this->button_type );
+		$values->setAttribute( 'id', $this->form->form_id . '_' . $this->id );
 
 		return $values;
 	}

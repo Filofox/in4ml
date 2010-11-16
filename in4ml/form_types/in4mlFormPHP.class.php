@@ -27,9 +27,9 @@ class In4mlFormPHP extends In4mlForm{
 		if( isset( $this->definition[ 'form_id' ] ) ){
 			$this->form_id = $this->definition[ 'form_id' ];
 		}
-
-		foreach( $this->buttons as $button ){
+		foreach( $this->buttons as $id => $button ){
 			$button[ 'type' ] = 'Button';
+			$button[ 'id' ] = $id;
 			$this->definition[ 'elements' ][] = $button;
 		}
 
