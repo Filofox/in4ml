@@ -13,26 +13,26 @@
  * Do not extend from this directly to define a form -- extend a form type class instead
  */
 class In4mlForm{
-	
+
 	// Root element of form
 	public $form_element;
 	protected $form_type;
-	
+
 	protected $enctype;
-	
+
 	// Flat list of field elements
 	protected $fields = array();
-	
+
 	// Whether or not to use internationalisation
 	public $enable_i18n = false;
 	// What language to render labels/errors/notes/prefixes/suffixes in
 	public $lang;
-	
+
 	// What type of renderer to use
 	protected $renderer_type;
 	// What type of template to use
 	protected $renderer_template;
-	
+
 	// Use GET (URL parameters) or POST submit [default = GET]]
 	public $submit_method;
 
@@ -42,19 +42,19 @@ class In4mlForm{
 	public $is_valid = true;
 	// Has been set with submitted values
 	public $is_populated = false;
-	
+
 	public $form_id;
-	
+
 	public $use_javascript = true;
 	public $ajax_submit = false;
-	
+
 	// Allows for 'automatic' processing of the form
 	protected $allow_auto_process = false;
-	
+
 	const BUTTON_TYPE_SUBMIT = 'submit';
 	const BUTTON_TYPE_RESET = 'reset';
 	const BUTTON_TYPE_BUTTON = 'button';
-	
+
 	const ENCTYPE_URLENCODED = 'application/x-www-form-urlencoded';
 	const ENCTYPE_MULTIPART = 'multipart/form-data';
 
@@ -66,11 +66,11 @@ class In4mlForm{
 			'label' => 'Submit'
 		)
 	);
-	
+
 	public function __construct(){
-		
+
 		$this->form_type = substr( get_class( $this ), strlen( in4ml::Config( 'form_prefix' ) ) );
-		
+
 		// If not overridden in form type defintion
 		if( !$this->renderer_type ){
 			// What type of renderer to use -- can change during rendering
@@ -104,14 +104,14 @@ class In4mlForm{
 			$this->fields[] = $form_id_field;
 		}
 	}
-	
+
 	/**
 	 * Form type subclasses must override this function
 	 */
 	protected function ProcessDefinition(){
 		throw new Exception( 'Method ProcessDefinition not implented for class ' . get_class( $this ) );
 	}
-	
+
 	/**
 	 * Add a button to end of the form
 	 */
@@ -127,7 +127,7 @@ class In4mlForm{
 			throw new Exception( "Button type '$button_type' not valid" );
 		}
 	}
-	
+
 	/**
 	 * Set a button's text
 	 *
@@ -150,14 +150,14 @@ class In4mlForm{
 			$this->buttons[ $button_id ][ 'class' ] = $class;
 		}
 	}
-	
+
 	/**
 	 * Return HTML representation of the form
 	 *
 	 * @return		string
 	 */
 	public function Render( $renderer_type = false, $renderer_template = false ){
-	
+
 		// Override renderer type?
 		if( $renderer_type ){
 			$renderer_type = 'in4mlRenderer' . $renderer_type;
@@ -169,7 +169,7 @@ class In4mlForm{
 		if( !$renderer_template ){
 			$renderer_template = $this->renderer_template;
 		}
-	
+
 		$renderer_path = in4ml::GetPathRenderers() . $renderer_type . '.class.php';
 		if( file_exists( $renderer_path ) ){
 			require_once( $renderer_path );
@@ -177,7 +177,7 @@ class In4mlForm{
 		} else {
 			throw new Exception( "Renderer type '$renderer_type' not found ($renderer_path)" );
 		}
-		
+
 		return $renderer->RenderForm( $this, $renderer_template );
 	}
 
@@ -195,10 +195,15 @@ class In4mlForm{
 				break;
 			}
 		}
-		
+
 		foreach( $this->fields as $field ){
 			if( isset( $values[ $field->name ] ) ){
-				$field->SetValue( $values[ $field->name ] );
+				$value = $values[ $field->name ];
+				// Strip slashes if necessary
+				if( get_magic_quotes_gpc() == true ){
+					$value = stripslashes( $value );
+				}
+				$field->SetValue( $value );
 			} elseif( $field->type == 'File' && isset( $_FILES[ $field->name ] ) ){
 				// Check it's not an array of files
 				if( isset( $_FILES[ $field->name ][ 0 ] ) ){
@@ -230,12 +235,12 @@ class In4mlForm{
 		}
 		$this->is_populated = true;
 	}
-	
+
 	/**
 	 * Get a field's value
 	 *
 	 * @param		string		$field_name
-	 * 
+	 *
 	 * @return		mixed
 	 */
 	public function GetValue( $field_name ){
@@ -260,7 +265,7 @@ class In4mlForm{
 	 * Get a field
 	 *
 	 * @param		string		$field_name
-	 * 
+	 *
 	 * @return		in4mlField
 	 */
 	public function GetField( $field_name ){
@@ -270,22 +275,14 @@ class In4mlForm{
 			}
 		}
 	}
-	/**
-	 * Get all fields
-	 *
-	 * @return		array
-	 */
-	public function GetFields(){
-		return $this->fields;
-	}
-	
+
 	/**
 	 * If the form has been submitted, do validation
 	 *
 	 * @return		NULL if not submitted, else boolean value for success/fail validation
 	 */
 	public function Process(){
-		
+
 		// Check that allow_auto_process boolean is true
 		if( !$this->allow_auto_process ){
 			throw new Exception( 'To use the in4mlForm::Process() method you must first enable the in4mlForm::allow_auto_process property in your form definition' );
@@ -304,20 +301,20 @@ class In4mlForm{
 
 		if( $form_id && $form_id == $this->form_id ){
 			$this->is_processed = true;
-			return $this->Validate();		
+			return $this->Validate();
 		} else {
 			return null;
 		}
 
 	}
-	
+
 	/**
 	 * Validate all fields
 	 *
 	 * @return		boolean
 	 */
 	public function Validate(){
-		
+
 		// Load submitted values into fields
 		$this->ParseValues();
 
@@ -338,12 +335,12 @@ class In4mlForm{
 	 * Filter all fields
 	 */
 	public function Filter(){
-		
+
 		foreach( $this->fields as $field ){
 			$field->Filter();
 		}
 	}
-	
+
 	/**
 	 * Return a JSON-endoded summary of this form
 	 *
@@ -357,7 +354,7 @@ class In4mlForm{
 			'fields' => array(),
 			'ajax_submit' => $this->ajax_submit
 		);
-		
+
 		foreach( $this->fields as $field ){
 			$validators = array();
 			foreach( $field->GetValidators() as $validator ){
@@ -411,7 +408,7 @@ class In4mlForm{
 			if( $field->confirm_field ){
 				$field_properties[ 'has_confirm' ] = true;
 			}
-			
+
 			foreach( $field->GetPropertiesForJSON() as $key => $value ){
 				$field_properties[ $key ] = $value;
 			}
@@ -422,10 +419,10 @@ class In4mlForm{
 				$field_properties
 			);
 		}
-		
+
 		return json_encode( $definition );
 	}
-	
+
 	/**
 	 * Set a general 'form' error (as opposed to a specific field error)
 	 *
@@ -442,9 +439,9 @@ class In4mlForm{
 	 * @return		in4mlFormResponse
 	 */
 	public function GetResponse(){
-		
+
 		$response = new in4mlFormResponse();
-		
+
 		try{
 			$response->success = $this->is_valid;
 			// Field errors
@@ -463,7 +460,7 @@ class In4mlForm{
 
 		return $response;
 	}
-	
+
 	/**
 	 * Render an image for Captcha field
 	 */
@@ -473,13 +470,13 @@ class In4mlForm{
 
 			// Generate text
 			$characters = str_split( $field->characters );
-			
+
 			$code = '';
 			$max = count( $characters ) - 1;
 			while( strlen( $code ) < $field->code_length ){
 				$code .= $characters[ rand( 0, $max ) ];
 			}
-			
+
 			// Write the code to a PHP file using the uid as a file name
 			$files_path = in4ml::GetPathLocal() . 'captcha_codes/' . date( 'YmdH' ) . '/';
 			if( !is_dir( $files_path ) ){
@@ -501,11 +498,11 @@ class In4mlForm{
 
 			// Create the image
 			$im = imagecreatetruecolor( $width, $height );
-			
+
 			// Background colour
 			$background_colour = $this->hexrgb( $field->background_colour );
 			imagefilledrectangle($im, 0, 0, $width, $height, imagecolorallocate($im, $background_colour[ 'r' ], $background_colour[ 'g' ], $background_colour[ 'b' ]));
-			
+
 			// Create the text
 			$text_colour = $this->hexrgb( $field->text_colour );
 			imagettftext(
@@ -518,7 +515,7 @@ class In4mlForm{
 				$field->font_path,
 				$code
 			);
-			
+
 			if( 0 && $error = error_get_last() ){
 				throw new Exception( $error[ 'message' ] );
 			} else {
@@ -533,9 +530,9 @@ class In4mlForm{
 			throw new Exception( 'Invalid field name' );
 		}
 	}
-	
+
 	public function CheckCaptchaUID( $uid, $user_input ){
-		
+
 		// Do cleanup (maybe)
 		if( !rand(0,10) ){
 			$this->ClearUpCaptchaCodes();
@@ -556,13 +553,13 @@ class In4mlForm{
 				$output = true;
 			}
 		}
-		
+
 		return $output;
 	}
-	
+
 	public function ClearUpCaptchaCodes(){
 		$file_path = in4ml::GetPathLocal() . 'captcha_codes/';
-		
+
 		$dirs = array();
 		$current = date( 'YmdH' );
 		$last = date( 'YmdH', strtotime( '-1 hour' ) );
@@ -589,7 +586,7 @@ class In4mlForm{
 			rmdir( $path );
 		}
 	}
-	
+
 	/**
 	 * Taken from http://php.net/manual/en/function.hexdec.php
 	 */
@@ -612,20 +609,20 @@ class In4mlForm{
 				"b" => 0xFF & $int
 				);
 				break;
-		}    
+		}
 	}// END GET Cor Hex => RGB
-	
+
 	/**
 	 * Taken from http://www.php.net/manual/en/function.imagettfbbox.php
 	 */
 	private function CalculateTextBox($font_size, $font_angle, $font_file, $text) {
 		$box = imagettfbbox($font_size, $font_angle, $font_file, $text);
-	
+
 		$min_x = min(array($box[0], $box[2], $box[4], $box[6]));
 		$max_x = max(array($box[0], $box[2], $box[4], $box[6]));
 		$min_y = min(array($box[1], $box[3], $box[5], $box[7]));
 		$max_y = max(array($box[1], $box[3], $box[5], $box[7]));
-	
+
 		return array(
 			'left' => ($min_x >= -1) ? -abs($min_x + 1) : abs($min_x + 2),
 			'top' => abs($min_y),
@@ -633,7 +630,7 @@ class In4mlForm{
 			'height' => $max_y - $min_y,
 			'box' => $box
 		);
-	}	
+	}
 }
 
 /**
@@ -643,7 +640,7 @@ class in4mlFormResponse{
 	public $success = false;
 	public $form_errors = array();
 	public $field_errors = array();
-	
+
 	/**
 	 * Add a generic 'form error'
 	 *
