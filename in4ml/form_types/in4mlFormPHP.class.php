@@ -73,9 +73,6 @@ class In4mlFormPHP extends In4mlForm{
 		$element->form_id = $this->form_id;
 		$element->form_type = $this->form_type;
 
-		// No container by default
-		$container_type = null;
-
 		// Set properties
 		foreach( $definition as $key => $value ){
 			switch( $key ){
@@ -203,6 +200,10 @@ class In4mlFormPHP extends In4mlForm{
 			$container->AddClass( 'container' );
 			$container->AddClass( strtolower( $container_type ) );
 			$container->AddClass( strtolower( $element->type ) );
+			
+			if( $element->container_id ){
+				$container->id = $element->container_id;
+			}
 			
 			// Checl for validator classes
 			foreach( $element->GetValidators() as $validator ){

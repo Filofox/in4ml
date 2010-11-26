@@ -24,6 +24,8 @@ class In4mlField extends in4mlElement{
 	protected $validators = array();
 	protected $filters = array();
 
+	public $container_id;
+
 	protected $errors = array();
 	
 	public $confirm_field;
