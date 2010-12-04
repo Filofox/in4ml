@@ -47,6 +47,7 @@ class In4mlForm{
 
 	public $use_javascript = true;
 	public $ajax_submit = false;
+	public $auto_render = true;
 
 	// Allows for 'automatic' processing of the form
 	protected $allow_auto_process = false;
@@ -352,7 +353,8 @@ class In4mlForm{
 		(
 			'id' => $this->form_id,
 			'fields' => array(),
-			'ajax_submit' => $this->ajax_submit
+			'ajax_submit' => $this->ajax_submit,
+			'auto_render' => $this->auto_render
 		);
 
 		foreach( $this->fields as $field ){
