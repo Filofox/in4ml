@@ -5,57 +5,57 @@
   var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
   // The base Class implementation (does nothing)
   this.Class = function(){};
-  
+
   // Create a new Class that inherits from this class
   Class.extend = function(prop) {
     var _super = this.prototype;
-    
+
     // Instantiate a base class (but only create the instance,
     // don't run the init constructor)
     initializing = true;
     var prototype = new this();
     initializing = false;
-    
+
     // Copy the properties over onto the new prototype
     for (var name in prop) {
       // Check if we're overwriting an existing function
-      prototype[name] = typeof prop[name] == "function" && 
+      prototype[name] = typeof prop[name] == "function" &&
         typeof _super[name] == "function" && fnTest.test(prop[name]) ?
         (function(name, fn){
           return function() {
             var tmp = this._super;
-            
+
             // Add a new ._super() method that is the same method
             // but on the super-class
             this._super = _super[name];
-            
+
             // The method only need to be bound temporarily, so we
             // remove it when we're done executing
-            var ret = fn.apply(this, arguments);        
+            var ret = fn.apply(this, arguments);
             this._super = tmp;
-            
+
             return ret;
           };
         })(name, prop[name]) :
         prop[name];
     }
-    
+
     // The dummy class constructor
     function Class() {
       // All construction is actually done in the init method
       if ( !initializing && this.init )
         this.init.apply(this, arguments);
     }
-    
+
     // Populate our constructed prototype object
     Class.prototype = prototype;
-    
+
     // Enforce the constructor to be what we expect
     Class.constructor = Class;
 
     // And make this class extendable
     Class.extend = arguments.callee;
-    
+
     return Class;
   };
 })();
@@ -80,7 +80,7 @@ var in4ml = {
 		this.text = new in4mlText( text );
 		this.resources_path = resources_path;
 	},
-	
+
 	/**
 	 * Register a form for JavaScript handling
 	 *
@@ -89,7 +89,7 @@ var in4ml = {
 	RegisterForm:function( form_definition ){
 		 var form = new in4mlForm( form_definition, this.ready_events[ form_definition.id ] );
 		form.Init();
-		
+
 		this.forms[ form_definition.id ] = form;
 	},
 	/**
@@ -99,7 +99,7 @@ var in4ml = {
 		var form_parameters = {
 			'__form_name': form_name
 		}
-		
+
 		if( typeof parameters == 'object' ){
 			for( var index in parameters ){
 				form_parameters[ index ] = parameters[ index ];
@@ -125,7 +125,7 @@ var in4ml = {
 			)
 		);
 	},
-	
+
 	LoadFormSuccess:function( status, response, callback ){
 		// Create a temporary DIV to attach it to
 		var div = $$.Create( 'div', {css:{'display':'none'}} );
@@ -151,9 +151,9 @@ var in4ml = {
 
 		// Is there a custom error message (from definition)?
 		if( typeof error_messages != 'undefined' ){
-			
+
 			var sub_item = error_type.split( ':' ).pop();
-			
+
 			// Text string or list of strings?
 			if( typeof error_messages == 'object' ){
 				// Is the required one present?
@@ -171,7 +171,7 @@ var in4ml = {
 			// Just use default error message
 			text = this.text.Get( 'Error', error_type, parameters );
 		}
-		
+
 		return text;
 	},
 	GetFieldSelector:function( field_type, field_name ){
@@ -219,7 +219,7 @@ var in4ml = {
 		} else {
 			callback( this.forms[ form_id ], 'Ready' );
 		}
-	}
+	},
 }
 
 /**
@@ -236,7 +236,7 @@ in4mlText = function( text ){
  * @param		JSON		parameters		[Optional] Key -> value pairs to be interpolated into the string
  */
 in4mlText.prototype.Get = function( namespace, item, parameters ){
-		
+
 	var parts = item.split( ':' );
 	if( parts.length == 1 ){
 		parts.push( 'default' );
@@ -278,9 +278,9 @@ in4mlText.prototype.Interpolate = function( parameters, template ){
  * Form item
  */
 in4mlForm = function( form_definition, ready_events ){
-	
+
 	this.id = form_definition.id;
-	
+
 	this.events = {};
 	this.validator_functions = [];
 
@@ -290,7 +290,11 @@ in4mlForm = function( form_definition, ready_events ){
 	this.errors = [];
 	this.ajax_submit = form_definition.ajax_submit;
 
-	// Build fields list	
+	// Determines whether certain form elements (e.g. RichText) will be drawn automatically when the form is first rendered,
+	// or only when the onShow() method is called
+	this.auto_render = (typeof form_definition.auto_render != 'undefined') ? form_definition.auto_render : true;
+
+	// Build fields list
 	this.fields = {};
 	for( var i = 0; i < form_definition.fields.length; i++ ){
 		if( form_definition.fields[ i ].name ){
@@ -328,7 +332,7 @@ in4mlForm = function( form_definition, ready_events ){
 					break;
 				}
 			}
-	
+
 			this.fields[ form_definition.fields[ i ].name ] = field;
 		}
 	}
@@ -398,14 +402,14 @@ in4mlForm.prototype.HandleSubmit = function(){
 
 	// Form will submit itself automatically if validation is successful
 	var is_valid = this.Validate();
-	
+
 	if( !is_valid ){
 		this.ShowErrors();
 		this.TriggerEvent( 'AfterValidateFail' );
 	} else {
 		this.TriggerEvent( 'AfterValidateSuccess' );
 	}
-	
+
 	// Check to see if any BeforeSubmit handlers have requested submit abort
 	if( this.abort_submit ){
 		is_valid = false;
@@ -424,7 +428,7 @@ in4mlForm.prototype.HandleSubmit = function(){
 			is_valid = false;
 		}
 	}
-	
+
 	return is_valid;
 }
 in4mlForm.prototype.AbortSubmit = function(){
@@ -466,10 +470,10 @@ in4mlForm.prototype.SetValue = function( field_name, value ){
  */
 in4mlForm.prototype.AjaxSubmit = function(){
 	var values = this.GetValues();
-	
+
 	// Pass values array for pre-submission alterations
 	this.TriggerEvent( 'BeforeAjaxSubmit', values );
-	
+
 	$$.JSONRequest
 	(
 		$$.GetAttribute( this.element, 'action' ),
@@ -550,7 +554,7 @@ in4mlForm.prototype.SetFormError = function( error ){
 }
 in4mlForm.prototype.ClearErrors = function(){
 	$$.RemoveClass( this.element, 'invalid' );
-	
+
 	this.errors = [];
 
 	if( typeof this.error_element != 'undefined' ){
@@ -562,7 +566,7 @@ in4mlForm.prototype.ClearErrors = function(){
 	}
 }
 in4mlForm.prototype.ShowErrors = function(){
-	
+
 	if( this.errors.length ){
 		$$.AddClass( this.element, 'invalid' );
 
@@ -579,7 +583,7 @@ in4mlForm.prototype.ShowErrors = function(){
 			html += '<li>' + this.errors[ i ] + '</li>';
 		}
 		html += '</ul>';
-		
+
 		$$.SetHTML( this.error_element, html );
 	}
 }
@@ -623,7 +627,22 @@ in4mlForm.prototype.AppendTo = function( element ){
 in4mlForm.prototype.AddValidator = function( validator_func ){
 	this.validator_functions.push( validator_func );
 }
-
+/**
+ * Call this when form is hidden
+ */
+in4mlForm.prototype.onHide = function(){
+	for( var index in this.fields ){
+		this.fields[ index ].onHide();
+	}
+}
+/**
+ * Call this when form is shown after being hidden (e.g. display:none)
+ */
+in4mlForm.prototype.onShow = function(){
+	for( var index in this.fields ){
+		this.fields[ index ].onShow();
+	}
+}
 /**
  * Field
  */
@@ -635,8 +654,8 @@ var in4mlField = Class.extend({
 		this.errors = [];
 		this.form = form;
 		this.element = this.FindElement();
-		
-		
+
+
 		this.container = null;
 
 		var no_container = false;
@@ -650,14 +669,14 @@ var in4mlField = Class.extend({
 				no_container = true;
 			}
 		}
-	
+
 		if( this.container ){
 			var error_element = $$.Find( 'div.error', this.container )
 			if( error_element.length ){
 				this.error_element = error_element[ 0 ];
 			}
 		}
-	
+
 	},
 	FindElement:function(){
 		return $$.Find( in4ml.GetFieldSelector( this.type, this.name ), this.form.element );
@@ -674,18 +693,18 @@ var in4mlField = Class.extend({
 		return $$.SetValue( this.element, value );
 	},
 	Validate:function(){
-	
+
 		// Reset errors
 		this.errors = [];
-	
+
 		var value = this.GetValue();
-		
+
 		is_valid = true;
-		
+
 		for( var i = 0; i < this.validators.length; i++ ){
-			
+
 			if( window[this.validators[i].type] ){
-				// Instantiate validator object			
+				// Instantiate validator object
 				var validator = new window[this.validators[i].type]();
 				for( var index in this.validators[i] ){
 					validator[ index ] = this.validators[i][ index ];
@@ -697,13 +716,13 @@ var in4mlField = Class.extend({
 	//			console.log( 'Validator not defined ' + this.validators[i].type );
 			}
 		}
-		
+
 		if( is_valid ){
 			this.ClearErrors();
 		} else {
 			this.ShowErrors();
 		}
-	
+
 		return is_valid;
 	},
 	SetError:function( error ){
@@ -718,7 +737,7 @@ var in4mlField = Class.extend({
 	ShowErrors: function(){
 		this.ClearErrors();
 		$$.AddClass( this.container, 'invalid' );
-	
+
 		if( !this.error_element ){
 			this.error_element = $$.Create( 'div', { 'class':'error' } );
 			$$.Append( this.container, this.error_element );
@@ -728,7 +747,7 @@ var in4mlField = Class.extend({
 			html += '<li>' + this.errors[ i ] + '</li>';
 		}
 		html += '</ul>';
-		
+
 		$$.SetHTML( this.error_element, html );
 	},
 	BindEvent:function( event, func ){
@@ -746,7 +765,9 @@ var in4mlField = Class.extend({
 				true
 			)
 		);
-	}
+	},
+	onHide:function(){},
+	onShow:function(){}
 });
 /**
  * Captcha field
@@ -757,7 +778,7 @@ var in4mlFieldCaptcha = in4mlField.extend({
 		var img = $$.Find( 'img.captcha', this.container );
 		var src = $$.GetAttribute( img, 'src' );
 		var code = src.match( /(?:&|\?)c=([a-z0-9]*)/i )[ 1 ];
-		
+
 		var new_code = '';
 		var characters = 'abcdefghijklmnopqrstuvwxyz1234567890';
 		for( var i=0; i < 41; i++ ){
@@ -816,7 +837,7 @@ var in4mlFieldRichText = in4mlField.extend({
 	init:function( form, definition ){
 		this._super( form, definition );
 
-		var options ={};
+		var options = {};
 
 		if( typeof definition.custom_params != 'undefined' ){
 			for( var index in definition.custom_params ){
@@ -824,11 +845,18 @@ var in4mlFieldRichText = in4mlField.extend({
 			}
 		}
 
+		// Render automatically?
 		$$.ConvertToRichText
 		(
-			this.element,
+			this,
 			options
 		);
+	},
+	onHide:function(){
+		$$.RichTextOnHide( this );
+	},
+	onShow:function(){
+		$$.RichTextOnShow( this );
 	}
 });
 /**
@@ -865,7 +893,7 @@ var in4mlFieldDate = in4mlField.extend({
 				this
 			)
 		};
-		
+
 		// Set default date
 		if( definition[ 'default' ] ){
 			options.default_date = new Date( definition[ 'default' ].year, definition[ 'default' ].month-1, definition[ 'default' ].day );
@@ -873,7 +901,7 @@ var in4mlFieldDate = in4mlField.extend({
 		if( definition.value ){
 			options.value = new Date( definition.value.year, definition.value.month-1, definition.value.day );
 		}
-		
+
 		// Create hidden fields to store
 		this.hidden_element_day = $$.Create
 		(
@@ -955,7 +983,7 @@ in4mlValidatorConfirm.prototype.ValidateField = function( field ){
 		field.SetError( in4ml.GetErrorText( 'confirm' ), null, this.error_message );
 		output = false;
 	}
-	
+
 	return output;
 }
 /**
@@ -973,7 +1001,7 @@ in4mlValidatorEmail.prototype.ValidateField = function( field ){
 		field.SetError( in4ml.GetErrorText( 'email' ), null, this.error_message );
 		output = false;
 	}
-	
+
 	return output;
 }
 /**
@@ -995,14 +1023,14 @@ in4mlValidatorLength.prototype.ValidateField = function( field ){
 		field.SetError( in4ml.GetErrorText( 'length:max', { 'max': this.max }, this.error_message ) );
 		output = false;
 	}
-	
+
 	return output;
 }
 in4mlValidatorNumeric = function(){
 }
 in4mlValidatorNumeric.prototype.ValidateField = function( field ){
 	var output = true;
-	
+
 	var value = field.GetValue();
 
 	if( value ){
@@ -1024,7 +1052,7 @@ in4mlValidatorNumeric.prototype.ValidateField = function( field ){
 				output = false;
 			}
 		}
-	}		
+	}
 	return output;
 }
 /**
@@ -1042,14 +1070,14 @@ in4mlValidatorRegex.prototype.ValidateField = function( field ){
 		if( this.ignore_case ){
 			modifiers.push( 'i' );
 		}
-		
+
 		// Run the regex
 		if ( in4mlUtilities.CheckRegexp( value, this.pattern, modifiers ) ){
 			field.SetError( in4ml.GetErrorText( "regex", null, this.error_message ) );
 			output = false;
 		}
 	}
-	
+
 	return output;
 }
 /**
@@ -1070,7 +1098,7 @@ in4mlValidatorRejectValues.prototype.ValidateField = function( field ){
 			}
 		}
 	}
-	
+
 	return output;
 }
 /**
@@ -1086,7 +1114,7 @@ in4mlValidatorRequired.prototype.ValidateField = function( field ){
 		field.SetError( in4ml.GetErrorText( 'required', null, this.error_message ) );
 		output = false;
 	}
-	
+
 	return output;
 }
 /**
@@ -1111,7 +1139,7 @@ in4mlValidatorURL.prototype.ValidateField = function( field ){
 			output = false;
 		}
 	}
-	
+
 	return output;
 }
 
@@ -1136,7 +1164,7 @@ JSLibInterface_jQuery.prototype.Find = function( selector, element ){
 	} else {
 		var elements = jQuery( selector );
 	}
-	
+
 	return jQuery.makeArray( elements );
 }
 /**
@@ -1155,7 +1183,7 @@ JSLibInterface_jQuery.prototype.FindParent = function( element, selector ){
 	} else {
 		var container = jQuery.makeArray( jQuery( element ).parent() ).pop();
 	}
-	
+
 	return container;
 }
 /**
@@ -1238,7 +1266,7 @@ JSLibInterface_jQuery.prototype.AddEvent = function( element, event, callback ){
 		this.Bind(
 			function(){
 				return callback( event, element );
-			
+
 			},
 			this,
 			[ callback, element, event ],
@@ -1425,7 +1453,7 @@ JSLibInterface_jQuery.prototype.Ready = function( callback ){
  * @param		HTMLElement		element
  * @param		JSON			options
  */
-JSLibInterface_jQuery.prototype.ConvertToRichText = function( element, options ){
+JSLibInterface_jQuery.prototype.ConvertToRichText = function( field, options ){
 
 	var defaults = {
 		// Location of TinyMCE script
@@ -1447,9 +1475,30 @@ JSLibInterface_jQuery.prototype.ConvertToRichText = function( element, options )
 		relative_urls: false
 	};
 
-	var settings = $.extend(true, defaults, options)
+	field.settings = $.extend(true, defaults, options)
 
-	$( element ).tinymce( settings );
+	if( field.form.auto_render == true ){
+		this._EnableRichText( field );
+	}
+}
+/**
+ * TinyMCE breaks if it's inside an element that's hidden so call this before hiding
+ */
+JSLibInterface_jQuery.prototype.RichTextOnHide = function( field ){
+	tinyMCE.triggerSave();
+	tinyMCE.execCommand("mceRemoveControl", false, $( field.element ).attr( 'id' ) );
+}
+/**
+ * Restores a tinyMCE field that's been hidden
+ */
+JSLibInterface_jQuery.prototype.RichTextOnShow = function( field ){
+	this._EnableRichText( field );
+}
+/**
+ * Initiates a rich text editor instance. Should not be called directly.
+ */
+JSLibInterface_jQuery.prototype._EnableRichText = function( field ){
+	$( field.element ).tinymce( field.settings );
 }
 /**
  * Convert a set of date selectors to a date picker
@@ -1459,7 +1508,7 @@ JSLibInterface_jQuery.prototype.ConvertToRichText = function( element, options )
  */
 JSLibInterface_jQuery.prototype.ConvertToDatePicker = function( element, options ){
 	element = $( element );
-	
+
 	var new_element = $( this.Create
 		(
 			'input',
@@ -1481,7 +1530,7 @@ JSLibInterface_jQuery.prototype.ConvertToDatePicker = function( element, options
 		'showOn': 'both',
 		'buttonImage': in4ml.resources_path + 'img/calendar_icon.png'
 	};
-	
+
 	// Interpolate settings
 	for( var property in options ){
 		var value = options[ property ];
@@ -1506,29 +1555,29 @@ JSLibInterface_jQuery.prototype.ConvertToDatePicker = function( element, options
 			}
 		}
 	}
-	
+
 	new_element.datepicker
 	(
 		settings
 	);
-	
+
 	// Only seems to work after instantiation, for some reason
 	if( options.value ){
 		new_element.datepicker( 'setDate', options.value );
 	}else if( options.default_date ){
 		new_element.datepicker( 'setDate', options.default_date );
 	}
-	
+
 	if( options.create ){
 		options.create( new_element.datepicker( 'getDate' ) );
 	}
-	
+
 	return new_element;
 }
 JSLibInterface_jQuery.prototype.SetDatePickerValue = function( element, value ){
 	$( element ).datepicker( 'setDate', value );
 }
-	
+
 /**
  * Send a JSON request
  *
@@ -1689,7 +1738,7 @@ in4mlUtilities = {
 	CheckRegexp:function( value, pattern, modifiers ){
 
 		var output = true;
-		
+
 		var regex = new RegExp( pattern, modifiers.join() );
 
 		return regex.test( value );
