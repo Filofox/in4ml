@@ -22,7 +22,7 @@ class in4mlValidatorFileMaxSize extends in4mlValidator{
 	 *
 	 * @return		boolean						False if the field is not valid
 	 */
-	public function ValidateField( in4mlFieldFile $field ){
+	public function ValidateField( in4mlField $field ){
 		$output = true;
 		
 		if( $this->size !== null && $this->units !== '' ){		
