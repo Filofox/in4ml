@@ -156,6 +156,10 @@ class In4mlFormPHP extends In4mlForm{
 						$this->enctype = self::ENCTYPE_MULTIPART;
 					}
 				}
+				// Store fragments so that their content can be set later
+				if( $child_element->category == 'General' && $child_element->type == 'Fragment' ){
+					$this->fragments[] = $child_element;
+				}
 			}
 		} else {
 			if( $element->category == 'Field' ){
@@ -164,6 +168,10 @@ class In4mlFormPHP extends In4mlForm{
 				if( $element->type == 'File' ){
 					$this->enctype = self::ENCTYPE_MULTIPART;
 				}
+			}
+			// Store fragments so that their content can be set later
+			if( $element->category == 'General' && $element->type == 'Fragment' ){
+				$this->fragments[] = $element;
 			}
 		}
 		

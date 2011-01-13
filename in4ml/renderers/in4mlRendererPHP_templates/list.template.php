@@ -40,7 +40,8 @@ $this->templates = array
 		// Extra <span> in fieldset to allow consistent styling (see http://www.tyssendesign.com.au/articles/css/legends-of-style/)
 		'legend' => '<legend><span>[[label]]</span></legend>',
 		'error' => '<li>[[value]]</li>',
-		'script' => '<script type="text/javascript">[[code]]</script>'
+		'script' => '<script type="text/javascript">[[code]]</script>',
+		'fragment' => '[[content]]'
 	)
 );
 

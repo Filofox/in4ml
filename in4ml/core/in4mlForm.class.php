@@ -22,6 +22,8 @@ class In4mlForm{
 
 	// Flat list of field elements
 	protected $fields = array();
+	// Flat list of fragment elements
+	protected $fragments = array();
 
 	// Whether or not to use internationalisation
 	public $enable_i18n = false;
@@ -586,6 +588,23 @@ class In4mlForm{
 			}
 			$d->close();
 			rmdir( $path );
+		}
+	}
+
+	/**
+	 * Set the content of a fragment
+	 *
+	 * @param		string		$name			The name of the fragment
+	 * @param		string		$content		The content to be written into the fragment
+	 */
+	public function SetFragment( $name, $content ){
+		/**
+		 * Might have more than one fragment with the same name
+		 */
+		foreach( $this->fragments as $fragment ){
+			if( $fragment->name == $name ){
+				$fragment->content = $content;
+			}
 		}
 	}
 
