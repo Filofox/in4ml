@@ -289,6 +289,12 @@ in4mlForm = function( form_definition, ready_events ){
 
 	this.errors = [];
 	this.ajax_submit = form_definition.ajax_submit;
+	
+	this.file_fields = [];
+	
+	// Submit method is called twice when advanced file elements are present
+	// This prevents validation + uploads from being performed twice
+	this.force_submit = false;
 
 	// Determines whether certain form elements (e.g. RichText) will be drawn automatically when the form is first rendered,
 	// or only when the onShow() method is called
@@ -325,6 +331,10 @@ in4mlForm = function( form_definition, ready_events ){
 				}
 				case 'Select':{
 					var field = new in4mlFieldSelect( this, form_definition.fields[ i ] );
+					break;
+				}
+				case 'File':{
+					var field = new in4mlFieldFile( this, form_definition.fields[ i ] );
 					break;
 				}
 				default:{
@@ -377,7 +387,10 @@ in4mlForm.prototype.GetField = function( field_name ){
 in4mlForm.prototype.GetFields = function(){
 	return this.fields;
 }
-in4mlForm.prototype.Submit = function(){
+in4mlForm.prototype.Submit = function( force_submit ){
+	if( typeof force_submit != 'undefined' ){
+		this.force_submit = force_submit;
+	}
 	$$.Trigger( this.element, 'submit' );
 }
 in4mlForm.prototype.Reset = function(){
@@ -394,27 +407,45 @@ in4mlForm.prototype.Reset = function(){
  * Catch form submit event and do validation
  */
 in4mlForm.prototype.HandleSubmit = function(){
-	this.ClearErrors();
-
-	this.abort_submit = false;
-
-	this.TriggerEvent( 'BeforeValidate' );
-
-	// Form will submit itself automatically if validation is successful
-	var is_valid = this.Validate();
-
-	if( !is_valid ){
-		this.ShowErrors();
-		this.TriggerEvent( 'AfterValidateFail' );
+	if( this.force_submit != true ){
+		this.ClearErrors();
+	
+		this.abort_submit = false;
+	
+		this.TriggerEvent( 'BeforeValidate' );
+	
+		// Form will submit itself automatically if validation is successful
+		var is_valid = this.Validate();
+	
+		if( !is_valid ){
+			this.ShowErrors();
+			this.TriggerEvent( 'AfterValidateFail' );
+		} else {
+			this.TriggerEvent( 'AfterValidateSuccess' );
+		}
+	
+		// Upload any files
+		if( is_valid == true ){
+			this.fields_to_upload = 0;
+			for( var i = 0; i < this.file_fields.length; i++ ){
+				if( this.file_fields[ i ].GetFilesCount() > 0 ){
+					this.fields_to_upload++;
+					this.file_fields[ i ].Upload();
+					// Don't submit immediately
+					is_valid = false;
+				}
+			}
+		}
 	} else {
-		this.TriggerEvent( 'AfterValidateSuccess' );
+		var is_valid = true;
+		this.force_submit = false;
 	}
 
 	// Check to see if any BeforeSubmit handlers have requested submit abort
 	if( this.abort_submit ){
 		is_valid = false;
 	} else {
-		if( is_valid && this.ajax_submit ){
+		if( is_valid == true && this.ajax_submit ){
 			// This prevents the form being submitted accidentally due to javascript error
 			setTimeout
 			(
@@ -434,6 +465,12 @@ in4mlForm.prototype.HandleSubmit = function(){
 in4mlForm.prototype.AbortSubmit = function(){
 	this.abort_submit = true;
 }
+in4mlForm.prototype.onUploadsComplete = function(){
+	this.fields_to_upload--;
+	if( this.fields_to_upload == 0 ){
+		this.Submit( true );
+	}
+}
 /**
  * Get all field values
  *
@@ -451,7 +488,14 @@ in4mlForm.prototype.GetValue = function( field_name ){
 in4mlForm.prototype.GetValues = function(){
 	var values = {};
 	for( var index in this.fields ){
-		values[ index ] = this.fields[ index ].GetValue();
+		var field = this.fields[ index ];
+		values[ index ] = field.GetValue();
+		if( field.type == 'File' ){
+			var uploadcodes = field.GetUploadCodes();
+			if( uploadcodes !== null ){
+				values[ '_' + index + '_uploadcodes' ] = uploadcodes;
+			}
+		}
 	}
 	return values;
 }
@@ -644,17 +688,26 @@ in4mlForm.prototype.onShow = function(){
 	}
 }
 /**
+ * Add an advanced file field to the list
+ */
+in4mlForm.prototype.AddFileField = function( field ){
+	this.file_fields.push( field );
+}
+
+/**
  * Field
  */
 var in4mlField = Class.extend({
-	init:	function( form, definition ){
+	init:function( form, definition ){
+		if( this.onBeforeInit ){
+			this.onBeforeInit( form, definition );
+		}
 		this.type = definition.type;
 		this.validators = definition.validators;
 		this.name = definition.name;
 		this.errors = [];
 		this.form = form;
 		this.element = this.FindElement();
-
 
 		this.container = null;
 
@@ -676,7 +729,9 @@ var in4mlField = Class.extend({
 				this.error_element = error_element[ 0 ];
 			}
 		}
-
+		if( this.onAfterInit ){
+			this.onAfterInit( form, definition );
+		}
 	},
 	FindElement:function(){
 		return $$.Find( in4ml.GetFieldSelector( this.type, this.name ), this.form.element );
@@ -816,6 +871,73 @@ var in4mlFieldCheckboxMultiple = in4mlField.extend({
 		}
 
 		return values;
+	}
+});
+/**
+ * File field
+ */
+var in4mlFieldFile = in4mlField.extend({
+	upload_codes_element:null,
+	files_count: 0,
+	/**
+	 * Do this after initialisation
+	 */
+	onAfterInit:function( form, definition ){
+		if( definition.advanced == true ){
+			var options =
+			{
+			};
+			$$.ConvertToAdvancedFile( this, options );
+			form.AddFileField( this );
+		}
+	},
+	/**
+	 * Initiate file upload
+	 */
+	Upload:function(){
+		$$.FileUpload( this );
+	},
+	/**
+	 * Add element where uploaded file codes are to be stored
+	 */
+	SetUploadCodeElement:function( element ){
+		this.upload_codes_element = element;
+	},
+	/**
+	 * Add code for uploaded file to list of file codes
+	 */
+	AddUploadedFileCode:function( code ){
+		var codes = $$.GetValue( this.upload_codes_element );
+		if( codes != '' ){
+			codes = codes.split( '|' );
+		} else {
+			codes = [];
+		}
+		codes.push( code );
+		
+		$$.SetValue( this.upload_codes_element, codes.join( '|' ) );
+	},
+	GetUploadCodes:function(){
+		if( this.upload_codes_element !== null ){
+			return $$.GetValue( this.upload_codes_element );
+		} else {
+			return null;
+		}
+	},
+	AddFile:function(){
+		this.files_count++;
+	},
+	RemoveFile:function(){
+		this.files_count--;
+	},
+	GetFilesCount:function(){
+		return this.files_count;
+	},
+	SetFilesCount:function( value ){
+		this.files_count = value;
+	},
+	onUploadsComplete:function(){
+		this.form.onUploadsComplete( this );
 	}
 });
 /**
@@ -1576,6 +1698,82 @@ JSLibInterface_jQuery.prototype.ConvertToDatePicker = function( element, options
 }
 JSLibInterface_jQuery.prototype.SetDatePickerValue = function( element, value ){
 	$( element ).datepicker( 'setDate', value );
+}
+/**
+ * Convert a textarea element to a rich text field
+ *
+ * @param		HTMLElement		element
+ * @param		JSON			options
+ */
+JSLibInterface_jQuery.prototype.ConvertToAdvancedFile = function( field, options ){
+	var upload_code_element = $$.Create
+		(
+			'input',
+			{
+				'type': 'hidden',
+				'name': '_' + field.name + '_uploadcodes'
+			}
+		);
+	field.SetUploadCodeElement( upload_code_element );
+	// Add hidden field to store uplod IDs
+	$( field.element ).after(
+		upload_code_element
+	);
+	
+	 $(field.element).uploadify({
+		'uploader'  : in4ml.resources_path + 'js/lib/uploadify/uploadify.swf',
+		'script'    : in4ml.resources_path + 'php/upload.php',
+		'cancelImg' : in4ml.resources_path + 'js/lib/uploadify/cancel.png',
+		'folder'    : in4ml.resources_path + 'js/lib/uploads',
+		'auto'      : false,
+		'fileDataName' : 'file',
+		'removeCompleted' : false,
+		'onComplete': $$.Bind(
+			function( event, code, file_object, response, data ){
+				this.RemoveFile();
+				this.AddUploadedFileCode( response )
+			},
+			field
+		),
+		'onCancel': $$.Bind(
+			function (event, code, file_object, response) {
+				this.SetFilesCount( response.fileCount );
+			},
+			field
+		),
+		'onClearQueue': $$.Bind(
+			function ( event, file_object ) {
+				this.SetFilesCount( file_object.fileCount );
+			},
+			field
+		)
+		,
+		'onSelectOnce': $$.Bind(
+			function ( event, code ) {
+				this.SetFilesCount( code.fileCount );
+			},
+			field
+		),
+		'onAllComplete': $$.Bind(
+			function () {
+				this.SetFilesCount( 0 );
+				this.onUploadsComplete( field );
+			},
+			field
+		),
+		'multi': true
+	  });
+}
+/**
+ * Upload files
+ */
+JSLibInterface_jQuery.prototype.FileUpload = function( field ){
+	// Check if any files to upload
+	if( field.GetFilesCount() > 0 ){
+		$( field.element ).uploadifyUpload();
+	} else {
+		field.onUploadsComplete( field );
+	}
 }
 
 /**

@@ -47,6 +47,8 @@ class In4mlForm{
 
 	public $form_id;
 
+	private $cleanup_files = array();
+
 	public $use_javascript = true;
 	public $ajax_submit = false;
 	public $auto_render = true;
@@ -199,39 +201,83 @@ class In4mlForm{
 			}
 		}
 
+		$finfo = finfo_open(FILEINFO_MIME_TYPE);
 		foreach( $this->fields as $field ){
-			if( isset( $values[ $field->name ] ) ){
+			if( $field->type == 'File' ){
+				// Advanced file
+				if( $field->advanced ){
+					// Rebuild $_FILES array entry
+					
+					// Get codes
+					$codes = $values[ '_' . $field->name . '_uploadcodes' ];
+					if( $codes != '' ){
+						$codes = explode( '|', $codes );
+					} else {
+						$codes = array();
+					}
+					
+					$_FILES[ $field->name ] = array();
+					foreach( $codes as $code ){
+						
+						// Find the file
+						$temp_dir = sys_get_temp_dir();
+						
+						$target_dir = $temp_dir . 'in4ml_' . $code . '/';
+
+						$d = dir( $target_dir );
+						while (false !== ($entry = $d->read())) {
+							if( strpos( $entry, $code ) !== false ){
+								$target_file_name = $entry;
+							}
+						}
+						$file_name = preg_replace( '~\.' . preg_quote( $code ) . '~', '', $target_file_name );
+						$this->cleanup_files[] = $target_dir . $target_file_name;
+						$d->close();						
+					
+						$_FILES[ $field->name ][] = array
+						(
+							'name' => $file_name,
+							'type' => finfo_file( $finfo, $target_dir . $target_file_name ),
+							'tmp_name' => $target_dir . $target_file_name,
+							'error' => 0,
+							'size' => filesize( $target_dir . $target_file_name )
+						);
+					}
+				}
+				if( isset( $_FILES[ $field->name ] ) && count( $_FILES[ $field->name ] ) > 0 ){
+
+					// Check it's not an array of files
+					if( isset( $_FILES[ $field->name ][ 0 ] ) ){
+						// It's an array
+						foreach( $_FILES[ $field->name ] as $file ){
+							$field->AddFile
+							(
+								$file[ 'name' ],
+								$file[ 'tmp_name' ],
+								$file[ 'type' ],
+								$file[ 'size' ],
+								$file[ 'error' ]
+							);
+						}
+					} else {
+						// Just one file
+						$field->AddFile
+						(
+							$_FILES[ $field->name ][ 'name' ],
+							$_FILES[ $field->name ][ 'tmp_name' ],
+							$_FILES[ $field->name ][ 'type' ],
+							$_FILES[ $field->name ][ 'size' ],
+							$_FILES[ $field->name ][ 'error' ]
+						);
+					}
+				}
+			} elseif( isset( $values[ $field->name ] ) ){
 				$value = $values[ $field->name ];
 				// Strip slashes if necessary
 				if( get_magic_quotes_gpc() == true ){
 					$value = stripslashes( $value );
 				}
 				$field->SetValue( $value );
-			} elseif( $field->type == 'File' && isset( $_FILES[ $field->name ] ) ){
-				// Check it's not an array of files
-				if( isset( $_FILES[ $field->name ][ 0 ] ) ){
-					// It's an array
-					foreach( $_FILES[ $field->name ] as $file ){
-						$field->AddFile
-						(
-							$file[ 'name' ],
-							$file[ 'tmp_name' ],
-							$file[ 'type' ],
-							$file[ 'size' ],
-							$file[ 'error' ]
-						);
-					}
-				} else {
-					// Just one file
-					$field->AddFile
-					(
-						$_FILES[ $field->name ][ 'name' ],
-						$_FILES[ $field->name ][ 'tmp_name' ],
-						$_FILES[ $field->name ][ 'type' ],
-						$_FILES[ $field->name ][ 'size' ],
-						$_FILES[ $field->name ][ 'error' ]
-					);
-				}
 			} else {
 				$field->SetValue( null );
 			}
@@ -651,6 +697,25 @@ class In4mlForm{
 			'height' => $max_y - $min_y,
 			'box' => $box
 		);
+	}
+	
+	/**
+	 * Do cleanup
+	 */
+	public function __destruct(){
+		if( count( $this->cleanup_files ) > 0 ){
+			foreach( $this->cleanup_files as $file ){
+				$pathinfo = pathinfo( $file );
+				// Delete file
+				if( file_exists( $file ) ){
+					unlink( $file );
+				}
+				// Delete directory
+				if( is_dir( $pathinfo[ 'dirname' ] ) ){
+					rmdir( $pathinfo[ 'dirname' ] );
+				}
+			}
+		}
 	}
 }
 

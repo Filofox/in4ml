@@ -17,6 +17,8 @@ class in4mlFieldFile extends in4mlField{
 	
 	public $files = array();
 	
+	public $advanced = false;
+	
 	/**
 	 * Add a file
 	 */
@@ -33,6 +35,10 @@ class in4mlFieldFile extends in4mlField{
 	
 	public function GetFiles(){
 		return $this->files;
+	}
+	
+	public function GetPropertiesForJSON(){
+		return array( 'advanced' => $this->advanced );
 	}
 }
 ?>

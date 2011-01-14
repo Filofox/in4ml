@@ -425,6 +425,12 @@ class in4ml{
 
 		$output = '<script type="text/javascript" src="' . self::GetPathResources() . 'js/in4ml.js"></script>' . "\n";
 
+		// Make this smarter
+		$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/uploadify/jquery.uploadify.min.js"></script>' . "\n";
+		$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/uploadify/swfobject.js"></script>' . "\n";
+		$output .= '<link rel="stylesheet" type="text/css" href="' . in4ml::GetPathResources() . 'js/lib/uploadify/uploadify.css"/>' . "\n";
+
+
 		//foreach( in4ml::GetRequiredJavaScript() as $path ){
 		//	$output .= ('<script type="text/javascript" src="' . $path . '"></script>');
 		//}

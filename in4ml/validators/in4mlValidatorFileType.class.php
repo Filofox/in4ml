@@ -53,6 +53,13 @@ echo system("file -b '<file path>'"); // without the 'i' after '-b'
 to output a human-readable string, like "HTML document text", which can sometimes be useful.
 The only drawback is that your scripts will not work on Windows, but is this such a problem? Just about all web hosts use a UNIX.
 It is a far better way than just examining the file extension.
+
+
+$finfo = finfo_open(FILEINFO_MIME_TYPE);
+$pathinfo = pathinfo( __FILE__ );
+$dir = realpath( $pathinfo[ 'dirname' ] );
+print_r( finfo_file( $finfo, $dir . '/foo.png' ) );
+
 */
 
 ?>
