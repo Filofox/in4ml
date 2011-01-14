@@ -544,6 +544,10 @@ in4mlForm.prototype.AjaxSubmit = function(){
 in4mlForm.prototype.HandleAjaxSubmitSuccess = function( status, response ){
 	if( response.success == true ){
 		this.TriggerEvent( 'SubmitSuccess', response );
+		// Clear file upload queues
+		for( var i = 0; i < this.file_fields.length; i++ ){
+			this.file_fields[ i ].ClearQueue();
+		}
 	} else {
 		// Form errors
 		for( var i = 0; i < response.form_errors.length; i++ ){
@@ -935,6 +939,10 @@ var in4mlFieldFile = in4mlField.extend({
 	},
 	SetFilesCount:function( value ){
 		this.files_count = value;
+	},
+	ClearQueue:function(){
+		$$.SetValue( this.upload_codes_element, '' );
+		$$.FileClearQueue( this );
 	},
 	onUploadsComplete:function(){
 		this.form.onUploadsComplete( this );
@@ -1731,7 +1739,8 @@ JSLibInterface_jQuery.prototype.ConvertToAdvancedFile = function( field, options
 		'onComplete': $$.Bind(
 			function( event, code, file_object, response, data ){
 				this.RemoveFile();
-				this.AddUploadedFileCode( response )
+				this.AddUploadedFileCode( response );
+				$( this.element ).uploadifyCancel( code );
 			},
 			field
 		),
@@ -1775,7 +1784,12 @@ JSLibInterface_jQuery.prototype.FileUpload = function( field ){
 		field.onUploadsComplete( field );
 	}
 }
-
+/**
+ * Upload files
+ */
+JSLibInterface_jQuery.prototype.FileClearQueue = function( field ){
+	$( field.element ).uploadifyClearQueue();
+}
 /**
  * Send a JSON request
  *
