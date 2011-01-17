@@ -1770,7 +1770,7 @@ JSLibInterface_jQuery.prototype.ConvertToAdvancedFile = function( field, options
 			},
 			field
 		),
-		'multi': true
+		'multi': false
 	  });
 }
 /**
