@@ -201,13 +201,22 @@ class In4mlForm{
 			}
 		}
 
-		$finfo = finfo_open(FILEINFO_MIME_TYPE);
+		if( function_exists( 'finfo_open' ) ){
+			$finfo = false;
+		} else {
+			$finfo = null;
+		}
 		foreach( $this->fields as $field ){
 			if( $field->type == 'File' ){
 				// Advanced file
 				if( $field->advanced ){
+
+					if( $finfo === false ){
+						$finfo = finfo_open(FILEINFO_MIME_TYPE);
+					}
+
 					// Rebuild $_FILES array entry
-					
+
 					// Get codes
 					$codes = $values[ '_' . $field->name . '_uploadcodes' ];
 					if( $codes != '' ){
@@ -215,13 +224,13 @@ class In4mlForm{
 					} else {
 						$codes = array();
 					}
-					
+
 					$_FILES[ $field->name ] = array();
 					foreach( $codes as $code ){
-						
+
 						// Find the file
 						$temp_dir = sys_get_temp_dir();
-						
+
 						$target_dir = $temp_dir . 'in4ml_' . $code . '/';
 
 						$d = dir( $target_dir );
@@ -232,12 +241,18 @@ class In4mlForm{
 						}
 						$file_name = preg_replace( '~\.' . preg_quote( $code ) . '~', '', $target_file_name );
 						$this->cleanup_files[] = $target_dir . $target_file_name;
-						$d->close();						
-					
+						$d->close();
+
+						if( $finfo ){
+							$mime_type = finfo_file( $finfo, $target_dir . $target_file_name );
+						} else {
+							$mime_type = mime_content_type( $target_dir . $target_file_name );
+						}
+
 						$_FILES[ $field->name ][] = array
 						(
 							'name' => $file_name,
-							'type' => finfo_file( $finfo, $target_dir . $target_file_name ),
+							'type' => $mime_type,
 							'tmp_name' => $target_dir . $target_file_name,
 							'error' => 0,
 							'size' => filesize( $target_dir . $target_file_name )
@@ -698,7 +713,7 @@ class In4mlForm{
 			'box' => $box
 		);
 	}
-	
+
 	/**
 	 * Do cleanup
 	 */
