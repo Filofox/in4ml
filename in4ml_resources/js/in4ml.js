@@ -219,7 +219,7 @@ var in4ml = {
 		} else {
 			callback( this.forms[ form_id ], 'Ready' );
 		}
-	},
+	}
 }
 
 /**
