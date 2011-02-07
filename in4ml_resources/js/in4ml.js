@@ -946,6 +946,12 @@ var in4mlFieldFile = in4mlField.extend({
 	},
 	onUploadsComplete:function(){
 		this.form.onUploadsComplete( this );
+	},
+	onHide:function(){
+		$$.AdvancedFileOnHide( this );
+	},
+	onShow:function(){
+		$$.AdvancedFileOnShow( this );
 	}
 });
 /**
@@ -1727,7 +1733,30 @@ JSLibInterface_jQuery.prototype.ConvertToAdvancedFile = function( field, options
 	$( field.element ).after(
 		upload_code_element
 	);
+	this.options = options;
 	
+	if( field.form.auto_render == true ){
+		this._EnableAdvancedFile( field );
+	}
+
+}
+/**
+ * Restores an advanced file element that's been hidden
+ */
+JSLibInterface_jQuery.prototype.AdvancedFileOnShow = function( field ){
+	this._EnableAdvancedFile( field );
+}
+/**
+ * Replaces an advanced file element with a 'clean' one that hasn't been uploadified
+ */
+JSLibInterface_jQuery.prototype.AdvancedFileOnHide = function( field ){
+	jQuery( field.element ).uploadifyClearQueue();
+	var new_element = field.element[0].cloneNode(true);
+	field.element = $( new_element );
+	jQuery( field.element ).replaceWith( new_element );
+}
+JSLibInterface_jQuery.prototype._EnableAdvancedFile = function( field ){
+
 	 $(field.element).uploadify({
 		'uploader'  : in4ml.resources_path + 'js/lib/uploadify/uploadify.swf',
 		'script'    : in4ml.resources_path + 'php/upload.php',
