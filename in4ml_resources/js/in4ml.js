@@ -440,6 +440,7 @@ in4mlForm.prototype.HandleSubmit = function(){
 		var is_valid = true;
 		this.force_submit = false;
 	}
+	this.TriggerEvent( 'AfterValidate' );
 
 	// Check to see if any BeforeSubmit handlers have requested submit abort
 	if( this.abort_submit ){
