@@ -125,7 +125,7 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 		if( is_array( $this->value ) && in_array( $this->value[ $index ] ) ){
 			$checkbox->value = 1;
 		}
-		if( isset( $this->default[ $index ] ) ){
+		if( is_array( $this->default ) && in_array( $value, $this->default ) ){
 			$checkbox->default = 1;
 		}
 		$checkbox->field_value = $value;
