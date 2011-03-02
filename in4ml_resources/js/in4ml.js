@@ -1209,7 +1209,8 @@ in4mlValidatorRegex.prototype.ValidateField = function( field ){
 		}
 
 		// Run the regex
-		if ( in4mlUtilities.CheckRegexp( value, this.pattern, modifiers ) ){
+		var result = in4mlUtilities.CheckRegexp( value, this.pattern, modifiers );
+		if ( this.match == result ){
 			field.SetError( in4ml.GetErrorText( "regex", null, this.error_message ) );
 			output = false;
 		}
