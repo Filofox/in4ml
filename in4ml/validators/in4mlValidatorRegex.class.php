@@ -17,6 +17,7 @@ class in4mlValidatorRegex extends in4mlValidator{
 	public $pattern;
 	public $delimiter = '/';
 	public $ignore_case = true;
+	public $match = false;
 	
 	/**
 	 * Perform validation
@@ -52,7 +53,7 @@ class in4mlValidatorRegex extends in4mlValidator{
 			if( $this->ignore_case ){
 				$pattern .= 'i';
 			}
-			$output = !( preg_match( $pattern, $value ) );
+			$output = ( $this->match != preg_match( $pattern, $value ) );
 		}		
 		
 		return $output;
