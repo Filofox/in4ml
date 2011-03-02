@@ -13,6 +13,8 @@ require_once( in4ml::GetPathValidatorTypes() . 'in4mlValidatorRegex.class.php' )
 class in4mlValidatorEmail extends in4mlValidatorRegex{
 	
 	public $pattern = '^([\w-]+\.?)*\w+@([\da-zA-z-]+\.)+[a-zA-z]{2,3}$';
+	public $match = true;
+
 	
 	/**
 	 * Perform validation
