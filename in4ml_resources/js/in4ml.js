@@ -918,8 +918,16 @@ var in4mlFieldFile = in4mlField.extend({
 		} else {
 			codes = [];
 		}
-		codes.push( code );
-		
+		var exists = false;
+		for( var i = 0; i < codes.length; i++ ){
+			if( codes[ i ] == code ){
+				exists = true;
+			}
+		}
+		if( exists == false ){
+			codes.push( code );
+		}
+
 		$$.SetValue( this.upload_codes_element, codes.join( '|' ) );
 	},
 	GetUploadCodes:function(){
@@ -946,7 +954,11 @@ var in4mlFieldFile = in4mlField.extend({
 		$$.FileClearQueue( this );
 	},
 	onUploadsComplete:function(){
-		this.form.onUploadsComplete( this );
+		if(this.files_count == 0){
+			this.form.onUploadsComplete( this );
+		} else {
+			alert( 'There was an error uploading your file(s). Please try again.' );
+		}
 	},
 	onHide:function(){
 		$$.AdvancedFileOnHide( this );
@@ -1772,18 +1784,30 @@ JSLibInterface_jQuery.prototype._EnableAdvancedFile = function( field ){
 				this.RemoveFile();
 				this.AddUploadedFileCode( response );
 				$( this.element ).uploadifyCancel( code );
+				return true;
+			},
+			field
+		),
+		'onError': $$.Bind(
+			function( event, code, file_object, response, data ){
+				//this.RemoveFile();
+				//this.AddUploadedFileCode( response );
+				//$( this.element ).uploadifyCancel( code );
+				return true;
 			},
 			field
 		),
 		'onCancel': $$.Bind(
 			function (event, code, file_object, response) {
 				this.SetFilesCount( response.fileCount );
+				return true;
 			},
 			field
 		),
 		'onClearQueue': $$.Bind(
 			function ( event, file_object ) {
 				this.SetFilesCount( file_object.fileCount );
+				return true;
 			},
 			field
 		)
@@ -1791,13 +1815,14 @@ JSLibInterface_jQuery.prototype._EnableAdvancedFile = function( field ){
 		'onSelectOnce': $$.Bind(
 			function ( event, code ) {
 				this.SetFilesCount( code.fileCount );
+				return true;
 			},
 			field
 		),
 		'onAllComplete': $$.Bind(
 			function () {
-				this.SetFilesCount( 0 );
 				this.onUploadsComplete( field );
+				return true;
 			},
 			field
 		),
