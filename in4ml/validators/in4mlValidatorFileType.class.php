@@ -27,7 +27,7 @@ class in4mlValidatorFileType extends in4mlValidator{
 			// Make sure something was submitted
 			if($file[ 'error_number' ] != 4){
 				if( !in_array( $file[ 'mime_type' ], array_keys( $this->types ) ) ){
-					$field->SetError( $this->GetErrorText( 'file:type', array( 'filetype' => $file[ 'mime_type' ], 'filename' => $file[ 'name' ], 'validtypes' => implode( $this->types ) ) ) );
+					$field->SetError( $this->GetErrorText( 'file:type', array( 'filetype' => $file[ 'mime_type' ], 'filename' => $file[ 'name' ], 'validtypes' => implode( ', ', array_unique( $this->types ) ) ) ) );
 					$output = false;
 				}
 			}
