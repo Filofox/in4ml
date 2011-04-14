@@ -543,6 +543,7 @@ in4mlForm.prototype.AjaxSubmit = function(){
  * @param		object		response	JSON object with details of server response
  */
 in4mlForm.prototype.HandleAjaxSubmitSuccess = function( status, response ){
+	this.TriggerEvent( 'AfterSubmit' );
 	if( response.success == true ){
 		this.TriggerEvent( 'SubmitSuccess', response );
 		// Clear file upload queues
@@ -573,6 +574,7 @@ in4mlForm.prototype.HandleAjaxSubmitSuccess = function( status, response ){
  * @param		string		error_code			Code indicating error
  */
 in4mlForm.prototype.HandleAjaxSubmitError = function( request_object, error_code  ){
+	this.TriggerEvent( 'AfterSubmit' );
 	console.log( 'error' );
 	console.log( arguments );
 	this.TriggerEvent( 'SubmitError' );
@@ -1764,7 +1766,7 @@ JSLibInterface_jQuery.prototype.AdvancedFileOnShow = function( field ){
  * Replaces an advanced file element with a 'clean' one that hasn't been uploadified
  */
 JSLibInterface_jQuery.prototype.AdvancedFileOnHide = function( field ){
-	jQuery( field.element ).uploadifyClearQueue();
+	this.FileClearQueue( field );
 	var new_element = field.element[0].cloneNode(true);
 	field.element = $( new_element );
 	jQuery( field.element ).replaceWith( new_element );
@@ -1844,7 +1846,9 @@ JSLibInterface_jQuery.prototype.FileUpload = function( field ){
  * Upload files
  */
 JSLibInterface_jQuery.prototype.FileClearQueue = function( field ){
-	$( field.element ).uploadifyClearQueue();
+	if( field.files_count > 0 ){
+		$( field.element ).uploadifyClearQueue();
+	}
 }
 /**
  * Send a JSON request
