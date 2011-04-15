@@ -231,6 +231,10 @@ class In4mlForm{
 						// Find the file
 						$temp_dir = sys_get_temp_dir();
 
+						if( substr( $temp_dir, -1 ) != '/' ){
+							$temp_dir .= '/';
+						}
+
 						$target_dir = $temp_dir . 'in4ml_' . $code . '/';
 
 						$d = dir( $target_dir );
