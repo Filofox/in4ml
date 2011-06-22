@@ -42,6 +42,7 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 		foreach( $this->container_class as $class ){
 			$this->options_element->AddClass( $class );
 		}
+		$this->options_element->notes = $this->notes;
 
 		return $this->options_element;
 	}
