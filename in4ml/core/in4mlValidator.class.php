@@ -12,17 +12,17 @@ class in4mlValidator
 {
 	/** Optional CSS class applied to container for any elements using this validator **/
 	protected $class = null;
-	
+
 	public $error_message;
-	
+
 	public function ValidateField( in4mlField $field ){
 		throw new Exception( 'Method in4mlValidator::ValidateField() must be overridden' );
 	}
-	
+
 	public function GetType(){
 		return str_replace( 'in4mlValidator', '', get_class( $this ) );
  	}
-	
+
 	/**
 	 * Return CSS class
 	 *
@@ -31,7 +31,7 @@ class in4mlValidator
 	public function GetClass( in4mlField $field ){
 		return $this->class;
 	}
-	
+
 	/**
 	 * Called when definition is being parsed -- allows validator to alter field's properties
 	 *
@@ -43,7 +43,7 @@ class in4mlValidator
 		// BY default, do nothing
 		return $element;
 	}
-	
+
 	/**
 	 * Return the text for an error
 	 *
@@ -53,12 +53,12 @@ class in4mlValidator
 	 * @return		string
 	 */
 	protected function GetErrorText( $error_type, $parameters = false ){
-		
+
 		// Is there a custom error message (from definition)?
 		if( $this->error_message ){
-			
-			$type = array_pop( explode( ':', $error_type ) );
-			
+			$exploded = explode( ':', $error_type );
+			$type = array_pop( $exploded );
+
 			// Is there i18n?
 			if( is_array( $this->error_message ) ){
 				// Get current language setting
@@ -80,10 +80,10 @@ class in4mlValidator
 			// Just use default error message
 			$text = in4ml::Text( 'Error', $error_type, $parameters );
 		}
-		
+
 		return $text;
 	}
-	
+
 	/**
 	 * Catch invalid property set
 	 */
