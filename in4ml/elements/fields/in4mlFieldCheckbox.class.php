@@ -13,9 +13,9 @@ require_once( in4ml::GetPathCore() . 'in4mlField.class.php' );
 class in4mlFieldCheckbox extends in4mlField{
 
 	public $type = 'Checkbox';
-	
+
 	protected $container_type = 'InlineLabel';
-	
+
 	public $text = '';
 	public $checked = "";
 	public $field_value = 'on';
@@ -29,19 +29,19 @@ class in4mlFieldCheckbox extends in4mlField{
 	 */
 	public function GetRenderValues( $render_value = false ){
 		$values = parent::GetRenderValues();
-		
+
 		// Checkbox text
 		$values->text = $this->text;
-		
+
 		$values->name = $this->name;
 
-		// Set value?		
+		// Set value?
 		if( ( $render_value && $this->value ) || ( !$render_value && isset( $this->default ) && $this->default ) ){
 			$values->SetAttribute( 'checked', 'checked' );
 		}
-		
+
 		$values->SetAttribute( 'value', $this->field_value );
-		
+
 		return $values;
 	}
 	/**

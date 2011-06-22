@@ -11,15 +11,15 @@
  * Handles config and basic functions. Acts as a singleton, all methods are static
  */
 class in4ml{
-	
+
 	const SUBMIT_METHOD_GET = 'get';
 	const SUBMIT_METHOD_POST = 'post';
-	
+
 	// Standard regular expressions (usually for use with ValidatorRegex)
 	const REGEX_ALPHA = '[^a-z]';
 	const REGEX_ALPHANUMERIC = '[^a-z0-9]';
 	const REGEX_ALPHANUMERIC_SPACE = '[^a-z0-9\s]';
-	
+
 	const SERVER_OS_WINDOWS = 'WIN';
 
 	/**
@@ -29,7 +29,7 @@ class in4ml{
 	 */
 	public static function Init( $config_path ){
 		$config_object = self::GetConfig();
-		
+
 		$config_object->path_local = $config_path;
 		// Read config file into config object
 		$config = array();
@@ -42,12 +42,12 @@ class in4ml{
 		foreach( $config as $key => $value ){
 			$config_object->$key = $value;
 		}
-		
+
 		if( !$config_object->default_renderer_template ){
 			$config_object->default_renderer_template = self::GetPathRenderers() . 'in4mlRendererPHP_templates/list.template.php';
 		}
 	}
-	
+
 	/**
 	 * Get a setting from config, or the entire config object
 	 *
@@ -55,7 +55,7 @@ class in4ml{
 	 */
 	public static function Config( $config_item = false ){
 		$config = self::GetConfig();
-		
+
 		if( $config_item ){
 			if( isset( $config->$config_item ) ){
 				$output = $config->$config_item;
@@ -68,13 +68,13 @@ class in4ml{
 
 		return $output;
 	}
-	
+
 	public static function Text( $namespace, $item, $parameters = null ){
 		$text = self::GetText();
-		
+
 		return $text->Get( $namespace, $item, $parameters );
 	}
-	
+
 	/**
 	 * Return server operating system
 	 */
@@ -85,10 +85,10 @@ class in4ml{
 			return PHP_OS;
 		}
 	}
-	
+
 	/**
 	 * Convenience function for retrieving base path for in4ml
-	 * 
+	 *
 	 * @return		string
 	 */
 	public static function GetPathBase(){
@@ -96,7 +96,7 @@ class in4ml{
 	}
 	/**
 	 * Convenience function for retrieving core class path
-	 * 
+	 *
 	 * @return		string
 	 */
 	public static function GetPathCore(){
@@ -104,7 +104,7 @@ class in4ml{
 	}
 	/**
 	 * Convenience function for retrieving elements class path
-	 * 
+	 *
 	 * @return		string
 	 */
 	public static function GetPathElements(){
@@ -112,7 +112,7 @@ class in4ml{
 	}
 	/**
 	 * Convenience function for retrieving blocks class path
-	 * 
+	 *
 	 * @return		string
 	 */
 	public static function GetPathBlocks(){
@@ -120,7 +120,7 @@ class in4ml{
 	}
 	/**
 	 * Convenience function for retrieving field types class path
-	 * 
+	 *
 	 * @return		string
 	 */
 	public static function GetPathFieldTypes(){
@@ -128,7 +128,7 @@ class in4ml{
 	}
 	/**
 	 * Convenience function for retrieving general elements class path
-	 * 
+	 *
 	 * @return		string
 	 */
 	public static function GetPathGeneral(){
@@ -136,7 +136,7 @@ class in4ml{
 	}
 	/**
 	 * Convenience function for retrieving filters class path
-	 * 
+	 *
 	 * @return		string
 	 */
 	public static function GetPathFilters(){
@@ -144,7 +144,7 @@ class in4ml{
 	}
 	/**
 	 * Convenience function for retrieving validators class path
-	 * 
+	 *
 	 * @return		string
 	 */
 	public static function GetPathRenderers(){
@@ -152,7 +152,7 @@ class in4ml{
 	}
 	/**
 	 * Convenience function for retrieving validators class path
-	 * 
+	 *
 	 * @return		string
 	 */
 	public static function GetPathValidatorTypes(){
@@ -160,7 +160,7 @@ class in4ml{
 	}
 	/**
 	 * Convenience function for retrieving form types class path
-	 * 
+	 *
 	 * @return		string
 	 */
 	public static function GetPathFormTypes(){
@@ -168,7 +168,7 @@ class in4ml{
 	}
 	/**
 	 * Convenience function for retrieving form types class path
-	 * 
+	 *
 	 * @return		string
 	 */
 	public static function GetPathi18n(){
@@ -176,7 +176,7 @@ class in4ml{
 	}
 	/**
 	 * Convenience function for retrieving form types class path
-	 * 
+	 *
 	 * @return		string
 	 */
 	public static function GetPathLibrary(){
@@ -184,7 +184,7 @@ class in4ml{
 	}
 	/**
 	 * Convenience function for retrieving local class path
-	 * 
+	 *
 	 * @return		string
 	 */
 	public static function GetPathLocal(){
@@ -192,7 +192,7 @@ class in4ml{
 	}
 	/**
 	 * Convenience function for retrieving resources (CSS, JavaScript) path
-	 * 
+	 *
 	 * @return		string
 	 */
 	public static function GetPathResources(){
@@ -200,7 +200,7 @@ class in4ml{
 	}
 	/**
 	 * Convenience function for retrieving forms
-	 * 
+	 *
 	 * @return		string
 	 */
 	public static function GetPathForms(){
@@ -226,7 +226,7 @@ class in4ml{
 	 * @return		string		Full class name of element
 	 */
 	public static function LoadElement( $element_type ){
-		
+
 		// What type of element is it?
 		if( strpos( $element_type, ':' ) !== false ){
 			list( $type, $class ) = explode( ':', $element_type );
@@ -255,9 +255,9 @@ class in4ml{
 			default:{
 				throw new Exception( "Element type $type not valid" );
 			}
-				
+
 		}
-		
+
 		$file_path = $path . $prefix . $class . '.class.php';
 
 		if( !class_exists( $prefix . $element_type ) ) {
@@ -267,7 +267,7 @@ class in4ml{
 				throw new Exception( 'Element type ' . $element_type . ' not found' );
 			}
 		}
-		
+
 		return $prefix . $class;
 	}
 
@@ -281,7 +281,7 @@ class in4ml{
 	public static function CreateValidator( $validator_type ){
 		self::LoadValidatorType( $validator_type );
 		$validator_type = 'in4mlValidator' . $validator_type;
-		
+
 		return new $validator_type();
 	}
 	/**
@@ -291,7 +291,7 @@ class in4ml{
 	 */
 	public static function LoadValidatorType( $validator_type ){
 		$file_path = self::GetPathValidatorTypes() . 'in4mlValidator' . $validator_type . '.class.php';
-		
+
 		if( !class_exists( 'in4mlValidator' . $validator_type ) ) {
 			if( file_exists( $file_path ) ){
 				require_once( $file_path );
@@ -310,7 +310,7 @@ class in4ml{
 	public static function CreateFilter( $filter_type ){
 		self::LoadFilter( $filter_type );
 		$filter_type = 'in4mlFilter' . $filter_type;
-		
+
 		return new $filter_type();
 	}
 	/**
@@ -320,7 +320,7 @@ class in4ml{
 	 */
 	public static function LoadFilter( $filter_type ){
 		$file_path = self::GetPathFilters() . 'in4mlFilter' . $filter_type . '.class.php';
-		
+
 		if( !class_exists( 'in4mlFilter' . $filter_type ) ) {
 			if( file_exists( $file_path ) ){
 				require_once( $file_path );
@@ -329,8 +329,8 @@ class in4ml{
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Retrieve a form instance by name
 	 *
@@ -340,7 +340,7 @@ class in4ml{
 	 * @return		in4mlForm					A form instance
 	 */
 	public static function GetForm( $form_type ){
-	
+
 		$form_name = self::Config( 'form_prefix' ) . $form_type;
 
 		// Only include it once
@@ -357,7 +357,7 @@ class in4ml{
 		$arguments = func_get_args();
 		// Drop form name
 		array_shift( $arguments );
-		
+
 		// Are there any arguments?
 		if( count( $arguments ) > 0 ){
 			// Yes
@@ -367,10 +367,10 @@ class in4ml{
 			// No
 			$instance = new $form_name();
 		}
-		
+
 		return $instance;
 	}
-	
+
 	/**
 	 * Load a form definition directly from a path rather than from default location set in the config
 	 *
@@ -398,13 +398,13 @@ class in4ml{
 
 		// Check for optional arguments
 		$arguments = func_get_args();
-		if( count( $arguments ) > 3 ){		
+		if( count( $arguments ) > 3 ){
 			// Drop form name
 			$arguments = array_slice( $arguments, 3 );
 		} else {
 			$arguments = array();
 		}
-		
+
 		// Are there any arguments?
 		if( count( $arguments ) > 0 ){
 			// Yes
@@ -414,10 +414,10 @@ class in4ml{
 			// No
 			$instance = new $form_name();
 		}
-		
+
 		return $instance;
 	}
-	
+
 	/**
 	 * Write required setup into page header
 	 */
@@ -447,7 +447,7 @@ class in4ml{
 		';
 
 		return $output;
-		
+
 	}
 
 	/**
@@ -458,40 +458,40 @@ class in4ml{
 	private static function GetConfig(){
 		// Cheeky way to store values in a singelton
 		static $config;
-		
+
 		// This will only be called once
 		if( empty( $config ) ){
 			$config = new in4mlConfig();
 		}
-		
+
 		return $config;
 	}
-	
+
 	/**
 	 * Get a text fragment, using i18n if necessary
 	 */
 	private static function GetText(){
 		// Cheeky way to store values in a singelton
 		static $text;
-		
+
 		// This will only be called once
 		if( empty( $text ) ){
 			$text = new in4mlText();
 		}
-		
+
 		return $text;
 	}
-	
+
 	public static function GetTextNamespace( $namespace = false ){
 		$text = self::GetText();
 		return $text->GetNamespace( $namespace );
 	}
-	
+
 	public static function ShowCaptchaImage(){
 		if( isset( $_GET[ 'f' ] ) && isset( $_GET[ 'c' ] ) && isset( $_GET[ 'e' ] ) ){
-			
+
 			$pattern = '~[^a-z0-9]*~Ui';
-			
+
 			$form_name = preg_replace( $pattern, '', $_GET[ 'f' ] );
 			$code = preg_replace( $pattern, '', $_GET[ 'c' ] );
 			$element = preg_replace( $pattern, '', $_GET[ 'e' ] );
@@ -505,7 +505,7 @@ class in4ml{
 		}
 
 	}
-	
+
 	// converts a UTF8-string into HTML entities
 	//  - $utf8:        the UTF8-string to convert
 	//  - $encodeTags:  booloean. TRUE will convert "<" to "&lt;"
@@ -563,13 +563,13 @@ class in4mlConfig{
 	public $path_resources = 'in4ml_resources/';
 	public $form_prefix;
 
-	// Override these settings in config file if necessary 
+	// Override these settings in config file if necessary
 	public $default_renderer = 'PHP';
 	public $default_renderer_template = false;
 	public $override_renderer_template = false;
-	
+
 	public $lang = 'en';
-	
+
 	/**
 	 * Catch invalid property set
 	 */
@@ -597,7 +597,7 @@ class in4mlText{
 	public function Get( $namespace, $item, $parameters = array() ){
 
 		$this->LoadNamespace( $namespace );
-		
+
 		if( strpos( $item, ':' ) !== false ){
 			list( $item, $sub_item ) = explode( ':', $item );
 		} else {
@@ -610,21 +610,21 @@ class in4mlText{
 			$item_text = self::Interpolate( $parameters, $item_text );
 		}
 
-		
+
 		return $item_text;
 	}
-	
+
 	private function LoadNamespace( $namespace ){
 		if( !isset( $this->text_namespaces[ $namespace ] ) ){
 			// Attempt to load text
 			$file_path = in4ml::GetPathi18n() . strtolower( $namespace ) . '/' . in4ml::Config( 'lang' ) . '.inc.php';
 
 			include( $file_path );
-			
+
 			$this->text_namespaces[ $namespace ] = $text;
 		}
 	}
-	
+
 	public function GetNamespace( $namespace = false ){
 		if( $namespace ){
 			$this->LoadNameSpace( $namespace );
@@ -633,7 +633,7 @@ class in4mlText{
 			return $this->text_namespaces;
 		}
 	}
-	
+
 	/**
 	 * Interpolate key/value pairs into a template string
 	 *

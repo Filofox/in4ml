@@ -13,44 +13,20 @@ require_once( in4ml::GetPathCore() . 'in4mlField.class.php' );
 class in4mlFieldCheckboxMultiple extends in4mlField{
 
 	public $type = 'CheckboxMultiple';
-	
+
 	protected $container_type = 'InlineLabel';
-	
+
 	public $text = '';
 	public $checked = "";
-	
+
 	private $options = array();
 	private $options_elements = array();
 	private $options_element = null;
-	
+
 	public function __construct(){
 		$element = in4ml::CreateElement( 'Block:' . $this->container_type );
 		$element->AddClass( strtolower( $this->type ) );
 		$this->options_element = $element;
-	}
-
-
-	/**
-	 * Return a list of key/value pairs to be interpolated into template
-	 *
-	 * @param		boolean		$render_value		Include submitted value when rendering
-	 *
-	 * @return		in4mlElementRenderValues object
-	 */
-	public function GetRenderValues( $render_value = false ){
-		$values = parent::GetRenderValues();
-		
-		// Checkbox text
-		$values->text = $this->text;
-		
-		$values->name = $this->name;
-
-		// Set value?		
-		if( ( $render_value && $this->value ) || ( !$render_value && isset( $this->default ) && $this->default ) ){
-			$values->SetAttribute( 'checked', 'checked' );
-		}
-		
-		return $values;
 	}
 
 	/**
@@ -61,7 +37,6 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 	 * @return		array		An array of in4mlElement objects
 	 */
 	public function Modify(){
-
 		$this->options_element->label = $this->label;
 
 		foreach( $this->container_class as $class ){
@@ -84,16 +59,29 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 			}
 		}
 	}
-	
+	/**
+	 * Set default values for checkboxes
+	 */
+	public function SetDefault( $value ){
+		parent::SetDefault($value);
+		if( is_array( $value ) ){
+			foreach( $this->options_element->elements as $element ){
+				if( in_array( $element->field_value, $value ) ){
+					$element->SetDefault( true );
+				}
+			}
+		}
+	}
+
 	/**
 	 * Get field value
 	 *
 	 * @return mixed
 	 */
 	public function GetValue(){
-		
+
 		$values = array();
-		
+
 		foreach( $this->options as $index => $option ){
 			if( is_array( $this->value ) && in_array( $option[ 'value' ], $this->value ) ){
 				$values[] = $this->options[ $index ][ 'value' ];
@@ -102,7 +90,7 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 
 		return $values;
 	}
-	
+
 	/**
 	 * Add an option
 	 *
@@ -130,11 +118,11 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 		}
 		$checkbox->field_value = $value;
 		$checkbox->form_id = $this->form_id;
-		
+
 		$this->options_elements[] = $checkbox;
 		$this->options_element->AddElement( $checkbox );
 	}
-	
+
 	/**
 	 * Return list of options
 	 *
