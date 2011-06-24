@@ -380,15 +380,18 @@ class in4ml{
 	 *
 	 * @return		in4mlForm					A form instance
 	 */
-	public static function GetFormFromPath( $form_type, $path, $prefix = false ){
+	public static function GetFormFromPath( $form_type, $path, $prefix = false, $file_name = false ){
 		if( $prefix === false ){
 			$prefix = self::Config( 'form_prefix' );
 		}
 		$form_name = $prefix . $form_type;
+		if( $file_name === false ){
+			$file_name = $form_name;
+		}
 
 		// Only include it once
 		if( !class_exists( $form_name ) ){
-			$file_path = $path .  $form_name . '.class.php';
+			$file_path = $path .  $file_name . '.class.php';
 			if( file_exists( $file_path ) ){
 				require_once( $file_path );
 			} else {
