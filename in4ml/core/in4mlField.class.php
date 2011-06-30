@@ -15,9 +15,9 @@ class In4mlField extends in4mlElement{
 	public $prefix;
 	public $suffix;
 	public $notes;
-	
+
 	public $category = 'Field';
-	
+
 	public $value;
 	public $default;
 
@@ -27,15 +27,17 @@ class In4mlField extends in4mlElement{
 	public $container_id;
 
 	protected $errors = array();
-	
+
 	public $confirm_field;
-	
+
+	public $disabled = false;
+
 	// Does this field require JavaScript?
 	public $require_javascript = false;
 
 	public function __construct(){
 		parent::__construct();
-		
+
 		$this->AddClass( $this->name );
 	}
 
@@ -45,7 +47,7 @@ class In4mlField extends in4mlElement{
 	public function AddValidator( in4mlValidator $validator ){
 		$this->validators[] = $validator;
 	}
-	
+
 	public function GetValidators(){
 		return $this->validators;
 	}
@@ -56,7 +58,7 @@ class In4mlField extends in4mlElement{
 	public function AddFilter( in4mlFilter $filter ){
 		$this->filters[] = $filter;
 	}
-	
+
 	/**
 	 * Get a list of all filters applied to this field
 	 *
@@ -65,7 +67,7 @@ class In4mlField extends in4mlElement{
 	public function GetFilters(){
 		return $this->filters;
 	}
-	
+
 	/**
 	 * Return a list of key/value pairs to be interpolated into template
 	 *
@@ -74,12 +76,15 @@ class In4mlField extends in4mlElement{
 	 * @return		in4mlElementRenderValues object
 	 */
 	public function GetRenderValues(){
-		
+
 		$values = parent::GetRenderValues();
 
 		$values->SetAttribute( 'name', $this->name );
 		if( $this->name ){
 			$values->SetAttribute( 'id', $this->form_id . '_' . $this->name );
+		}
+		if( $this->disabled ){
+			$values->SetAttribute( 'disabled', 'disabled' );
 		}
 
 		return $values;
@@ -94,7 +99,7 @@ class In4mlField extends in4mlElement{
 	public function GetNotes(){
 		return $this->notes;
 	}
-	
+
 	/**
 	 * Run all validators
 	 *
@@ -104,7 +109,7 @@ class In4mlField extends in4mlElement{
 		foreach( $this->validators as $validator ){
 			$validator->ValidateField( $this );
 		}
-		
+
 		return $this->IsValid();
 	}
 	/**
@@ -115,7 +120,7 @@ class In4mlField extends in4mlElement{
 			$filter->FilterField( $this );
 		}
 	}
-	
+
 	/**
 	 * Set field value
 	 */
@@ -129,7 +134,7 @@ class In4mlField extends in4mlElement{
 	public function SetDefault( $value ){
 		$this->default = $value;
 	}
-	
+
 	/**
 	 * Get field value
 	 *
@@ -138,7 +143,7 @@ class In4mlField extends in4mlElement{
 	public function GetValue(){
 		return $this->value;
 	}
-	
+
 	/**
 	 * Add an error for this field
 	 *
@@ -147,7 +152,7 @@ class In4mlField extends in4mlElement{
 	public function SetError( $error_message ){
 		$this->errors[] = $error_message;
 	}
-	
+
 	/**
 	 * Return a list of errors for this field
 	 *
@@ -156,7 +161,7 @@ class In4mlField extends in4mlElement{
 	public function GetErrors(){
 		return $this->errors;
 	}
-	
+
 	/**
 	 * Check whether this field passed all validators
 	 */
@@ -172,7 +177,7 @@ class In4mlField extends in4mlElement{
 	public function GetDefault(){
 		return $this->default;
 	}
-	
+
 	/**
 	 * Override this to return any 'extra' key/value pairs required when exporting form to JSON
 	 *
@@ -181,20 +186,20 @@ class In4mlField extends in4mlElement{
 	public function GetPropertiesForJSON(){
 		return array();
 	}
-	
+
 	/**
 	 * Create a deep clone of this field
 	 *
 	 * Usage: $new_field = clone $field;
 	 */
-	function __clone() { 
-		foreach($this as $key => $val) { 
-			if(is_object($val)||(is_array($val))){ 
-				$this->{$key} = unserialize(serialize($val)); 
-			} 
-		} 
+	function __clone() {
+		foreach($this as $key => $val) {
+			if(is_object($val)||(is_array($val))){
+				$this->{$key} = unserialize(serialize($val));
+			}
+		}
 	}
-	
+
 	public function DoValidatorModifications(){
 		$element = $this;
 		foreach( $this->validators as $validator ){
@@ -202,7 +207,7 @@ class In4mlField extends in4mlElement{
 		}
 		return $element;
 	}
-	
+
 }
 
 ?>
