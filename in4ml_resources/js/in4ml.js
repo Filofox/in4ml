@@ -289,9 +289,9 @@ in4mlForm = function( form_definition, ready_events ){
 
 	this.errors = [];
 	this.ajax_submit = form_definition.ajax_submit;
-	
+
 	this.file_fields = [];
-	
+
 	// Submit method is called twice when advanced file elements are present
 	// This prevents validation + uploads from being performed twice
 	this.force_submit = false;
@@ -409,21 +409,21 @@ in4mlForm.prototype.Reset = function(){
 in4mlForm.prototype.HandleSubmit = function(){
 	if( this.force_submit != true ){
 		this.ClearErrors();
-	
+
 		this.abort_submit = false;
-	
+
 		this.TriggerEvent( 'BeforeValidate' );
-	
+
 		// Form will submit itself automatically if validation is successful
 		var is_valid = this.Validate();
-	
+
 		if( !is_valid ){
 			this.ShowErrors();
 			this.TriggerEvent( 'AfterValidateFail' );
 		} else {
 			this.TriggerEvent( 'AfterValidateSuccess' );
 		}
-	
+
 		// Upload any files
 		if( is_valid == true ){
 			this.fields_to_upload = 0;
@@ -791,18 +791,20 @@ var in4mlField = Class.extend({
 		this.errors.push( error );
 	},
 	ClearErrors:function(){
+		this.errors = [];
 		$$.RemoveClass( this.container, 'invalid' );
 		if( this.error_element ){
 			$$.Empty( this.error_element );
 		}
 	},
 	ShowErrors: function(){
-		this.ClearErrors();
 		$$.AddClass( this.container, 'invalid' );
 
 		if( !this.error_element ){
 			this.error_element = $$.Create( 'div', { 'class':'error' } );
 			$$.Append( this.container, this.error_element );
+		} else {
+			$$.Empty( this.error_element );
 		}
 		var html = '<ul>';
 		for( var i = 0; i < this.errors.length; i++ ){
@@ -1750,7 +1752,7 @@ JSLibInterface_jQuery.prototype.ConvertToAdvancedFile = function( field, options
 		upload_code_element
 	);
 	this.options = options;
-	
+
 	if( field.form.auto_render == true ){
 		this._EnableAdvancedFile( field );
 	}
