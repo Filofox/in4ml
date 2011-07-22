@@ -87,10 +87,12 @@ var in4ml = {
 	 * @param		JSON		form_definition
 	 */
 	RegisterForm:function( form_definition ){
-		 var form = new in4mlForm( form_definition, this.ready_events[ form_definition.id ] );
-		form.Init();
-
-		this.forms[ form_definition.id ] = form;
+	  if( typeof( this.forms[ form_definition.id ] ) != 'undefined' ){
+		this.ready_events[ form_definition.id ] = [];
+	  }
+	  var form = new in4mlForm( form_definition, this.ready_events[ form_definition.id ] );
+	  this.forms[ form_definition.id ] = form;
+	  form.Init();
 	},
 	/**
 	 * Load a form via ajax
@@ -217,7 +219,10 @@ var in4ml = {
 			}
 			this.ready_events[ form_id ].push( callback );
 		} else {
-			callback( this.forms[ form_id ], 'Ready' );
+			this.forms[ form_id ].BindEvent(
+			  'Ready',
+			  callback
+			)
 		}
 	}
 }
@@ -280,6 +285,9 @@ in4mlText.prototype.Interpolate = function( parameters, template ){
 in4mlForm = function( form_definition, ready_events ){
 
 	this.id = form_definition.id;
+
+	this.ready = false;
+	this.fields_initialised = false;
 
 	this.events = {};
 	this.validator_functions = [];
@@ -346,7 +354,6 @@ in4mlForm = function( form_definition, ready_events ){
 			this.fields[ form_definition.fields[ i ].name ] = field;
 		}
 	}
-
 	// Bind submit event
 	$$.AddEvent
 	(
@@ -361,13 +368,31 @@ in4mlForm = function( form_definition, ready_events ){
 
 	if( ready_events ){
 		for( var i = 0; i < ready_events.length; i++ ){
-			this.BindEvent( 'ready', ready_events[ i ] );
+			this.BindEvent( 'Ready', ready_events[ i ] );
 		}
 	}
+
 }
 
 in4mlForm.prototype.Init=function(){
-	this.TriggerEvent( 'ready' );
+    this.fields_initialised = true;
+	this.FieldReady();
+}
+in4mlForm.prototype.FieldReady=function(){
+  if( this.fields_initialised == true ){
+	var fields_count = 0;
+	var fields_ready = 0;
+	for( var index in this.fields ){
+	  fields_count++;
+	  if( this.fields[ index ].ready ){
+		fields_ready++;
+	  }
+	}
+	if( fields_ready >= fields_count ){
+	  this.ready = true;
+	  this.TriggerEvent( 'Ready' );
+	}
+  }
 }
 /**
  * Return a field by its name
@@ -639,17 +664,21 @@ in4mlForm.prototype.ShowErrors = function(){
 	}
 }
 in4mlForm.prototype.BindEvent = function( event, func ){
+  if( typeof this.events[ event ] == 'undefined' ){
+	  this.events[ event ] = [];
+  }
+  this.events[ event ].push( func );
 
+  if( event == "Ready" && this.ready == true ){
+	this.TriggerEvent( "Ready" );
+  } else {
 	$$.AddEvent
 	(
 		this.element,
 		event,
 		func
 	);
-	if( typeof this.events[ event ] == 'undefined' ){
-		this.events[ event ] = [];
-	}
-	this.events[ event ].push( func );
+  }
 }
 in4mlForm.prototype.TriggerEvent = function( event ){
 	if( typeof this.events[ event ] != 'undefined' ){
@@ -705,6 +734,7 @@ in4mlForm.prototype.AddFileField = function( field ){
  * Field
  */
 var in4mlField = Class.extend({
+	ready: true,
 	init:function( form, definition ){
 		if( this.onBeforeInit ){
 			this.onBeforeInit( form, definition );
@@ -738,6 +768,9 @@ var in4mlField = Class.extend({
 		}
 		if( this.onAfterInit ){
 			this.onAfterInit( form, definition );
+		}
+		if( this.ready ){
+		  this.form.FieldReady( this );
 		}
 	},
 	FindElement:function(){
@@ -987,6 +1020,8 @@ var in4mlFieldRadio = in4mlField.extend({
  * Rich text (WYSIWYG) element
  */
 var in4mlFieldRichText = in4mlField.extend({
+	ready: false,
+	hidden: false,
 	init:function( form, definition ){
 		this._super( form, definition );
 
@@ -1596,10 +1631,20 @@ JSLibInterface_jQuery.prototype.SetValue = function( element, value ){
  * @param		function		callback
  */
 JSLibInterface_jQuery.prototype.Ready = function( callback ){
-	jQuery( document ).ready
+  // If document is ready to go, run it
+  if( document.readyState != 'loading'){
+	callback();
+  } else{
+	jQuery( document ).bind
 	(
-		callback
+	  'ready',
+	  function( event ){
+		jQuery(document).unbind( 'ready', event );
+		callback();
+	  }
 	);
+  }
+
 }
 /**
  * Convert a textarea element to a rich text field
@@ -1608,7 +1653,6 @@ JSLibInterface_jQuery.prototype.Ready = function( callback ){
  * @param		JSON			options
  */
 JSLibInterface_jQuery.prototype.ConvertToRichText = function( field, options ){
-
 	var defaults = {
 		// Location of TinyMCE script
 		script_url : in4ml.resources_path + 'js/lib/tiny_mce/tiny_mce.js',
@@ -1626,33 +1670,62 @@ JSLibInterface_jQuery.prototype.ConvertToRichText = function( field, options ){
 		theme_advanced_toolbar_align : "left",
 		theme_advanced_statusbar_location : "bottom",
 		theme_advanced_resizing : true,
-		relative_urls: false
+		relative_urls: false,
+		setup : $$.Bind
+		(
+			function(ed)
+			{
+			  ed.onInit.add(
+				$$.Bind
+				(
+				  function(ed, cm)
+				  {
+					if( !field.ready ){
+					  field.ready = true;
+					  field.form.FieldReady();
+					}
+				  },
+				  this
+				)
+			  )
+			},
+			this
+		)
 	};
 
 	field.settings = $.extend(true, defaults, options)
 
 	if( field.form.auto_render == true ){
 		this._EnableRichText( field );
+	} else {
+		field.ready = true;
+		field.form.FieldReady();
 	}
 }
 /**
  * TinyMCE breaks if it's inside an element that's hidden so call this before hiding
  */
 JSLibInterface_jQuery.prototype.RichTextOnHide = function( field ){
-	tinyMCE.triggerSave();
-	tinyMCE.execCommand("mceRemoveControl", false, $( field.element ).attr( 'id' ) );
+	if( typeof tinyMCE != 'undefined'){
+	  tinyMCE.triggerSave();
+	  tinyMCE.execCommand("mceRemoveControl", false, $( field.element ).attr( 'id' ) );
+	}
 }
 /**
  * Restores a tinyMCE field that's been hidden
  */
 JSLibInterface_jQuery.prototype.RichTextOnShow = function( field ){
+  if( $( field.element ).tinymce != 'undefined'){
 	this._EnableRichText( field );
+  }
 }
 /**
  * Initiates a rich text editor instance. Should not be called directly.
  */
 JSLibInterface_jQuery.prototype._EnableRichText = function( field ){
-	$( field.element ).tinymce( field.settings );
+  if( typeof tinyMCE != 'undefined'){
+	  $( field.element ).tinymce( field.settings );
+  }
 }
 /**
  * Convert a set of date selectors to a date picker
@@ -1770,12 +1843,13 @@ JSLibInterface_jQuery.prototype.AdvancedFileOnShow = function( field ){
 JSLibInterface_jQuery.prototype.AdvancedFileOnHide = function( field ){
 	this.FileClearQueue( field );
 	var new_element = field.element[0].cloneNode(true);
+	var old_element = field.element;
 	field.element = $( new_element );
-	jQuery( field.element ).replaceWith( new_element );
+	jQuery( old_element ).replaceWith( new_element );
+	jQuery( new_element ).parent().find( 'object' ).remove();
 }
 JSLibInterface_jQuery.prototype._EnableAdvancedFile = function( field ){
-
-	 $(field.element).uploadify({
+	 jQuery(field.element).uploadify({
 		'uploader'  : in4ml.resources_path + 'js/lib/uploadify/uploadify.swf',
 		'script'    : in4ml.resources_path + 'php/upload.php',
 		'cancelImg' : in4ml.resources_path + 'js/lib/uploadify/cancel.png',
