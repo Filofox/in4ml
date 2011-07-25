@@ -89,10 +89,11 @@ var in4ml = {
 	RegisterForm:function( form_definition ){
 	  if( typeof( this.forms[ form_definition.id ] ) != 'undefined' ){
 		this.ready_events[ form_definition.id ] = [];
+	  } else {
+		var form = new in4mlForm( form_definition, this.ready_events[ form_definition.id ] );
+		this.forms[ form_definition.id ] = form;
+		form.Init();
 	  }
-	  var form = new in4mlForm( form_definition, this.ready_events[ form_definition.id ] );
-	  this.forms[ form_definition.id ] = form;
-	  form.Init();
 	},
 	/**
 	 * Load a form via ajax
