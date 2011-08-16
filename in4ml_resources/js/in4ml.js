@@ -391,6 +391,10 @@ in4mlForm.prototype.FieldReady=function(){
 	}
 	if( fields_ready >= fields_count ){
 	  this.ready = true;
+	  // Allows user to specify different action when submitting over Ajax
+	  if( typeof this.ajax_submit == 'string' ){
+		this.element.action = this.ajax_submit;
+	  }
 	  this.TriggerEvent( 'Ready' );
 	}
   }
