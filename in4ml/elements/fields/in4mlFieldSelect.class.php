@@ -13,16 +13,16 @@ require_once( in4ml::GetPathCore() . 'in4mlField.class.php' );
 class in4mlFieldSelect extends in4mlField{
 
 	public $type = 'Select';
-	
+
 	protected $container_type = 'Container';
-	
+
 	protected $option_template = '<option value="[[value]]"[[selected]]>[[text]]</option>';
 
 	private $options = array();
-	
+
 	public function __construct(){
 		// Automatically validates options
-		$this->AddValidator( in4ml::CreateValidator( 'Options' ) );		
+		$this->AddValidator( in4ml::CreateValidator( 'Options' ) );
 	}
 
 	/**
@@ -34,15 +34,15 @@ class in4mlFieldSelect extends in4mlField{
 	 */
 	public function GetRenderValues( $render_value = false ){
 		$values = parent::GetRenderValues();
-		
+
 		// Use default value?
 		if( !$render_value && isset( $this->default ) ){
 			$this->value = $this->default;
 		}
-		
+
 		// Build options HTML
 		$values->options = $this->BuildOptions( $this->options );
-		
+
 		return $values;
 	}
 
@@ -59,7 +59,16 @@ class in4mlFieldSelect extends in4mlField{
 			'text' => $text
 		);
 	}
-	
+
+	/**
+	 * Set the options list in one go
+	 *
+	 * @param		array		$options		Array of arrays (array('value'=>1, 'text'=>'foo'))
+	 */
+	public function SetOptions( $options ){
+		$this->options = $options;
+	}
+
 	/**
 	 * Add an option group (<optgroup>)
 	 *
@@ -73,8 +82,8 @@ class in4mlFieldSelect extends in4mlField{
 			'options' => $options
 		);
 	}
-	
-	
+
+
 	/**
 	 * Return list of options
 	 *
@@ -83,7 +92,7 @@ class in4mlFieldSelect extends in4mlField{
 	public function GetOptions(){
 		return $this->options;
 	}
-	
+
 	/**
 	 * Take a list of options and render them as HTML
 	 *
@@ -94,7 +103,7 @@ class in4mlFieldSelect extends in4mlField{
 	protected function BuildOptions( $options ){
 		$output = '';
 		foreach( $options as $option ){
-			
+
 			// Check to see if it's a group
 			if( isset( $option[ 'label' ] ) ){
 				$output .= '<optgroup label="' . $option[ 'label' ] . '">' . $this->BuildOptions( $option[ 'options' ] ) . '</optgroup>';
@@ -117,7 +126,7 @@ class in4mlFieldSelect extends in4mlField{
 				);
 			}
 		}
-		
+
 		return $output;
 	}
 
