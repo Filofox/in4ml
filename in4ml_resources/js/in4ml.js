@@ -1060,6 +1060,12 @@ var in4mlFieldSelect = in4mlField.extend({
 	  var option = $$.Create( 'option', { value: value, text:text } );
 	  $$.Append( this.element, option );
 	},
+	SetOptions:function( options ){
+	  this.ClearOptions();
+	  for( var i = 0; i < options.length; i++ ){
+		this.AddOption( options[ i ].value, options[ i ].text );
+	  }
+	},
 	ClearOptions:function(){
 	  $$.Empty( this.element );
 	}
