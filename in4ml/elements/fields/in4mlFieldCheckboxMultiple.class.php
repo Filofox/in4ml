@@ -67,6 +67,9 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 		parent::SetDefault($value);
 		if( is_array( $value ) ){
 			foreach( $this->options_element->elements as $element ){
+				if( !is_subclass_of( $element, 'in4mlField' ) ){
+					$element = $element->elements[ 0 ];
+				}
 				if( in_array( $element->field_value, $value ) ){
 					$element->SetDefault( true );
 				}
