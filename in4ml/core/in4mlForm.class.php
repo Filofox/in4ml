@@ -201,19 +201,10 @@ class In4mlForm{
 			}
 		}
 
-		if( function_exists( 'finfo_open' ) ){
-			$finfo = false;
-		} else {
-			$finfo = null;
-		}
 		foreach( $this->fields as $field ){
 			if( $field->type == 'File' ){
 				// Advanced file
 				if( $field->advanced ){
-
-					if( $finfo === false ){
-						$finfo = finfo_open(FILEINFO_MIME_TYPE);
-					}
 
 					// Rebuild $_FILES array entry
 
@@ -231,7 +222,7 @@ class In4mlForm{
 						// Find the file
 						$temp_dir = sys_get_temp_dir();
 
-						if( substr( $temp_dir, -1 ) != '/' ){
+						if( substr( $temp_dir, -1 ) != '/' && substr( $temp_dir, -1 ) != "\\" ){
 							$temp_dir .= '/';
 						}
 
@@ -247,11 +238,7 @@ class In4mlForm{
 						$this->cleanup_files[] = $target_dir . $target_file_name;
 						$d->close();
 
-						if( $finfo ){
-							$mime_type = finfo_file( $finfo, $target_dir . $target_file_name );
-						} else {
-							$mime_type = mime_content_type( $target_dir . $target_file_name );
-						}
+						$mime_type = mime_content_type( $target_dir . $target_file_name );
 
 						$_FILES[ $field->name ][] = array
 						(
