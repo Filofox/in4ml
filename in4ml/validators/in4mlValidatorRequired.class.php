@@ -11,18 +11,18 @@ require_once( in4ml::GetPathCore() . 'in4mlValidator.class.php' );
  * Checks that a value has been supplied
  */
 class in4mlValidatorRequired extends in4mlValidator{
-	
+
 	protected $class = 'required';
-	
+
 	/**
 	 * Perform validation
-	 * 
+	 *
 	 * @param		in4mlField		$field		The field to be validated
 	 *
 	 * @return		boolean						False if the field is not valid
 	 */
 	public function ValidateField( in4mlField $field ){
-		
+
 		$output = true;
 
 		switch( $field->type ){
@@ -38,15 +38,15 @@ class in4mlValidatorRequired extends in4mlValidator{
 			}
 			default:{
 				$value = $field->GetValue();
-		
-				if( $value === null || $value === '' ){
+
+				if( $value === null || $value === '' || $value === false ){
 					$field->SetError( $this->GetErrorText( 'required' ) );
 					$output = false;
 				}
 				break;
 			}
 		}
-		
+
 		return $output;
 	}
 }
