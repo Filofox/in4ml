@@ -238,15 +238,7 @@ class In4mlForm{
 						$this->cleanup_files[] = $target_dir . $target_file_name;
 						$d->close();
 
-						// Because the fallback Windows mime type detection function uses the file name...
-						if( !function_exists('finfo_file') && !function_exists('mime_content_type') && strpos( PHP_OS, 'WIN' ) === 0 ){
-							// Strip the temporary guff from the file name
-							$temp_target_file_name = substr($filename, 0, strpos($filename, $name)) . $name;
-						} else {
-							$temp_target_file_name = $target_file_name;
-						}
-
-						$mime_type = mime_content_type( $target_dir . $temp_target_file_name );
+						$mime_type = in4ml::GetMimeType( $target_dir . $target_file_name, $file_name );
 
 						$_FILES[ $field->name ][] = array
 						(

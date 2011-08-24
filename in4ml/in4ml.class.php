@@ -559,6 +559,91 @@ class in4ml{
 		}
 		return $result;
 	}
+
+	public static function GetMimeType( $file_path, $file_name ){
+		// If Fileinfo extension is installed
+		if (function_exists('finfo_file'))
+		{
+			$finfo = finfo_open(FILEINFO_MIME);
+			$mimetype = finfo_file($finfo, $file_path);
+			finfo_close($finfo);
+
+			return $mimetype;
+		}
+		// Otherwise use this method
+		else
+		{
+			// Windows
+			if( strpos( PHP_OS, 'WIN' ) === 0 ){
+				$mime_types = array(
+					'txt' => 'text/plain',
+					'htm' => 'text/html',
+					'html' => 'text/html',
+					'php' => 'text/html',
+					'css' => 'text/css',
+					'js' => 'application/javascript',
+					'json' => 'application/json',
+					'xml' => 'application/xml',
+					'swf' => 'application/x-shockwave-flash',
+					'flv' => 'video/x-flv',
+
+					// images
+					'png' => 'image/png',
+					'jpe' => 'image/jpeg',
+					'jpeg' => 'image/jpeg',
+					'jpg' => 'image/jpeg',
+					'gif' => 'image/gif',
+					'bmp' => 'image/bmp',
+					'ico' => 'image/vnd.microsoft.icon',
+					'tiff' => 'image/tiff',
+					'tif' => 'image/tiff',
+					'svg' => 'image/svg+xml',
+					'svgz' => 'image/svg+xml',
+
+					// archives
+					'zip' => 'application/zip',
+					'rar' => 'application/x-rar-compressed',
+					'exe' => 'application/x-msdownload',
+					'msi' => 'application/x-msdownload',
+					'cab' => 'application/vnd.ms-cab-compressed',
+
+					// audio/video
+					'mp3' => 'audio/mpeg',
+					'qt' => 'video/quicktime',
+					'mov' => 'video/quicktime',
+
+					// adobe
+					'pdf' => 'application/pdf',
+					'psd' => 'image/vnd.adobe.photoshop',
+					'ai' => 'application/postscript',
+					'eps' => 'application/postscript',
+					'ps' => 'application/postscript',
+
+					// ms office
+					'doc' => 'application/msword',
+					'rtf' => 'application/rtf',
+					'xls' => 'application/vnd.ms-excel',
+					'ppt' => 'application/vnd.ms-powerpoint',
+
+					// open office
+					'odt' => 'application/vnd.oasis.opendocument.text',
+					'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
+				);
+
+				$parts = explode( '.', $file_name );
+				$ext = array_pop( $parts );
+				if (array_key_exists($ext, $mime_types)) {
+					return $mime_types[$ext];
+				} else {
+					return 'application/octet-stream';
+				}
+			} else {
+				$parts = explode(';',exec('file -bi '.escapeshellarg($file_path)));
+				$mime = array_shift( $parts );
+				return trim($mime);
+			}
+		}
+	}
 }
 
 /**
@@ -679,120 +764,6 @@ class in4mlText{
 	public function __get( $property ){
 		throw new Exception( 'Configuration property ' . $property . ' not valid'  );
 	}
-}
-
-// Setup replacement functions for the deprecated mime_content_type()
-// Based on http://www.lowter.com/blogs/2008/4/7/php-determining-mime-type
-if (!function_exists('mime_content_type'))
-{
-    // If Fileinfo extension is installed
-    if (function_exists('finfo_file'))
-    {
-        /**
-         * Determine a file's MIME type
-         *
-         * @param string $file File path
-         * @return string
-         */
-        function mime_content_type($file)
-        {
-            $finfo = finfo_open(FILEINFO_MIME);
-            $mimetype = finfo_file($finfo, $file);
-            finfo_close($finfo);
-
-            return $mimetype;
-        }
-    }
-    // Otherwise use this method
-    else
-    {
-        /**
-         * Determine a file's MIME type
-         *
-         * @param string $file File path
-         * @return string
-         */
-        function mime_content_type($filename)
-        {
-			// Windows
-			if( strpos( PHP_OS, 'WIN' ) === 0 ){
-				$mime_types = array(
-					'txt' => 'text/plain',
-					'htm' => 'text/html',
-					'html' => 'text/html',
-					'php' => 'text/html',
-					'css' => 'text/css',
-					'js' => 'application/javascript',
-					'json' => 'application/json',
-					'xml' => 'application/xml',
-					'swf' => 'application/x-shockwave-flash',
-					'flv' => 'video/x-flv',
-
-					// images
-					'png' => 'image/png',
-					'jpe' => 'image/jpeg',
-					'jpeg' => 'image/jpeg',
-					'jpg' => 'image/jpeg',
-					'gif' => 'image/gif',
-					'bmp' => 'image/bmp',
-					'ico' => 'image/vnd.microsoft.icon',
-					'tiff' => 'image/tiff',
-					'tif' => 'image/tiff',
-					'svg' => 'image/svg+xml',
-					'svgz' => 'image/svg+xml',
-
-					// archives
-					'zip' => 'application/zip',
-					'rar' => 'application/x-rar-compressed',
-					'exe' => 'application/x-msdownload',
-					'msi' => 'application/x-msdownload',
-					'cab' => 'application/vnd.ms-cab-compressed',
-
-					// audio/video
-					'mp3' => 'audio/mpeg',
-					'qt' => 'video/quicktime',
-					'mov' => 'video/quicktime',
-
-					// adobe
-					'pdf' => 'application/pdf',
-					'psd' => 'image/vnd.adobe.photoshop',
-					'ai' => 'application/postscript',
-					'eps' => 'application/postscript',
-					'ps' => 'application/postscript',
-
-					// ms office
-					'doc' => 'application/msword',
-					'rtf' => 'application/rtf',
-					'xls' => 'application/vnd.ms-excel',
-					'ppt' => 'application/vnd.ms-powerpoint',
-
-					// open office
-					'odt' => 'application/vnd.oasis.opendocument.text',
-					'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
-				);
-
-				$parts = explode('.',$filename);
-				$ext = array_pop($parts);
-				$ext = strtolower( $ext );
-				if (array_key_exists($ext, $mime_types)) {
-					return $mime_types[$ext];
-				}
-				elseif (function_exists('finfo_open')) {
-					$finfo = finfo_open(FILEINFO_MIME);
-					$mimetype = finfo_file($finfo, $filename);
-					finfo_close($finfo);
-					return $mimetype;
-				}
-				else {
-					return 'application/octet-stream';
-				}
-			} else {
-				$parts = explode(';',exec('file -bi '.escapeshellarg($filename)));
-				$mime = array_shift( $parts );
-	            return trim($mime);
-			}
-        }
-    }
 }
 
 ?>
