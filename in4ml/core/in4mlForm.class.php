@@ -203,8 +203,8 @@ class In4mlForm{
 
 		foreach( $this->fields as $field ){
 			if( $field->type == 'File' ){
-				// Advanced file
-				if( $field->advanced ){
+				// Advanced file (check that codes field is preent -- if not, it was not submitted via JS)
+				if( $field->advanced && isset(  $values[ '_' . $field->name . '_uploadcodes' ] ) ){
 
 					// Rebuild $_FILES array entry
 
@@ -256,25 +256,29 @@ class In4mlForm{
 					if( isset( $_FILES[ $field->name ][ 0 ] ) ){
 						// It's an array
 						foreach( $_FILES[ $field->name ] as $file ){
-							$field->AddFile
-							(
-								$file[ 'name' ],
-								$file[ 'tmp_name' ],
-								$file[ 'type' ],
-								$file[ 'size' ],
-								$file[ 'error' ]
-							);
+							if( $file[ 'error' ] != 4 ){
+								$field->AddFile
+								(
+									$file[ 'name' ],
+									$file[ 'tmp_name' ],
+									$file[ 'type' ],
+									$file[ 'size' ],
+									$file[ 'error' ]
+								);
+							}
 						}
 					} else {
-						// Just one file
-						$field->AddFile
-						(
-							$_FILES[ $field->name ][ 'name' ],
-							$_FILES[ $field->name ][ 'tmp_name' ],
-							$_FILES[ $field->name ][ 'type' ],
-							$_FILES[ $field->name ][ 'size' ],
-							$_FILES[ $field->name ][ 'error' ]
-						);
+						if( $_FILES[ $field->name ][ 'error' ] != 4 ){
+							// Just one file
+							$field->AddFile
+							(
+								$_FILES[ $field->name ][ 'name' ],
+								$_FILES[ $field->name ][ 'tmp_name' ],
+								$_FILES[ $field->name ][ 'type' ],
+								$_FILES[ $field->name ][ 'size' ],
+								$_FILES[ $field->name ][ 'error' ]
+							);
+						}
 					}
 				}
 			} elseif( isset( $values[ $field->name ] ) ){
