@@ -11,7 +11,7 @@ if( !class_exists( 'LibDate' ) ){
 		public $hours = '00';
 		public $minutes = '00';
 		public $seconds = '00';
-	
+
 		/**
 		 * Constructor
 		 *
@@ -22,7 +22,7 @@ if( !class_exists( 'LibDate' ) ){
 				$this->SetFromTimestamp( date( 'U' ) );
 			}
 		}
-		
+
 		/**
 		 * Check to see if a value has been set
 		 *
@@ -31,7 +31,7 @@ if( !class_exists( 'LibDate' ) ){
 		public function HasValue(){
 			return (( $this->year )?true:false);
 		}
-	
+
 		/**
 		 * Set date from MySQL DATETIME string
 		 *
@@ -47,7 +47,7 @@ if( !class_exists( 'LibDate' ) ){
 					$date = $mysql_string;
 				}
 				list( $this->year, $this->month, $this->day ) = explode( '-', $date );
-	
+
 				if( $this->year == '0000'){
 					$this->year = null;
 					$this->month = null;
@@ -55,7 +55,7 @@ if( !class_exists( 'LibDate' ) ){
 				}
 			}
 		}
-	
+
 		/**
 		 * Set the date using the output from a form date element
 		 *
@@ -68,7 +68,7 @@ if( !class_exists( 'LibDate' ) ){
 				$this->year = $form_value[ 'year' ];
 			}
 		}
-	
+
 		/**
 		 * Set the date from a UNIX timestamp
 		 *
@@ -84,7 +84,7 @@ if( !class_exists( 'LibDate' ) ){
 				$this->seconds = date( 's', $timestamp );
 			}
 		}
-		
+
 		/**
 		 * Return the date formatted (as per PHP's date() command)
 		 *
@@ -98,7 +98,7 @@ if( !class_exists( 'LibDate' ) ){
 			}
 			return $date;
 		}
-	
+
 		/**
 		 * Return date as a UNIX timestamp
 		 *
@@ -111,7 +111,7 @@ if( !class_exists( 'LibDate' ) ){
 			}
 			return $timestamp;
 		}
-	
+
 		/**
 		 * Return date as a MySQL date 'YYYY-MM-DD hh:mm:ss'
 		 *
@@ -124,7 +124,7 @@ if( !class_exists( 'LibDate' ) ){
 				return null;
 			}
 		}
-		
+
 		/**
 		 * Change the date by a relative amount (i.e. number of days/weeks/months -- use negative values to go backwards)
 		 *
@@ -177,16 +177,16 @@ if( !class_exists( 'LibDate' ) ){
 		 * User + or - to specify relative dates, otherwise absolute date assumed
 		 */
 		public function SetRelativeDateFromString( $date_string ){
-			
+
 			// First, set date to 'now'
 			$this->SetFromTimestamp( date( 'U' ) );
 			$this->hours = $this->minutes = $this->seconds = 0;
-			
+
 			$date = array();
-	
+
 			// Split and match for + and - (relative dates)
 			preg_match( '/(\+|-|)(\d*)\/(\+|-|)(\d*)\/(\+|-|)(\d*)/', $date_string, $matches );
-	
+
 			$current_date = date_create();
 
 			// Convert to numbers
@@ -195,7 +195,7 @@ if( !class_exists( 'LibDate' ) ){
 			$year = (int) $matches[6];
 
 			$relative_year = $relative_month = $relative_day = false;
-	
+
 			// Year
 			if( $year > 0 ){
 				switch( $matches[ 5 ] ){
@@ -210,7 +210,7 @@ if( !class_exists( 'LibDate' ) ){
 					}
 				}
 			}
-	
+
 			// Month
 			if( $month > 0 ){
 				switch( $matches[ 3 ] ){
@@ -224,7 +224,7 @@ if( !class_exists( 'LibDate' ) ){
 						break;
 					}
 				}
-			}	
+			}
 			if( $day > 0 ){
 				// Day
 				switch( $matches[ 1 ] ){
@@ -239,11 +239,11 @@ if( !class_exists( 'LibDate' ) ){
 					}
 				}
 			}
-			
+
 			// Do any relative stuff
-			$this->SetRelativeDate( $relative_day, $relative_month, $relative_year );	
+			$this->SetRelativeDate( $relative_day, $relative_month, $relative_year );
 		}
-		
+
 		/**
 		 * Return the date of the first day of the week which contains current date
 		 *
@@ -254,10 +254,10 @@ if( !class_exists( 'LibDate' ) ){
 		public function GetWeekStartDate( $start_day = 1 ){
 			$date_timestamp = $this->GetAsTimestamp();
 			$week_start = date('U', mktime(1, 0, 0, date('m', $date_timestamp), date('d', $date_timestamp)-(date('w', $date_timestamp)-$start_day), date('Y', $date_timestamp)) - 3600 );
-			
+
 			return $week_start;
 		}
-		
+
 		/**
 		 * Return difference (in days) between two dates
 		 *
@@ -268,6 +268,15 @@ if( !class_exists( 'LibDate' ) ){
 		public function Diff( LibDate $date ){
 			$result = floor( ( $date->Format( 'U' ) - $this->Format( 'U' ) ) / (60 * 60 * 24) );
 			return $result;
+		}
+
+		/**
+		 * Set value from a DateTime object
+		 *
+		 * @param		DateTime		$date_time
+		 */
+		public function SetFromDateTime( DateTime $date_time ){
+			$this->SetFromTimestamp( $date_time->format( 'U' ) );
 		}
 	} // END class LibDate
 }
