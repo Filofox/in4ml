@@ -89,11 +89,10 @@ var in4ml = {
 	RegisterForm:function( form_definition ){
 	  if( typeof( this.forms[ form_definition.id ] ) != 'undefined' ){
 		this.ready_events[ form_definition.id ] = [];
-	  } else {
-		var form = new in4mlForm( form_definition, this.ready_events[ form_definition.id ] );
-		this.forms[ form_definition.id ] = form;
-		form.Init();
 	  }
+	  var form = new in4mlForm( form_definition, this.ready_events[ form_definition.id ] );
+	  this.forms[ form_definition.id ] = form;
+	  form.Init();
 	},
 	/**
 	 * Load a form via ajax
@@ -130,8 +129,14 @@ var in4ml = {
 	},
 
 	LoadFormSuccess:function( status, response, callback ){
+
+		var container_id = 'in4ml_container_' + response.form_id;
+		if( $( 'div#' + container_id ).length > 0 ){
+		  $( 'div#' + container_id ).remove();
+		}
+
 		// Create a temporary DIV to attach it to
-		var div = $$.Create( 'div', {css:{'display':'none'}} );
+		var div = $$.Create( 'div', {css:{'display':'none'}, id:container_id} );
 		$$.Append( document.body, div );
 		$( div ).html( response.form_html );
 
