@@ -294,6 +294,7 @@ in4mlForm = function( form_definition, ready_events ){
 
 	this.ready = false;
 	this.fields_initialised = false;
+	this.ready_fired = false;
 
 	this.events = {};
 	this.validator_functions = [];
@@ -360,6 +361,7 @@ in4mlForm = function( form_definition, ready_events ){
 			this.fields[ form_definition.fields[ i ].name ] = field;
 		}
 	}
+
 	// Bind submit event
 	$$.AddEvent
 	(
@@ -377,7 +379,8 @@ in4mlForm = function( form_definition, ready_events ){
 			this.BindEvent( 'Ready', ready_events[ i ] );
 		}
 	}
-
+	// Remove the init script to prevent it being run again if form is moved
+	$$.Remove( $$.Find( 'script', this.element ) );
 }
 
 in4mlForm.prototype.Init=function(){
@@ -400,7 +403,10 @@ in4mlForm.prototype.FieldReady=function(){
 	  if( typeof this.ajax_submit == 'string' ){
 		this.element.action = this.ajax_submit;
 	  }
-	  this.TriggerEvent( 'Ready' );
+	  if( !this.ready_fired ){
+		this.ready_fired = true;
+		this.TriggerEvent( 'Ready' );
+	  }
 	}
   }
 }
@@ -680,7 +686,15 @@ in4mlForm.prototype.BindEvent = function( event, func ){
   this.events[ event ].push( func );
 
   if( event == "Ready" && this.ready == true ){
-	this.TriggerEvent( "Ready" );
+	// Has ready event already been fired?
+	if( !this.ready_fired ){
+	  // No, fire all events
+	  this.ready_fired = true;
+	  this.TriggerEvent( "Ready" );
+	} else {
+	  // Yes, just fire this event
+	  func(this);
+	}
   } else {
 	$$.AddEvent
 	(
