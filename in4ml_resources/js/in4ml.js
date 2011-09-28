@@ -441,6 +441,8 @@ in4mlForm.prototype.Reset = function(){
 		var field = this.fields[ index ];
 		if( typeof field.Reset == 'function' ){
 			field.Reset();
+		} else {
+		  $( field.element ).val( '' );
 		}
 	}
 }
