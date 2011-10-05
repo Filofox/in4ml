@@ -285,7 +285,7 @@ class In4mlForm{
 				$value = $values[ $field->name ];
 				// Strip slashes if necessary
 				if( get_magic_quotes_gpc() == true ){
-					$value = stripslashes( $value );
+					$value = $this->stripslashes( $value );
 				}
 				$field->SetValue( $value );
 			} else {
@@ -293,6 +293,18 @@ class In4mlForm{
 			}
 		}
 		$this->is_populated = true;
+	}
+
+	/**
+	 * Performs stripslahes recursively
+	 *
+	 * @param		mixed		$value
+	 *
+	 * @return		mixed
+	 */
+	private function stripslashes($value)
+	{
+		return ( is_array($value) )?array_map( array( $this, 'stripslashes' ), $value):stripslashes($value);
 	}
 
 	/**
