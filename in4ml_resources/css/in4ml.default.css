@@ -85,6 +85,11 @@ form.in4ml div.fieldset
 	border-top: 1px solid #ccc;
 	padding: 10px 0px;
 	margin: 30px 0px;
+	clear: both;
+}
+form.in4ml div.fieldset.no-label{
+	margin-top: 0px;
+	border: 0;
 }
 form.in4ml fieldset.set legend{
 	padding: 0px;
