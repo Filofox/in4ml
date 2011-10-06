@@ -13,6 +13,22 @@ form.in4ml label{
 form.in4ml div.notes{
 	margin-left: 200px;
 	clear: both;
+	display: none;
+}
+form.in4ml div.container.has-notes div.notes{
+	display: block;
+}
+form.in4ml span.prefix{
+	display: none;
+}
+form.in4ml div.container.has-prefix span.prefix{
+	display: block;
+}
+form.in4ml span.suffix{
+	display: none;
+}
+form.in4ml div.container.has-suffix span.suffix{
+	display: block;
 }
 form.in4ml div.container,
 form.in4ml input.submit
