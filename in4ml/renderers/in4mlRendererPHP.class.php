@@ -22,7 +22,7 @@ class in4mlRendererPHP extends in4mlRenderer{
 			throw new Exception( "Form template '$template_path' not found" );
 		}
 		include( $template_path );
-		
+
 		if( $override_template_path = in4ml::Config( 'override_renderer_template' ) ){
 			$override_template_path .= '.template.php';
 			if( !file_exists( $override_template_path ) ){
@@ -35,12 +35,12 @@ class in4mlRendererPHP extends in4mlRenderer{
 				}
 			}
 		}
-		
+
 		$html = $this->RenderElement( $form->form_element, $form->is_populated );
 
 		return $html;
 	}
-	
+
 	/**
 	 * Render a form element
 	 *
@@ -53,7 +53,7 @@ class in4mlRendererPHP extends in4mlRenderer{
 		// These are the values that will be parsed into the template
 		$keys = array();
 		$values = array();
-		
+
 		// Elements
 		$elements = array();
 		if( isset( $element->elements ) ){
@@ -62,7 +62,7 @@ class in4mlRendererPHP extends in4mlRenderer{
 				$elements[] = $this->RenderElement( $child_element, $render_values );
 
 				// Errors
-				
+
 				if( $child_element->category == 'Field' && $errors = $child_element->GetErrors() ){
 					$error_container = in4ml::CreateElement( 'Block:Error' );
 					$element->AddClass( 'invalid' );
@@ -95,7 +95,16 @@ class in4mlRendererPHP extends in4mlRenderer{
 			$keys[] = '[[error]]';
 			$values[] = $error_html;
 		}
-		
+
+		if( isset( $element->notes ) ){
+			$element->AddClass( 'has-notes' );
+		}
+		if( isset( $element->prefix ) ){
+			$element->AddClass( 'has-prefix' );
+		}
+		if( isset( $element->suffix ) ){
+			$element->AddClass( 'has-suffix' );
+		}
 		$element_render_values = $element->GetRenderValues( $render_values );
 
 		// Attributes
@@ -115,7 +124,7 @@ class in4mlRendererPHP extends in4mlRenderer{
 			}
 
 			$keys[] = '[[' . $key . ']]';
-			
+
 			switch( $key ){
 				default:{
 					$values[] = $value;
