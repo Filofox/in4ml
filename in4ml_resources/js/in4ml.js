@@ -607,7 +607,7 @@ in4mlForm.prototype.HandleAjaxSubmitSuccess = function( status, response ){
 			}
 			field.ShowErrors();
 		}
-		this.TriggerEvent( 'SubmitError' );
+		this.TriggerEvent( 'SubmitError', response );
 	}
 }
 /**
