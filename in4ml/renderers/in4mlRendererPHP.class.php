@@ -96,6 +96,9 @@ class in4mlRendererPHP extends in4mlRenderer{
 			$values[] = $error_html;
 		}
 
+		if( isset( $element->label ) ){
+			$element->AddClass( 'has-label' );
+		}
 		if( isset( $element->notes ) ){
 			$element->AddClass( 'has-notes' );
 		}
