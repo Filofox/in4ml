@@ -40,6 +40,13 @@ form.in4ml input.submit
 form.in4ml div.container.checkboxmultiple div.inlinelabel label{
 	display: none;
 }
+form.in4ml div.container label{
+	display: none;
+}
+form.in4ml div.container.has-label label{
+	display: block;
+}
+
 form.in4ml div.container.radio label.element,
 form.in4ml div.container.checkbox label.element,
 form.in4ml div.container.checkboxmultiple.inlinelabel label.element

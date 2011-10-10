@@ -628,8 +628,10 @@ in4mlForm.prototype.HandleAjaxSubmitError = function( request_object, error_code
 in4mlForm.prototype.Validate = function(){
 
 	var is_valid = true;
+	this.field_errors = {};
 	for( var index in this.fields ){
 		if( !this.fields[ index ].Validate() ){
+			this.field_errors[ index ] = this.fields[ index ].errors;
 			is_valid = false;
 		}
 	}
