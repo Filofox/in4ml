@@ -560,6 +560,9 @@ class in4ml{
 		return $result;
 	}
 
+	/**
+	 * Attempt to find mime type for a given file
+	 */
 	public static function GetMimeType( $file_path, $file_name ){
 		// If Fileinfo extension is installed
 		if (function_exists('finfo_file'))
