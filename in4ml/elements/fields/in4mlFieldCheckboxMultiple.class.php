@@ -72,6 +72,8 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 				}
 				if( in_array( $element->field_value, $value ) ){
 					$element->SetDefault( true );
+				} else {
+					$element->SetDefault( false );
 				}
 			}
 		}
