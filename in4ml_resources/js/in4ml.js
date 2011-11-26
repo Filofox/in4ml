@@ -68,6 +68,7 @@ var in4ml = {
 	// Lookup for forms (by ID)
 	forms:{},
 	ready_events:{},
+	ready_events_global:[],
 	abort_submit: false,
 
 
@@ -90,7 +91,14 @@ var in4ml = {
 	  if( typeof( this.forms[ form_definition.id ] ) != 'undefined' ){
 		this.ready_events[ form_definition.id ] = [];
 	  }
-	  var form = new in4mlForm( form_definition, this.ready_events[ form_definition.id ] );
+	  var events = this.ready_events[ form_definition.id ];
+	  if( !events ){
+		var events = [];
+	  }
+	  for( var i = 0; i < this.ready_events_global.length; i++ ){
+		events.push( this.ready_events_global[i] );
+	  }
+	  var form = new in4mlForm( form_definition, events );
 	  this.forms[ form_definition.id ] = form;
 	  form.Init();
 	},
@@ -225,6 +233,19 @@ var in4ml = {
 			}
 			this.ready_events[ form_id ].push( callback );
 		} else {
+			this.forms[ form_id ].BindEvent(
+			  'Ready',
+			  callback
+			);
+		}
+	},
+	/**
+	 * Add a callback for every form that's loaded
+	 */
+	onFormsReady:function( callback ){
+		this.ready_events_global.push( callback );
+		// Add to existing forms
+		for( var id in this.forms ){
 			this.forms[ form_id ].BindEvent(
 			  'Ready',
 			  callback
