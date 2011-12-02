@@ -321,6 +321,22 @@ class In4mlForm{
 			}
 		}
 	}
+
+	/**
+	 * Get all field values
+	 *
+	 * @return		object
+	 */
+	public function GetValues(){
+		$values = new stdClass();
+		foreach( $this->fields as $field ){
+			if( $name = $field->name ){
+				$values->$name = $field->GetValue();
+			}
+		}
+		return $values;
+	}
+
 	/**
 	 * Set a field's default value
 	 *
