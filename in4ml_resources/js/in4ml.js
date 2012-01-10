@@ -1193,6 +1193,7 @@ var in4mlFieldDate = in4mlField.extend({
 			$$.SetValue( this.hidden_element_month, 0 );
 			$$.SetValue( this.hidden_element_year, 0 );
 		}
+		$$.Trigger( this.element, '_change' );
 	},
 	GetValue:function(){
 		return {
@@ -1204,6 +1205,40 @@ var in4mlFieldDate = in4mlField.extend({
 	SetValue:function( value ){
 		$$.SetDatePickerValue( this.element, value );
 		this.onUpdate( value );
+	},
+	BindEvent:function( event, func ){
+	  // If we rely on the built-in 'change' event, it fires before the value is updated
+	  if( event == 'change' ){
+		$$.AddEvent
+		(
+			this.element,
+			'_change',
+			$$.Bind
+			(
+				function( func, event ){
+					func( this, event );
+				},
+				this,
+				[ func, event ],
+				true
+			)
+		);
+	  } else {
+		$$.AddEvent
+		(
+			this.element,
+			event,
+			$$.Bind
+			(
+				function( func, event ){
+					func( this, event );
+				},
+				this,
+				[ func, event ],
+				true
+			)
+		);
+	  }
 	}
 
 });
