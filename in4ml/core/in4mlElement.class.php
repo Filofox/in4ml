@@ -20,16 +20,16 @@ class In4mlElement{
 	public $form_type;
 
 	protected $template;
-	
+
 	protected $class = array();
 	protected $container_class = array();
-	
+
 	protected $container_type = null;
 
 	function __construct(){
 		$this->AddClass( strtolower( $this->type ) );
 	}
-	
+
 	public function SetContainerType( $container_type ){
 		$this->container_type = $container_type;
 	}
@@ -45,9 +45,9 @@ class In4mlElement{
 	 * @return		in4mlElementRenderValues object
 	 */
 	public function GetRenderValues(){
-		
+
 		require_once( in4ml::GetPathCore() . 'in4mlElementRenderValues.class.php' );
-		
+
 		$values = new in4mlElementRenderValues( $this->category, $this->type );
 
 		foreach( $this->class as $class ){
@@ -56,10 +56,10 @@ class In4mlElement{
 			}
 		}
 		$values->form_type = $this->form_type;
-		
+
 		return $values;
 	}
-	
+
 	/**
 	 * Retrieve the label for this element
 	 *
@@ -73,7 +73,7 @@ class In4mlElement{
 	 * Catch invalid property set
 	 */
 	public function __set( $property, $value ){
-		
+
 		switch( $property ){
 			case 'class':{
 				if( is_array( $value ) ){
@@ -107,7 +107,7 @@ class In4mlElement{
 	public function __get( $property ){
 		throw new Exception( "Field property '" . $property . "' not valid for " . get_class( $this ) );
 	}
-	
+
 	/**
 	 * Add a class to the element
 	 *

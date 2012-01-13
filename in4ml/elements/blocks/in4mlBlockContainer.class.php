@@ -12,7 +12,7 @@ require_once( in4ml::GetPathCore() . 'in4mlBlock.class.php' );
  */
 class in4mlBlockContainer extends in4mlBlock{
 	public $type = 'Container';
-	
+
 	public $label;
 	public $field_name;
 	public $prefix;
@@ -22,7 +22,7 @@ class in4mlBlockContainer extends in4mlBlock{
 
 	public function __construct(){
 		parent::__construct();
-		
+
 		$this->AddClass( 'default' );
 	}
 
@@ -34,17 +34,35 @@ class in4mlBlockContainer extends in4mlBlock{
 	 * @return		in4mlElementRenderValues object
 	 */
 	public function GetRenderValues(){
+
+		// Check for element container classes
+		foreach( $this->elements as $element ){
+			// Check for validator classes
+			foreach( $element->GetValidators() as $validator ){
+				if( $validator_class = $validator->GetClass( $element ) ){
+					$this->AddClass( strtolower( $validator_class ) );
+				}
+			}
+
+			foreach( $element->GetContainerClasses() as $class ){
+				$this->AddClass( $class );
+			}
+			if( $element->container_id ){
+				$this->id = $element->container_id;
+			}
+		}
 		$values = parent::GetRenderValues();
-		
+
 		$values->prefix = $this->prefix;
 		$values->suffix = $this->suffix;
 		$values->notes = $this->notes;
 		$values->errors = $this->errors;
-		
+
+
 		return $values;
 	}
 
-	
+
 }
 
 ?>

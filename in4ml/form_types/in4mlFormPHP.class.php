@@ -37,10 +37,10 @@ class In4mlFormPHP extends In4mlForm{
 
 		// Add script element?
 		if( $this->use_javascript ){
-			
+
 			$element = in4ml::CreateElement( 'General:ScriptDefinition' );
 			$element->form = $this;
-			
+
 			$this->form_element->AddElement( $element );
 		}
 
@@ -66,7 +66,7 @@ class In4mlFormPHP extends In4mlForm{
 		if( strpos( $definition[ 'type' ], ':' ) === false ){
 			$definition[ 'type' ] = 'Field:' . $definition[ 'type' ];
 		}
-		
+
 		$element = in4ml::CreateElement( $definition[ 'type' ] );
 
 		$element->form = $this;
@@ -106,9 +106,9 @@ class In4mlFormPHP extends In4mlForm{
 				case 'filters':{
 					foreach( $definition[ 'filters' ] as $filter_type => $parameters ){
 						$filter = in4ml::CreateFilter( $filter_type );
-						
+
 						$element->AddFilter( $filter );
-						
+
 						if( is_array( $parameters ) ){
 							foreach( $parameters as $name => $value ){
 								$filter->$name = $value;
@@ -141,7 +141,7 @@ class In4mlFormPHP extends In4mlForm{
 				}
 			}
 		}
-		
+
 		// In case any validators need to modify the element
 		if( $element->category == 'Field' ){
 			$element = $element->DoValidatorModifications();
@@ -174,10 +174,10 @@ class In4mlFormPHP extends In4mlForm{
 				$this->fragments[] = $element;
 			}
 		}
-		
+
 		return $element;
 	}
-	
+
 	/**
 	 * Add container elements
 	 *
@@ -190,41 +190,25 @@ class In4mlFormPHP extends In4mlForm{
 		$element = $element->Modify();
 
 		if( isset( $element->elements ) ){
-			
+
 			$elements = array();
-			
+
 			foreach( $element->elements as $child_element ){
 				$elements[] = $this->ModifyStructure( $child_element );
 			}
-			
+
 			$element->elements = $elements;
 		}
-		
+
 		// If a container type is specified
 		if( $container_type = $element->GetContainerType() ){
 			// Create container element
 			$container = in4ml::CreateElement( 'Block:' . $container_type );
-			
+
 			$container->AddClass( 'container' );
 			$container->AddClass( strtolower( $container_type ) );
 			$container->AddClass( strtolower( $element->type ) );
-			
-			if( $element->container_id ){
-				$container->id = $element->container_id;
-			}
-			
-			// Checl for validator classes
-			foreach( $element->GetValidators() as $validator ){
-				if( $validator_class = $validator->GetClass( $element ) ){
-					$container->AddClass( strtolower( $validator_class ) );
-				}
-			}
 
-			// Check for container classes
-			foreach( $element->GetContainerClasses() as $class ){
-				$container->AddClass( $class );
-			}
-			
 			// Set some values
 			$container->label = $element->GetLabel();
 			$container->field_name = $element->name;
@@ -239,7 +223,7 @@ class In4mlFormPHP extends In4mlForm{
 			$container->AddElement( $element );
 			$element = $container;
 		}
-		
+
 		return $element;
 	}
 }
