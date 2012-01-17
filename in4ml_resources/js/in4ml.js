@@ -1123,8 +1123,10 @@ var in4mlFieldDate = in4mlField.extend({
 		var options =
 		{
 			'format': definition.format,
+
 			'min_date': new Date( definition.min_date.year, definition.min_date.month - 1, definition.min_date.day ),
 			'max_date': new Date( definition.max_date.year, definition.max_date.month - 1, definition.max_date.day ),
+			'year_select': (definition.custom_params.year_select|false),
 			'change': $$.Bind
 			(
 				this.onUpdate,
@@ -1134,7 +1136,8 @@ var in4mlFieldDate = in4mlField.extend({
 			(
 				this.onUpdate,
 				this
-			)
+			),
+			first_day: definition.custom_params.first_day
 		};
 
 		// Set default date
@@ -1840,8 +1843,11 @@ JSLibInterface_jQuery.prototype.ConvertToDatePicker = function( element, options
 	var settings =
 	{
 		'dateFormat': options.format,
+		'changeYear': options.year_select,
+		'yearRange': options.min_date.getFullYear() + ':' + options.max_date.getFullYear(),
 		'minDate': options.min_date,
 		'maxDate': options.max_date,
+		'firstDay': options.first_day,
 		'showOn': 'both',
 		'buttonImage': in4ml.resources_path + 'img/calendar_icon.png'
 	};
