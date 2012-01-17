@@ -14,6 +14,10 @@ class in4mlFieldDate extends in4mlField{
 	public $type = 'Date';
 	protected $container_type = 'Container';
 	public $format = 'dd/mm/yy'; // Format of javascript date picker
+	public $custom_params = array
+	(
+		'first_day' => 1 // First day of the week 0=Sunday (default = 1 = Monday)
+	);
 
 	/**
 	 * Return a list of key/value pairs to be interpolated into template
@@ -24,7 +28,7 @@ class in4mlFieldDate extends in4mlField{
 	 */
 	public function GetRenderValues( $render_value = false ){
 		$values = parent::GetRenderValues();
-		
+
 		// Insert value
 		$value = "";
 		if( $render_value ){
@@ -36,7 +40,7 @@ class in4mlFieldDate extends in4mlField{
 				$values->SetAttribute( 'value', $this->default );
 			}
 		}
-		
+
 		return $values;
 	}
 
@@ -51,12 +55,12 @@ class in4mlFieldDate extends in4mlField{
 
 		$element = in4ml::CreateElement( 'Block:Group' );
 		$element->AddClass( strtolower( $this->type ) );
-		
+
 		foreach( $this->container_class as $class ){
 			$element->AddClass( $class );
 		}
 		$element->AddClass( 'container' );
-		
+
 		$element->label = $this->label;
 
 		// Hidden element -- used as a marker by JS, otherwise ignored
@@ -69,7 +73,7 @@ class in4mlFieldDate extends in4mlField{
 
 		// Wrap in a noscript element
 		$noscript_element = in4ml::CreateElement( 'Block:NoScript' );
-	
+
 		// Get date range validator details
 		$daterange_validator = false;
 		foreach( $this->validators as $validator ){
@@ -120,10 +124,10 @@ class in4mlFieldDate extends in4mlField{
 		$noscript_element->AddElement( $year_select );
 
 		$element->AddElement( $noscript_element );
-		
+
 		return $element;
 	}
-	
+
 	/**
 	 * Set value - converts array to date object
 	 */
@@ -135,7 +139,7 @@ class in4mlFieldDate extends in4mlField{
 			$this->value->SetFromFormValue( $value );
 		}
 	}
-	
+
 	/**
 	 * Return 'extra' key/value pairs required when exporting field to JSON
 	 */
@@ -148,21 +152,21 @@ class in4mlFieldDate extends in4mlField{
 				break;
 			}
 		}
-		
+
 		// Min and max date
 		require_once( in4ml::GetPathLibrary() . 'LibDate.class.php' );
 		$min_date = new LibDate();
 		$min_date->SetRelativeDateFromString( $daterange_validator->min );
 		$max_date = new LibDate();
 		$max_date->SetRelativeDateFromString( $daterange_validator->max );
-		
+
 		$settings = array
 		(
 			'format' => $this->format,
 			'min_date' => $min_date,
 			'max_date' => $max_date
 		);
-		
+
 		if( $this->default ){
 			if( is_object( $this->default ) ){
 				$settings[ 'default' ] = $this->default;
@@ -177,7 +181,9 @@ class in4mlFieldDate extends in4mlField{
 		if( $this->value ){
 			$settings[ 'value' ] = $this->value;
 		}
-		
+
+		$settings[ 'custom_params' ] = $this->custom_params;
+
 		return $settings;
 	}
 }
