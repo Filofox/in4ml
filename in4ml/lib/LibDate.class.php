@@ -189,6 +189,10 @@ if( !class_exists( 'LibDate' ) ){
 
 			$current_date = date_create();
 
+			if( count( $matches ) == 0 ){
+				throw new Exception( 'Invalid date' );
+			}
+
 			// Convert to numbers
 			$day = (int) $matches[2];
 			$month = (int) $matches[4];
