@@ -270,7 +270,17 @@ if( !class_exists( 'LibDate' ) ){
 		 * @return		int
 		 */
 		public function Diff( LibDate $date ){
-			$result = floor( ( $date->Format( 'U' ) - $this->Format( 'U' ) ) / (60 * 60 * 24) );
+			$this_date = new LibDate();
+			$this_date->year = $this->year;
+			$this_date->month = $this->month;
+			$this_date->day = $this->day;
+
+			$diff_date = new LibDate();
+			$diff_date->year = $date->year;
+			$diff_date->month = $date->month;
+			$diff_date->day = $date->day;
+
+			$result = floor( ( $diff_date->Format( 'U' ) - $this_date->Format( 'U' ) ) / (60 * 60 * 24) );
 			return $result;
 		}
 
