@@ -38,18 +38,21 @@ class in4mlBlockContainer extends in4mlBlock{
 		// Check for element container classes
 		foreach( $this->elements as $element ){
 			// Check for validator classes
-			foreach( $element->GetValidators() as $validator ){
-				if( $validator_class = $validator->GetClass( $element ) ){
-					$this->AddClass( strtolower( $validator_class ) );
+			if( is_subclass_of( $element, 'in4mlField' ) ){
+				foreach( $element->GetValidators() as $validator ){
+					if( $validator_class = $validator->GetClass( $element ) ){
+						$this->AddClass( strtolower( $validator_class ) );
+					}
+				}
+				if( $element->container_id ){
+					$this->id = $element->container_id;
 				}
 			}
 
 			foreach( $element->GetContainerClasses() as $class ){
 				$this->AddClass( $class );
 			}
-			if( $element->container_id ){
-				$this->id = $element->container_id;
-			}
+
 		}
 		$values = parent::GetRenderValues();
 
