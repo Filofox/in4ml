@@ -1,17 +1,17 @@
 <?php
 if( isset( $_FILES[ 'file' ] ) && count( $_FILES[ 'file' ] ) ){
 	$uid = substr( sha1( rand() ), 0, 6 ) . microtime(true);
-	
+
 	// Make new temp directory for this upload
 	$temp_dir = sys_get_temp_dir();
-	
+	$temp_dir .= (substr($str, -1) == DIRECTORY_SEPARATOR) ? '' : '/';
 	$target_dir = $temp_dir . 'in4ml_' . $uid . '/';
-	
+
 	mkdir( $temp_dir . 'in4ml_' . $uid, 0777, true );
-	
+
 	// Move file to temp directory
 	move_uploaded_file( $_FILES[ 'file' ][ 'tmp_name' ], $target_dir . $_FILES[ 'file' ][ 'name' ] . '.' . $uid );
-	
+
 	echo($uid);
 } else {
 	echo( 'ERROR' );
