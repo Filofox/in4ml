@@ -75,12 +75,17 @@ class in4mlFieldSelect extends in4mlField{
 	 * @param		string		$label		The label for the group
 	 * @param		array		$options	A list of options as array( value => '', text => '' )
 	 */
-	public function AddOptionGroup( $label, $options ){
-		$this->options[] = array
+	public function AddOptionGroup( $label, $options, $id = null ){
+		$option = array
 		(
 			'label' => $label,
 			'options' => $options
 		);
+		if( $id !== null ){
+			$option[ 'id' ] = $id;
+		}
+
+		$this->options[] = $option;
 	}
 
 
@@ -106,7 +111,7 @@ class in4mlFieldSelect extends in4mlField{
 
 			// Check to see if it's a group
 			if( isset( $option[ 'label' ] ) ){
-				$output .= '<optgroup label="' . $option[ 'label' ] . '">' . $this->BuildOptions( $option[ 'options' ] ) . '</optgroup>';
+				$output .= '<optgroup' . ((isset( $option[ 'id' ] ))?' id="' . $option[ 'id' ] . '"':'') . ' label="' . $option[ 'label' ] . '">' . $this->BuildOptions( $option[ 'options' ] ) . '</optgroup>';
 			} else {
 				$output .= str_replace
 				(

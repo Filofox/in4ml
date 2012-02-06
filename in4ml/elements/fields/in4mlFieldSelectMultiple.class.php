@@ -15,7 +15,7 @@ class in4mlFieldSelectMultiple extends in4mlFieldSelect{
 	public $type = 'SelectMultiple';
 
 	protected $container_type = 'Container';
-	
+
 	/**
 	 * Return a list of key/value pairs to be interpolated into template
 	 *
@@ -25,10 +25,10 @@ class in4mlFieldSelectMultiple extends in4mlFieldSelect{
 	 */
 	public function GetRenderValues( $render_value = false ){
 		$values = parent::GetRenderValues();
-		
+
 		// Converts name to an array so that PHP can handle more than one value
 		$values->setAttribute( 'name', $this->name . '[]' );
-		
+
 		return $values;
 	}
 
@@ -38,10 +38,10 @@ class in4mlFieldSelectMultiple extends in4mlFieldSelect{
 	protected function BuildOptions( $options ){
 		$output = '';
 		foreach( $options as $option ){
-			
+
 			// Check to see if it's a group
 			if( isset( $option[ 'label' ] ) ){
-				$output .= '<optgroup label="' . $option[ 'label' ] . '">' . $this->BuildOptions( $option[ 'options' ] ) . '</optgroup>';
+				$output .= '<optgroup' . ((isset( $option[ 'id' ] ))?' id="' . $option[ 'id' ] . '"':'') . ' label="' . $option[ 'label' ] . '">' . $this->BuildOptions( $option[ 'options' ] ) . '</optgroup>';
 			} else {
 				$output .= str_replace
 				(
@@ -61,7 +61,7 @@ class in4mlFieldSelectMultiple extends in4mlFieldSelect{
 				);
 			}
 		}
-		
+
 		return $output;
 	}
 }
