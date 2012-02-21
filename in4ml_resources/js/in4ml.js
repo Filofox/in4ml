@@ -1278,9 +1278,37 @@ in4mlValidatorEmail.prototype.ValidateField = function( field ){
 
 	var value = field.GetValue();
 
-	if( value && !in4mlUtilities.CheckRegexp( value, this.pattern, ['i'] ) ){
-		field.SetError( in4ml.GetErrorText( 'email' ), null, this.error_message );
-		output = false;
+	if( value ) {
+	  // Multiple addresses?
+	  if( this.allow_multiple && value.indexOf( ';' ) !== -1 ){
+		var emails = value.split( ';' );
+		for( var i = 0; i < emails.length; i++ ){
+		  var email = $.trim( emails[ i ] );
+		  if( this.allow_name ){
+			var matches = email.match( /^(.*)<\s*(.+)\s*>\s*$/ );
+			if( matches !== null ){
+			  var email = $.trim( matches[2] );
+			}
+		  }
+		  if( email.length > 0 ){
+			if( !in4mlUtilities.CheckRegexp( email, this.pattern, ['i'] ) ){
+			  field.SetError( in4ml.GetErrorText( 'email', {email:email} ), this.error_message );
+			  output = false;
+			}
+		  }
+		}
+	  } else {
+		  if( this.allow_name ){
+			var matches = value.match( /^(.*)<\s*(.+)\s*>\s*$/ );
+			if( matches !== null ){
+			  var value = $.trim( matches[2] );
+			}
+		  }
+		if( !in4mlUtilities.CheckRegexp( value, this.pattern, ['i'] ) ){
+		  field.SetError( in4ml.GetErrorText( 'email', {email:value} ), this.error_message );
+		  output = false;
+		}
+	  }
 	}
 
 	return output;
