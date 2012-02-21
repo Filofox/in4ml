@@ -17,7 +17,7 @@ $text = array
 	),
 	'email' => array
 	(
-		'default' => 'Not a valid email address.'
+		'default' => 'Not a valid email address ([[email]]).'
 	),
 	'file' => array
 	(

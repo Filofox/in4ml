@@ -11,30 +11,53 @@ require_once( in4ml::GetPathValidatorTypes() . 'in4mlValidatorRegex.class.php' )
  * Check for a valid email address
  */
 class in4mlValidatorEmail extends in4mlValidatorRegex{
-	
+
 	public $pattern = '^([\w-]+\.?)*\w+@([\da-zA-z-]+\.)+[a-zA-z]{2,3}$';
 	public $match = true;
 
-	
+	public $allow_multiple = false;
+	public $allow_name = false;
+
+
 	/**
 	 * Perform validation
-	 * 
+	 *
 	 * @param		in4mlField		$field		The field to be validated
 	 *
 	 * @return		boolean						False if the field is not valid
 	 */
 	public function ValidateField( in4mlField $field ){
-		
-		// Check for non-match
-		$output = $this->DoRegex( $field );
 
 		$value = $field->GetValue();
 
-		if( $value !== null && $value !== '' && $output ){
-			$field->SetError( $this->GetErrorText( "email" ) );
-			$output = false;
+		$output = true ;
+		// Check for non-match
+		if( $this->allow_multiple && strpos( $value, ';' ) !== false ){
+			foreach( explode( ';', $value ) as $email ){
+				$email = trim( $email );
+				if( $this->allow_name ){
+					if( preg_match( '~^(.*)<\s*(.+)\s*>\s*$~U', $email, $matches ) ){
+						$email = $matches[ 2 ];
+					}
+				}
+				if( $email && $this->Execute( $email ) ){
+					$field->SetError( $this->GetErrorText( "email", array( 'email' => $email ) ) );
+					$output = false;
+				}
+			}
+		} else {
+			$email = $value;
+			if( $this->allow_name ){
+				if( preg_match( '~^(.*)<\s*(.+)\s*>\s*$~U', $email, $matches ) ){
+					$email = $matches[ 2 ];
+				}
+			}
+			if( $email && $this->Execute( $email ) ){
+				$field->SetError( $this->GetErrorText( "email", array( 'email' => $email ) ) );
+				$output = false;
+			}
 		}
-		
+
 		return $output;
 	}
 }
