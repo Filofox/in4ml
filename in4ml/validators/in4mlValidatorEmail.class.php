@@ -37,7 +37,7 @@ class in4mlValidatorEmail extends in4mlValidatorRegex{
 				$email = trim( $email );
 				if( $this->allow_name ){
 					if( preg_match( '~^(.*)<\s*(.+)\s*>\s*$~U', $email, $matches ) ){
-						$email = $matches[ 2 ];
+						$email = trim($matches[ 2 ]);
 					}
 				}
 				if( $email && $this->Execute( $email ) ){
@@ -49,7 +49,7 @@ class in4mlValidatorEmail extends in4mlValidatorRegex{
 			$email = $value;
 			if( $this->allow_name ){
 				if( preg_match( '~^(.*)<\s*(.+)\s*>\s*$~U', $email, $matches ) ){
-					$email = $matches[ 2 ];
+					$email = trim($matches[ 2 ]);
 				}
 			}
 			if( $email && $this->Execute( $email ) ){
