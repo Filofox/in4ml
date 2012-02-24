@@ -1206,8 +1206,16 @@ var in4mlFieldDate = in4mlField.extend({
 		}
 	},
 	SetValue:function( value ){
-		$$.SetDatePickerValue( this.element, value );
-		this.onUpdate( value );
+	  if( $.isPlainObject(value) ){
+		var date = new Date();
+		date.setTime( 0 );
+		date.setFullYear(parseInt( value.year, 10 ));
+		date.setMonth(parseInt( value.month, 10 )-1);
+		date.setDate(parseInt( value.day, 10 ));
+		value = date;
+	  }
+	  $$.SetDatePickerValue( this.element, value );
+	  this.onUpdate( value );
 	},
 	BindEvent:function( event, func ){
 	  // If we rely on the built-in 'change' event, it fires before the value is updated
