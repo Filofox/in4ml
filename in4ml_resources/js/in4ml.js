@@ -431,6 +431,9 @@ in4mlForm.prototype.FieldReady=function(){
 	}
   }
 }
+in4mlForm.prototype.HasField = function( field_name ){
+	return (typeof( this.fields[ field_name ] ) != 'undefined' );
+}
 /**
  * Return a field by its name
  *
