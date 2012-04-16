@@ -657,6 +657,8 @@ class in4mlConfig{
 	public $path_local;
 	public $path_resources = 'in4ml_resources/';
 	public $form_prefix;
+	public $captcha_image_path = false;
+	public $captcha_codes_path = false;
 
 	// Override these settings in config file if necessary
 	public $default_renderer = 'PHP';

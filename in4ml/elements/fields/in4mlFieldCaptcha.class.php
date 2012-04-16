@@ -22,24 +22,24 @@ class in4mlFieldCaptcha extends in4mlField{
 	public $code_length = '6';
 	// Only use easily-distinguishable characters
 	public $characters = "ACDEFGHJKLMNPRTUVWXY34679";
-	
+
 	public $uid;
 	public $uid_field;
-	
+
 	public function __construct(){
-		
+
 		// Default font
 		$this->font_path = in4ml::GetPathLibrary() . 'fonts/Liberation/LiberationMono-Bold.ttf';
 
 		// Automatically validates options
-		$this->AddValidator( in4ml::CreateValidator( 'Required' ) );		
-		$this->AddValidator( in4ml::CreateValidator( 'Captcha' ) );		
+		$this->AddValidator( in4ml::CreateValidator( 'Required' ) );
+		$this->AddValidator( in4ml::CreateValidator( 'Captcha' ) );
 		$this->uid = sha1( microtime( true ) . rand( 0, 10000 ) );
-		
+
 		parent::__construct();
 	}
-	
-	
+
+
 	/**
 	 * Return a list of key/value pairs to be interpolated into template
 	 *
@@ -49,12 +49,16 @@ class in4mlFieldCaptcha extends in4mlField{
 	 */
 	public function GetRenderValues( $render_value = false ){
 		$values = parent::GetRenderValues();
-		
-		$values->image_path = in4ml::Config( 'path_resources' ) . 'php/captcha_image.php';
+
+		if( !$path = in4ml::Config( 'captcha_image_path' ) ){
+			$values->image_path = in4ml::Config( 'path_resources' ) . 'php/captcha_image.php';
+		} else {
+			$values->image_path = $path;
+		}
 
 		$values->name = $this->name;
 		$values->uid = $this->uid;
-		
+
 		// Insert value
 		$value = "";
 		if( $render_value ){
@@ -66,10 +70,10 @@ class in4mlFieldCaptcha extends in4mlField{
 				$values->SetAttribute( 'value', in4ml::Escape( $this->default ) );
 			}
 		}
-		
+
 		return $values;
 	}
-	
+
 	public function CheckUID( $uid, $code ){
 		return $this->form->CheckCaptchaUID( $uid, $code );
 	}

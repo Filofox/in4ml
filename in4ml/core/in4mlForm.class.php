@@ -566,7 +566,10 @@ class In4mlForm{
 			}
 
 			// Write the code to a PHP file using the uid as a file name
-			$files_path = in4ml::GetPathLocal() . 'captcha_codes/' . date( 'YmdH' ) . '/';
+			if( !$captcha_codes_path = in4ml::Config( 'captcha_codes_path' ) ){
+				$captcha_codes_path = in4ml::GetPathLocal();
+			}
+			$files_path = $captcha_codes_path . date( 'YmdH' ) . '/';
 			if( !is_dir( $files_path ) ){
 				mkdir( $files_path, 0775, true );
 			}
@@ -629,8 +632,11 @@ class In4mlForm{
 		$output = false;
 
 		// Try to load file
-		$file_path = in4ml::GetPathLocal() . 'captcha_codes/' . date( 'YmdH' ) . '/' . $uid . '.php';
-		$file_path_old = in4ml::GetPathLocal() . 'captcha_codes/' . date( 'YmdH', strtotime( '-1 hour' ) ) . '/' . $uid . '.php';
+		if( !$captcha_codes_path = in4ml::Config( 'captcha_codes_path' ) ){
+			$captcha_codes_path = in4ml::GetPathLocal() . 'captcha_codes/';
+		}
+		$file_path = $captcha_codes_path . date( 'YmdH' ) . '/' . $uid . '.php';
+		$file_path_old = $captcha_codes_path . date( 'YmdH', strtotime( '-1 hour' ) ) . '/' . $uid . '.php';
 		if( file_exists( $file_path_old ) ){
 			$file_path = $file_path_old;
 		}
@@ -646,7 +652,10 @@ class In4mlForm{
 	}
 
 	public function ClearUpCaptchaCodes(){
-		$file_path = in4ml::GetPathLocal() . 'captcha_codes/';
+		if( !$captcha_codes_path = in4ml::Config( 'captcha_codes_path' ) ){
+			$captcha_codes_path = in4ml::GetPathLocal() . 'captcha_codes/';
+		}
+		$file_path = $captcha_codes_path;
 
 		$dirs = array();
 		$current = date( 'YmdH' );
