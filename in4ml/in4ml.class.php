@@ -38,7 +38,7 @@ class in4ml{
 		$path_info = pathinfo( __FILE__ );
 		$config[ 'path_base' ] = $path_info[ 'dirname' ] . '/';
 
-		require_once( $config_path . 'im4ml.config.php' );
+		require_once( $config_path . 'in4ml.config.php' );
 		foreach( $config as $key => $value ){
 			$config_object->$key = $value;
 		}
