@@ -4,7 +4,7 @@ if( isset( $_FILES[ 'file' ] ) && count( $_FILES[ 'file' ] ) ){
 
 	// Make new temp directory for this upload
 	$temp_dir = sys_get_temp_dir();
-	$temp_dir .= (substr($str, -1) == DIRECTORY_SEPARATOR) ? '' : '/';
+	$temp_dir .= (substr($temp_dir, -1) == DIRECTORY_SEPARATOR) ? '' : '/';
 	$target_dir = $temp_dir . 'in4ml_' . $uid . '/';
 
 	mkdir( $temp_dir . 'in4ml_' . $uid, 0777, true );
