@@ -580,6 +580,7 @@ class in4ml{
 			if( strpos( PHP_OS, 'WIN' ) === 0 ){
 				$mime_types = array(
 					'txt' => 'text/plain',
+					'csv' => 'text/csv',
 					'htm' => 'text/html',
 					'html' => 'text/html',
 					'php' => 'text/html',
