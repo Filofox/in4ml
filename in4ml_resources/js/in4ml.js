@@ -165,6 +165,13 @@ var in4ml = {
 	 */
 	GetErrorText:function( error_type, parameters, error_messages ){
 
+		// Avoid XSS injection
+		if( typeof parameters !== 'undefined' ){
+		  for( var index in parameters ){
+			parameters[ index ] = $$.Escape( parameters[ index ] );
+		  }
+		}
+
 		// Is there a custom error message (from definition)?
 		if( typeof error_messages != 'undefined' ){
 
@@ -1754,8 +1761,17 @@ JSLibInterface_jQuery.prototype.GetValue = function( element ){
  * @return		mixed
  */
 JSLibInterface_jQuery.prototype.SetValue = function( element, value ){
-
-	$( element ).val( value );
+  $( element ).val( value );
+}
+/**
+ * Simple JS alternative to htmlentities()
+ *
+ * @param		string		str
+ *
+ * @return		string
+ */
+JSLibInterface_jQuery.prototype.Escape = function( str ){
+	return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 /**
  * Call a function when document is ready
