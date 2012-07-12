@@ -11,12 +11,13 @@ require_once( in4ml::GetPathCore() . 'in4mlValidator.class.php' );
  * Check for a valid email address
  */
 class in4mlValidatorFileType extends in4mlValidator{
-	
+
 	public $types = array();
-	
+	public $enable_groups = false;
+
 	/**
 	 * Perform validation
-	 * 
+	 *
 	 * @param		in4mlField		$field		The field to be validated
 	 *
 	 * @return		boolean						False if the field is not valid
@@ -26,8 +27,20 @@ class in4mlValidatorFileType extends in4mlValidator{
 		foreach( $field->files as $file ){
 			// Make sure something was submitted
 			if($file[ 'error_number' ] != 4){
-				if( !in_array( $file[ 'mime_type' ], array_keys( $this->types ) ) ){
-					$field->SetError( $this->GetErrorText( 'file:type', array( 'filetype' => $file[ 'mime_type' ], 'filename' => $file[ 'name' ], 'validtypes' => implode( ', ', array_unique( $this->types ) ) ) ) );
+
+				if( $this->enable_groups ){
+					$types = array();
+					foreach( $this->types as $group ){
+						foreach( $group as $mime_type => $extension ){
+							$types[ $mime_type ] = $extension;
+						}
+					}
+				} else {
+					$types = $this->types;
+				}
+
+				if( !in_array( $file[ 'mime_type' ], array_Keys( $types ) ) ){
+					$field->SetError( $this->GetErrorText( 'file:type', array( 'filetype' => $file[ 'mime_type' ], 'filename' => $file[ 'name' ], 'validtypes' => implode( ', ', $types ) ) ) );
 					$output = false;
 				}
 			}

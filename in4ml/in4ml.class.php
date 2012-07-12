@@ -431,6 +431,10 @@ class in4ml{
 
 		$output = '<script type="text/javascript" src="' . self::GetPathResources() . 'js/in4ml.js"></script>' . "\n";
 
+		if( self::Config( 'file_upload_library' ) ){
+			$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/in4ml-file-' . self::Config( 'file_upload_library' ) . '.js"></script>' . "\n";
+		}
+
 		// Make this smarter
 		$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/tiny_mce/tiny_mce.js"></script>' . "\n";
 		$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/uploadify/jquery.uploadify.min.js"></script>' . "\n";
@@ -660,6 +664,7 @@ class in4mlConfig{
 	public $form_prefix;
 	public $captcha_image_path = false;
 	public $captcha_codes_path = false;
+	public $file_upload_library = false;
 
 	// Override these settings in config file if necessary
 	public $default_renderer = 'PHP';
