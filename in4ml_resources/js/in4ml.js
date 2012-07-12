@@ -956,6 +956,9 @@ var in4mlFieldCheckbox = in4mlField.extend({
 	// Set value
 	GetValue:function( value ){
 		return $$.GetAttribute( this.element, 'checked' );
+	},
+	Reset:function(){
+	  $$.SetAttribute( this.element, 'checked', false );
 	}
 });
 /**
@@ -972,6 +975,22 @@ var in4mlFieldCheckboxMultiple = in4mlField.extend({
 		}
 
 		return values;
+	},
+	SetValue:function( values ){
+		var by_index = {};
+		for( var i= 0; i < values.length; i++ ){
+		  by_index[ values[ i ] ] = true;
+		}
+		for( var i = 0; i < this.element.length; i++ ){
+			if( typeof by_index[ $$.GetAttribute( this.element[ i ], 'value' ) ] != 'undefined' ){
+	  		$$.SetAttribute( this.element[ i ], 'checked', true );
+			}
+		}
+	},
+	Reset:function(){
+		for( var i = 0; i < this.element.length; i++ ){
+	  		$$.SetAttribute( this.element[ i ], 'checked', false );
+		}
 	}
 });
 /**
@@ -1061,6 +1080,9 @@ var in4mlFieldFile = in4mlField.extend({
 	},
 	onShow:function(){
 		$$.AdvancedFileOnShow( this );
+	},
+	Reset:function(){
+		$$.AdvancedFileReset( this );
 	}
 });
 /**
@@ -2075,6 +2097,14 @@ JSLibInterface_jQuery.prototype.FileClearQueue = function( field ){
 		$( field.element ).uploadifyClearQueue();
 	}
 }
+/**
+ * Restores an advanced file element that's been hidden
+ */
+JSLibInterface_jQuery.prototype.AdvancedFileReset = function( field ){
+	$( field.upload_code_element ).val( '' );
+	$$.FileClearQueue( field );
+}
+
 /**
  * Send a JSON request
  *
