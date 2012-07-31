@@ -1089,12 +1089,20 @@ var in4mlFieldFile = in4mlField.extend({
  * Radio button(s)
  */
 var in4mlFieldRadio = in4mlField.extend({
+  	init:function( form, definition ){
+	  this._super( form, definition );
+	  this.default_value = $( this.container ).find( 'input.radiobutton:checked' ).val();
+	},
 	// Set value (i.e. set which one is checked)
 	SetValue:function( value ){
 		// Uncheck all
 		$( this.container ).find( 'input.radiobutton' ).attr( 'checked', false );
 		// Check selected
 		$( $( this.container ).find( 'input.radiobutton[value=' + value + ']' ) ).attr( 'checked', true );
+	},
+	Reset:function(){
+	  // Do nothing
+	  this.SetValue( this.default_value );
 	}
 });
 /**
