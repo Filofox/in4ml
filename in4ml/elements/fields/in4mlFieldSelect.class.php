@@ -125,7 +125,7 @@ class in4mlFieldSelect extends in4mlField{
 					(
 						in4ml::Escape( $option[ 'value' ] ),
 						$option[ 'text' ],
-						( ( $option[ 'value' ] == $this->value )?' selected="selected"':'' )
+						( ( (string)$option[ 'value' ] == (string)$this->value )?' selected="selected"':'' )
 					),
 					$this->option_template
 				);
