@@ -983,7 +983,9 @@ var in4mlFieldCheckboxMultiple = in4mlField.extend({
 		}
 		for( var i = 0; i < this.element.length; i++ ){
 			if( typeof by_index[ $$.GetAttribute( this.element[ i ], 'value' ) ] != 'undefined' ){
-	  		$$.SetAttribute( this.element[ i ], 'checked', true );
+    	  		$$.SetAttribute( this.element[ i ], 'checked', true );
+			} else {
+		  		$$.SetAttribute( this.element[ i ], 'checked', false );
 			}
 		}
 	},
