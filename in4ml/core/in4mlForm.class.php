@@ -331,7 +331,9 @@ class In4mlForm{
 		$values = new stdClass();
 		foreach( $this->fields as $field ){
 			if( $name = $field->name ){
-				$values->$name = $field->GetValue();
+				if( $name != '__form_id' ){
+					$values->$name = $field->GetValue();
+				}
 			}
 		}
 		return $values;
