@@ -151,6 +151,7 @@ class In4mlField extends in4mlElement{
 	 */
 	public function SetError( $error_message ){
 		$this->errors[] = $error_message;
+		$this->form->is_valid = false;
 	}
 
 	/**
