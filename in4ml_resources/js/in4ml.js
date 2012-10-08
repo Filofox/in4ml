@@ -1919,6 +1919,7 @@ JSLibInterface_jQuery.prototype.ConvertToDatePicker = function( element, options
 			'input',
 			{
 				'name':element.attr( 'name' ),
+				'type':'text',
 				'id':element.attr( 'id' ),
 				'class': 'date text'
 			}
