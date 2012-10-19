@@ -318,6 +318,9 @@ in4mlText.prototype.Interpolate = function( parameters, template ){
  */
 in4mlForm = function( form_definition, ready_events ){
 
+	this.errors_container = '<ul>[[elements]]</ul>';
+	this.error_container = '<li>[[value]]</li>';
+
 	this.id = form_definition.id;
 
 	this.ready = false;
@@ -553,7 +556,15 @@ in4mlForm.prototype.onUploadsComplete = function(){
  */
 in4mlForm.prototype.GetValue = function( field_name ){
 	var field = this.GetField( field_name );
-	return field.GetValue();
+	if( arguments.length > 1 ){
+		var args = [];
+		for( var i =  1; i < arguments.length; i++ ){
+			args.push( arguments[ i ] );
+		}
+		return field.GetValue.apply( field, args );
+	} else {
+		return field.GetValue();
+	}
 }
 /**
  * Get all field values
@@ -697,22 +708,43 @@ in4mlForm.prototype.ShowErrors = function(){
 	if( this.errors.length ){
 		$$.AddClass( this.element, 'invalid' );
 
-		if( typeof this.error_element == 'undefined' ){
-			this.error_element = $$.Create( 'div', { 'class':[ 'error', 'default' ] } );
+		var elements = '';
+		for( var i = 0; i < this.errors.length; i++ ){
+			elements += in4mlUtilities.Replace( '[[value]]', this.errors[ i ], this.error_container );
+		}
+
+		if( typeof this.error_element != 'undefined' ){
+			$$.Remove( this.error_element );
+		}
+		this.error_element = $$.Create( 'div', { 'class':'error default' } );
+
+		$$.SetHTML( this.error_element, in4mlUtilities.Replace( '[[elements]]', elements, this.errors_container ) );
+
 			$$.Prepend
 			(
 				$$.Find( '> fieldset', this.element ).pop(),
 				this.error_element
 			);
-		}
-		var html = '<ul>';
-		for( var i = 0; i < this.errors.length; i++ ){
-			html += '<li>' + this.errors[ i ] + '</li>';
-		}
-		html += '</ul>';
-
-		$$.SetHTML( this.error_element, html );
 	}
+
+	//if( this.errors.length ){
+	//	$$.AddClass( this.element, 'invalid' );
+	//
+	//	var elements = '';
+	//	for( var i = 0; i < this.errors.length; i++ ){
+	//		elements += in4mlUtilities.Replace( '[[value]]', this.errors[ i ], this.error_container );
+	//	}
+	//
+	//	if( typeof this.error_element == 'undefined' ){
+	//		this.error_element = $$.Create( in4mlUtilities.Replace( '[[elements]]', elements, this.errors_container ) );
+	//		$$.Prepend
+	//		(
+	//			$$.Find( '> fieldset', this.element ).pop(),
+	//			this.error_element
+	//		);
+	//	}
+	//
+	//}
 }
 in4mlForm.prototype.BindEvent = function( event, func ){
   if( typeof this.events[ event ] == 'undefined' ){
@@ -793,7 +825,11 @@ in4mlForm.prototype.AddFileField = function( field ){
  * Field
  */
 var in4mlField = Class.extend({
+	errors_container: '<ul>[[elements]]</ul>',
+	error_container:'<li>[[value]]</li>',
+
 	ready: true,
+	is_valid: true,
 	init:function( form, definition ){
 		if( this.onBeforeInit ){
 			this.onBeforeInit( form, definition );
@@ -853,7 +889,7 @@ var in4mlField = Class.extend({
 
 		var value = this.GetValue();
 
-		is_valid = true;
+		this.is_valid = true;
 
 		for( var i = 0; i < this.validators.length; i++ ){
 
@@ -864,20 +900,22 @@ var in4mlField = Class.extend({
 					validator[ index ] = this.validators[i][ index ];
 				}
 				if( !validator.ValidateField( this ) ){
-					is_valid = false;
+					this.is_valid = false;
 				}
 			} else {
 	//			console.log( 'Validator not defined ' + this.validators[i].type );
 			}
 		}
 
-		if( is_valid ){
+		$$.Trigger( this.element, 'Validate', this );
+
+		if( this.is_valid ){
 			this.ClearErrors();
 		} else {
 			this.ShowErrors();
 		}
 
-		return is_valid;
+		return this.is_valid;
 	},
 	SetError:function( error ){
 		this.errors.push( error );
@@ -892,19 +930,41 @@ var in4mlField = Class.extend({
 	ShowErrors: function(){
 		$$.AddClass( this.container, 'invalid' );
 
-		if( !this.error_element ){
-			this.error_element = $$.Create( 'div', { 'class':'error' } );
-			$$.Append( this.container, this.error_element );
-		} else {
-			$$.Empty( this.error_element );
-		}
-		var html = '<ul>';
-		for( var i = 0; i < this.errors.length; i++ ){
-			html += '<li>' + this.errors[ i ] + '</li>';
-		}
-		html += '</ul>';
+		//if( !this.error_element ){
+		//	this.error_element = $$.Create( 'div', { 'class':'error' } );
+		//	$$.Append( this.container, this.error_element );
+		//} else {
+		//	$$.Empty( this.error_element );
+		//}
+		//var html = '<ul>';
+		//for( var i = 0; i < this.errors.length; i++ ){
+		//	html += '<li>' + this.errors[ i ] + '</li>';
+		//}
+		//html += '</ul>';
+		//
+		//$$.SetHTML( this.error_element, html );
+		if( this.errors.length ){
+			$$.AddClass( this.element, 'invalid' );
 
-		$$.SetHTML( this.error_element, html );
+			var elements = '';
+			for( var i = 0; i < this.errors.length; i++ ){
+				elements += in4mlUtilities.Replace( '[[value]]', this.errors[ i ], this.error_container );
+			}
+
+			if( typeof this.error_element != 'undefined' ){
+				$$.Remove( this.error_element );
+			}
+			this.error_element = $$.Create( 'div', { 'class':'error' } );
+
+			$$.SetHTML( this.error_element, in4mlUtilities.Replace( '[[elements]]', elements, this.errors_container ) );
+
+			$$.Append
+			(
+				this.container,
+				this.error_element
+			);
+		}
+
 	},
 	BindEvent:function( event, func ){
 		$$.AddEvent
@@ -1189,6 +1249,9 @@ var in4mlFieldDate = in4mlField.extend({
 		if( definition.value ){
 			options.value = new Date( definition.value.year, definition.value.month-1, definition.value.day );
 		}
+		for( var index in definition.custom_params ){
+			options[ index ] = definition.custom_params[ index ];
+		}
 
 		// Create hidden fields to store
 		this.hidden_element_day = $$.Create
@@ -1240,12 +1303,21 @@ var in4mlFieldDate = in4mlField.extend({
 		}
 		$$.Trigger( this.element, '_change' );
 	},
-	GetValue:function(){
-		return {
-			day:$$.GetValue( this.hidden_element_day ),
-			month:$$.GetValue( this.hidden_element_month ),
-			year:$$.GetValue( this.hidden_element_year )
+	GetValue:function( get_as_object ){
+		if( get_as_object ){
+			if( parseInt( $$.GetValue( this.hidden_element_year ) ) == 0 ){
+				output = null;
+			} else {
+				output = new Date( parseInt( $$.GetValue( this.hidden_element_year ) ), parseInt( $$.GetValue( this.hidden_element_month ) ) - 1, parseInt( $$.GetValue( this.hidden_element_day ) ) );
+			}
+			} else {
+			var output = {
+				day:$$.GetValue( this.hidden_element_day ),
+				month:$$.GetValue( this.hidden_element_month ),
+				year:$$.GetValue( this.hidden_element_year )
+			};
 		}
+		return output;
 	},
 	SetValue:function( value ){
 	  if( $.isPlainObject(value) ){
@@ -1751,7 +1823,14 @@ JSLibInterface_jQuery.prototype.Bind = function( fn, scope, args, override ) {
  * @param		string			event
  */
 JSLibInterface_jQuery.prototype.Trigger = function( element, event ){
-	$( element ).trigger( event );
+
+	if( arguments.length > 2 ){
+		$( element ).trigger( event, $( arguments ).slice( 2 ) );
+	} else {
+		$( element ).trigger( event );
+
+	}
+
 }
 /**
  * Get the value of a form element
@@ -1793,7 +1872,15 @@ JSLibInterface_jQuery.prototype.GetValue = function( element ){
  * @return		mixed
  */
 JSLibInterface_jQuery.prototype.SetValue = function( element, value ){
-  $( element ).val( value );
+	switch( $( element ) [0].nodeName.toLowerCase() ){
+		case 'select':{
+		  $( element ).val( value ).trigger( 'change' );
+		}
+		default:{
+		  $( element ).val( value );
+		  break;
+		}
+	}
 }
 /**
  * Simple JS alternative to htmlentities()
@@ -1937,7 +2024,7 @@ JSLibInterface_jQuery.prototype.ConvertToDatePicker = function( element, options
 		'maxDate': options.max_date,
 		'firstDay': options.first_day,
 		'showOn': 'both',
-		'buttonImage': in4ml.resources_path + 'img/calendar_icon.png'
+		'buttonImage': ((options.icon_image)?options.icon_image:in4ml.resources_path + 'img/calendar_icon.png')
 	};
 
 	// Interpolate settings
