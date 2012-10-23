@@ -2040,7 +2040,7 @@ JSLibInterface_jQuery.prototype.ConvertToDatePicker = function( element, options
 				break;
 			}
 			case 'change':{
-				settings.onClose = this.Bind(
+				settings.onSelect = this.Bind(
 					function( date_string, date_picker, callback ){
 						callback( date_picker.input.datepicker( 'getDate' ) );
 					},
