@@ -99,7 +99,7 @@ class in4mlRendererPHP extends in4mlRenderer{
 		if( isset( $element->label ) ){
 			$element->AddClass( 'has-label' );
 		}
-		if( isset( $element->notes ) ){
+		if( isset( $element->notes ) && $element->notes ){
 			$element->AddClass( 'has-notes' );
 		}
 		if( isset( $element->prefix ) ){

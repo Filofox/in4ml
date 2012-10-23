@@ -60,6 +60,9 @@ class in4mlFieldDate extends in4mlField{
 			$element->AddClass( $class );
 		}
 		$element->AddClass( 'container' );
+		if( $this->notes ){
+			$element->notes = $this->notes;
+		}
 
 		$element->label = $this->label;
 
@@ -180,6 +183,9 @@ class in4mlFieldDate extends in4mlField{
 
 		if( $this->value ){
 			$settings[ 'value' ] = $this->value;
+		}
+		if( $this->notes ){
+			$settings[ 'notes' ] = $this->notes;
 		}
 
 		$settings[ 'custom_params' ] = $this->custom_params;
