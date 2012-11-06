@@ -827,6 +827,7 @@ in4mlForm.prototype.AddFileField = function( field ){
 var in4mlField = Class.extend({
 	errors_container: '<ul>[[elements]]</ul>',
 	error_container:'<li>[[value]]</li>',
+	hidden:false,
 
 	ready: true,
 	is_valid: true,
@@ -1138,10 +1139,16 @@ var in4mlFieldFile = in4mlField.extend({
 		}
 	},
 	onHide:function(){
-		$$.AdvancedFileOnHide( this );
+		if( !this.hidden ){
+			$$.AdvancedFileOnHide( this );
+			this.hidden = true;
+		}
 	},
 	onShow:function(){
-		$$.AdvancedFileOnShow( this );
+		if( this.hidden ){
+			$$.AdvancedFileOnShow( this );
+			this.hidden = false;
+		}
 	},
 	Reset:function(){
 		$$.AdvancedFileReset( this );
@@ -1192,10 +1199,16 @@ var in4mlFieldRichText = in4mlField.extend({
 		);
 	},
 	onHide:function(){
-		$$.RichTextOnHide( this );
+		if( !this.hidden ){
+			$$.RichTextOnHide( this );
+			this.hidden = true;
+		}
 	},
 	onShow:function(){
-		$$.RichTextOnShow( this );
+		if( this.hidden ){
+			$$.RichTextOnShow( this );
+			this.hidden = false;
+		}
 	}
 });
 /**
