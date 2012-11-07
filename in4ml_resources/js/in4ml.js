@@ -100,7 +100,8 @@ var in4ml = {
 	  }
 	  var form = new in4mlForm( form_definition, events );
 	  this.forms[ form_definition.id ] = form;
-	  form.Init();
+	  // Delay execution due to IE8 DOM problems (can't modify DOM before page load complete)
+	  setTimeout($$.Bind(form.Init,form),0);
 	},
 	/**
 	 * Load a form via ajax
@@ -348,50 +349,7 @@ in4mlForm = function( form_definition, ready_events ){
 
 	// Build fields list
 	this.fields = {};
-	for( var i = 0; i < form_definition.fields.length; i++ ){
-		if( form_definition.fields[ i ].name ){
-			switch( form_definition.fields[ i ].type ){
-				case 'Captcha':{
-					var field = new in4mlFieldCaptcha( this, form_definition.fields[ i ] );
-					break;
-				}
-				case 'Checkbox':{
-					var field = new in4mlFieldCheckbox( this, form_definition.fields[ i ] );
-					break;
-				}
-				case 'CheckboxMultiple':{
-					var field = new in4mlFieldCheckboxMultiple( this, form_definition.fields[ i ] );
-					break;
-				}
-				case 'Radio':{
-					var field = new in4mlFieldRadio( this, form_definition.fields[ i ] );
-					break;
-				}
-				case 'Date':{
-					var field = new in4mlFieldDate( this, form_definition.fields[ i ] );
-					break;
-				}
-				case 'RichText':{
-					var field = new in4mlFieldRichText( this, form_definition.fields[ i ] );
-					break;
-				}
-				case 'Select':{
-					var field = new in4mlFieldSelect( this, form_definition.fields[ i ] );
-					break;
-				}
-				case 'File':{
-					var field = new in4mlFieldFile( this, form_definition.fields[ i ] );
-					break;
-				}
-				default:{
-					var field = new in4mlField( this, form_definition.fields[ i ] );
-					break;
-				}
-			}
-
-			this.fields[ form_definition.fields[ i ].name ] = field;
-		}
-	}
+	this.form_definition = form_definition;
 
 	// Bind submit event
 	$$.AddEvent
@@ -415,6 +373,52 @@ in4mlForm = function( form_definition, ready_events ){
 }
 
 in4mlForm.prototype.Init=function(){
+
+	for( var i = 0; i < this.form_definition.fields.length; i++ ){
+		if( this.form_definition.fields[ i ].name ){
+			switch( this.form_definition.fields[ i ].type ){
+				case 'Captcha':{
+					var field = new in4mlFieldCaptcha( this, this.form_definition.fields[ i ] );
+					break;
+				}
+				case 'Checkbox':{
+					var field = new in4mlFieldCheckbox( this, this.form_definition.fields[ i ] );
+					break;
+				}
+				case 'CheckboxMultiple':{
+					var field = new in4mlFieldCheckboxMultiple( this, this.form_definition.fields[ i ] );
+					break;
+				}
+				case 'Radio':{
+					var field = new in4mlFieldRadio( this, this.form_definition.fields[ i ] );
+					break;
+				}
+				case 'Date':{
+					var field = new in4mlFieldDate( this, this.form_definition.fields[ i ] );
+					break;
+				}
+				case 'RichText':{
+					var field = new in4mlFieldRichText( this, this.form_definition.fields[ i ] );
+					break;
+				}
+				case 'Select':{
+					var field = new in4mlFieldSelect( this, this.form_definition.fields[ i ] );
+					break;
+				}
+				case 'File':{
+					var field = new in4mlFieldFile( this, this.form_definition.fields[ i ] );
+					break;
+				}
+				default:{
+					var field = new in4mlField( this, this.form_definition.fields[ i ] );
+					break;
+				}
+			}
+
+			this.fields[ this.form_definition.fields[ i ].name ] = field;
+		}
+	}
+
     this.fields_initialised = true;
 	this.FieldReady();
 }
@@ -1139,16 +1143,12 @@ var in4mlFieldFile = in4mlField.extend({
 		}
 	},
 	onHide:function(){
-		if( !this.hidden ){
-			$$.AdvancedFileOnHide( this );
-			this.hidden = true;
-		}
+		$$.AdvancedFileOnHide( this );
+		this.hidden = true;
 	},
 	onShow:function(){
-		if( this.hidden ){
-			$$.AdvancedFileOnShow( this );
-			this.hidden = false;
-		}
+		$$.AdvancedFileOnShow( this );
+		this.hidden = false;
 	},
 	Reset:function(){
 		$$.AdvancedFileReset( this );
@@ -1199,16 +1199,12 @@ var in4mlFieldRichText = in4mlField.extend({
 		);
 	},
 	onHide:function(){
-		if( !this.hidden ){
-			$$.RichTextOnHide( this );
-			this.hidden = true;
-		}
+		$$.RichTextOnHide( this );
+		this.hidden = true;
 	},
 	onShow:function(){
-		if( this.hidden ){
-			$$.RichTextOnShow( this );
-			this.hidden = false;
-		}
+		$$.RichTextOnShow( this );
+		this.hidden = false;
 	}
 });
 /**
