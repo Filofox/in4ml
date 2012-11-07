@@ -101,7 +101,8 @@ var in4ml = {
 	  var form = new in4mlForm( form_definition, events );
 	  this.forms[ form_definition.id ] = form;
 	  // Delay execution due to IE8 DOM problems (can't modify DOM before page load complete)
-	  setTimeout($$.Bind(form.Init,form),0);
+	  //setTimeout($$.Bind(form.Init,form),0);
+	  form.Init();
 	},
 	/**
 	 * Load a form via ajax
