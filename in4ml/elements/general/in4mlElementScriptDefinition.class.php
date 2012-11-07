@@ -28,8 +28,6 @@ class in4mlElementScriptDefinition extends in4mlElementScript{
 		$values = parent::GetRenderValues();
 
 		$values->code = '$$.Ready( function(){ in4ml.RegisterForm( ' . $this->form->GetDefinitionAsJSON() . ' ); } )';
-		// The above fails in IE8 if the in4ml code hasn't been loaded correctly -- this fixes it but should only be used if absolutely necessary.
-		//$values->code = '$(document).ready( function(){ in4ml.RegisterForm( ' . $this->form->GetDefinitionAsJSON() . ' ); } )';
 
 		return $values;
 	}
