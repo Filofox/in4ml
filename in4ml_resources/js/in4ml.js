@@ -1232,6 +1232,9 @@ var in4mlFieldSelect = in4mlField.extend({
 var in4mlFieldDate = in4mlField.extend({
 	init:function( form, definition ){
 		this._super( form, definition );
+		$( window ).load( $$.Bind( this.AfterInit, this, [form,definition], true ) );
+	},
+	AfterInit:function( form,definition ){
 		var options =
 		{
 			'format': definition.format,
@@ -1680,7 +1683,18 @@ JSLibInterface_jQuery.prototype.Empty = function( element ){
  * @return		mixed
  */
 JSLibInterface_jQuery.prototype.GetAttribute = function( element, attribute ){
-	return jQuery( element ).attr( attribute );
+	var value = jQuery( element ).attr( attribute );
+	// Fix tinyMCE attr problem?
+	if( $.isArray( value ) ){
+		var base_element = $( element ).get(0);
+		if( typeof base_element == 'undefined' || typeof base_element.getAttribute == 'undefined' ){
+			return null;
+		} else {
+			return base_element.getAttribute(attribute);
+		}
+	}
+
+	return value;
 }
 /**
  * Set an attribute of an element
@@ -1985,7 +1999,8 @@ JSLibInterface_jQuery.prototype.ConvertToRichText = function( field, options ){
 JSLibInterface_jQuery.prototype.RichTextOnHide = function( field ){
 	if( typeof tinyMCE != 'undefined'){
 	  tinyMCE.triggerSave();
-	  tinyMCE.execCommand("mceRemoveControl", false, $( field.element ).attr( 'id' ) );
+	  var id = $( field.element ).get(0).id;
+	  tinyMCE.execCommand("mceRemoveControl", false, id );
 	}
 }
 /**
