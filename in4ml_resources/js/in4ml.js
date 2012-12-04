@@ -1685,7 +1685,7 @@ JSLibInterface_jQuery.prototype.Empty = function( element ){
 JSLibInterface_jQuery.prototype.GetAttribute = function( element, attribute ){
 	var value = jQuery( element ).attr( attribute );
 	// Fix tinyMCE attr problem?
-	if( $.isArray( value ) ){
+	if( value instanceof jQuery ){
 		var base_element = $( element ).get(0);
 		if( typeof base_element == 'undefined' || typeof base_element.getAttribute == 'undefined' ){
 			return null;
