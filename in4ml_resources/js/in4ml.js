@@ -1252,6 +1252,11 @@ var in4mlFieldDate = in4mlField.extend({
 				this.onUpdate,
 				this
 			),
+			'close': $$.Bind
+			(
+				this.onUpdate,
+				this
+			),
 			first_day: definition.custom_params.first_day
 		};
 
@@ -2062,6 +2067,18 @@ JSLibInterface_jQuery.prototype.ConvertToDatePicker = function( element, options
 					value
 				);
 				break;
+			}
+			case 'close':{
+			  settings.onClose = this.Bind(
+				function( date_string, date_picker, callback ){
+				  if( date_string == '' ){
+    				  callback();
+				  }
+				},
+				this,
+				value
+			  );
+			  break;
 			}
 		}
 	}
