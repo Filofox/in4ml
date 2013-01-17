@@ -1232,7 +1232,7 @@ var in4mlFieldSelect = in4mlField.extend({
 var in4mlFieldDate = in4mlField.extend({
 	init:function( form, definition ){
 		this._super( form, definition );
-		$( window ).load( $$.Bind( this.AfterInit, this, [form,definition], true ) );
+		$( $$.Bind( this.AfterInit, this, [form,definition], true ) );
 	},
 	AfterInit:function( form,definition ){
 		var options =
@@ -1890,7 +1890,7 @@ JSLibInterface_jQuery.prototype.GetValue = function( element ){
  * @return		mixed
  */
 JSLibInterface_jQuery.prototype.SetValue = function( element, value ){
-	switch( $( element ) [0].nodeName.toLowerCase() ){
+	switch( $( element )[0].nodeName.toLowerCase() ){
 		case 'select':{
 		  $( element ).val( value ).trigger( 'change' );
 		}
