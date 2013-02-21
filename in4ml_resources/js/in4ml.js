@@ -825,6 +825,28 @@ in4mlForm.prototype.onShow = function(){
 in4mlForm.prototype.AddFileField = function( field ){
 	this.file_fields.push( field );
 }
+/**
+ * Get form action
+ */
+in4mlForm.prototype.GetAction = function(){
+	return $( this.element ).attr( 'action' );
+}
+/**
+ * Set form action
+ */
+in4mlForm.prototype.SetAction = function( action ){
+	if( typeof this.original_action == "undefined" ){
+		this.original_action = this.GetAction();
+	}
+	$( this.element ).attr( 'action', action );
+}
+/**
+ * Reset form action
+ */
+in4mlForm.prototype.ResetAction = function(){
+	$( this.element ).attr( 'action', this.original_action );
+}
+
 
 /**
  * Field
