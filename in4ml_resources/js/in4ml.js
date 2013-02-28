@@ -1011,7 +1011,13 @@ var in4mlField = Class.extend({
 		);
 	},
 	onHide:function(){},
-	onShow:function(){}
+	onShow:function(){},
+	Disable:function(){
+	  $$.SetAttribute( this.element, 'disabled', true);
+	},
+	Enable:function(){
+	  $$.SetAttribute( this.element, 'disabled', false);
+	}
 });
 /**
  * Captcha field
