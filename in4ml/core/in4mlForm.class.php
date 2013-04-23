@@ -365,6 +365,14 @@ class In4mlForm{
 		}
 	}
 
+	public function HasField( $field_name ){
+		foreach( $this->fields as $field ){
+			if( $field->name == $field_name ){
+				return true;
+			}
+		}
+	}
+
 	/**
 	 * If the form has been submitted, do validation
 	 *
