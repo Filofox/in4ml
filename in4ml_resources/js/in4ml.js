@@ -756,7 +756,6 @@ in4mlForm.prototype.BindEvent = function( event, func ){
 	  this.events[ event ] = [];
   }
   this.events[ event ].push( func );
-
   if( event == "Ready" && this.ready == true ){
 	// Has ready event already been fired?
 	if( !this.ready_fired ){
@@ -765,7 +764,7 @@ in4mlForm.prototype.BindEvent = function( event, func ){
 	  this.TriggerEvent( "Ready" );
 	} else {
 	  // Yes, just fire this event
-	  func(this);
+	  func( this, "Ready" );
 	}
   } else {
 	$$.AddEvent
