@@ -1051,7 +1051,7 @@ var in4mlFieldCheckbox = in4mlField.extend({
 		return $$.GetAttribute( this.element, 'checked' );
 	},
 	Reset:function(){
-	  $$.SetAttribute( this.element, 'checked', false );
+	  $$.SetAttribute( this.element, 'checked', $$.GetAttribute( this.element, 'defaultChecked' ) );
 	}
 });
 /**
