@@ -1587,7 +1587,18 @@ in4mlValidatorRequired.prototype.ValidateField = function( field ){
 
 	var output = true;
 
-	if( field.GetValue() == null || field.GetValue() == '' || typeof field.GetValue() == 'undefined' || ( field.type == 'Date' && field.GetValue().year == 0 ) ){
+	if(
+	  field.GetValue() == null
+	  ||
+	  field.GetValue() == ''
+	  ||
+	  typeof field.GetValue() == 'undefined'
+	  ||
+	  ( field.type == 'Date' && field.GetValue().year == 0 )
+	  ||
+	  ( field.type == 'CheckboxMultiple' && field.GetValue().length == 0 )
+	)
+	{
 		field.SetError( in4ml.GetErrorText( 'required', null, this.error_message ) );
 		output = false;
 	}
@@ -1890,7 +1901,7 @@ JSLibInterface_jQuery.prototype.GetValue = function( element ){
 
 	switch( $$.GetAttribute( element, 'type' ) ){
 		case 'checkbox':{
-			value = $$.GetAttribute( element, 'checked' );
+			value = ( typeof $$.GetAttribute( element, 'checked' ) != 'undefined' );
 			break;
 		}
 		case 'radio':{
