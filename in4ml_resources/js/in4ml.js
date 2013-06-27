@@ -1901,7 +1901,6 @@ JSLibInterface_jQuery.prototype.GetValue = function( element ){
 
 	switch( $$.GetAttribute( element, 'type' ) ){
 		case 'checkbox':{
-console.log($$.GetAttribute( element, 'checked' ));
 			value = ( typeof $$.GetAttribute( element, 'checked' ) != 'undefined' &&  $$.GetAttribute( element, 'checked' ) != false );
 			break;
 		}
