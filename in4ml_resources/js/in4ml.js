@@ -612,7 +612,7 @@ in4mlForm.prototype.AjaxSubmit = function(){
 	$$.JSONRequest
 	(
 		$$.GetAttribute( this.element, 'action' ),
-		'POST',
+		$$.GetAttribute( this.element, 'method' ),
 		values,
 		$$.Bind
 		(
