@@ -45,11 +45,11 @@ JSLibInterface_jQuery.prototype.AdvancedFileOnHide = function( field ){
 	}
 }
 JSLibInterface_jQuery.prototype._EnableAdvancedFile = function( field ){
+
 	var params = {
 		// General settings
 		runtimes : 'gears,flash,silverlight,browserplus,html5',
 		url : in4ml.resources_path + 'php/upload.php',
-		max_file_size : '1Gb',
 		unique_names : true,
 
 		// Flash settings
@@ -140,6 +140,10 @@ JSLibInterface_jQuery.prototype._EnableAdvancedFile = function( field ){
 				} else {
 
 				}
+				break;
+			}
+			case 'in4mlValidatorFileMaxSize': {
+				params.max_file_size = validator.size + validator.units.toLowerCase();
 				break;
 			}
 		}
