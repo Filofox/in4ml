@@ -49,7 +49,7 @@ JSLibInterface_jQuery.prototype._EnableAdvancedFile = function( field ){
 		// General settings
 		runtimes : 'gears,flash,silverlight,browserplus,html5',
 		url : in4ml.resources_path + 'php/upload.php',
-		max_file_size : '10mb',
+		max_file_size : '1Gb',
 		unique_names : true,
 
 		// Flash settings
