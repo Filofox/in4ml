@@ -1188,8 +1188,15 @@ var in4mlFieldFile = in4mlField.extend({
 var in4mlFieldRadio = in4mlField.extend({
   	init:function( form, definition ){
 	  this._super( form, definition );
-	  this.default_value = $( this.container ).find( 'input.radiobutton:checked' ).val();
+	  this.default_value = $$.GetValue( $$.Find( 'input.radiobutton:checked', this.container ) );
 	},
+	//GetValue:function(){
+	//	// Check selected
+	//	var checked = $$.Find( 'input.radiobutton:checked', this.container );
+	//	if( checked.length > 0 ){
+	//	}
+	//	return null;
+	//},
 	// Set value (i.e. set which one is checked)
 	SetValue:function( value ){
 		// Uncheck all
@@ -1907,7 +1914,7 @@ JSLibInterface_jQuery.prototype.GetValue = function( element ){
 		}
 		case 'radio':{
 			for( var i = 0; i < element.length; i++ ){
-				if( jQuery( element[ i ] ).attr( 'checked' ) ){
+				if( jQuery( element[ i ] ).is(':checked') ){
 					value = jQuery( element[ i ] ).val();
 				}
 			}
