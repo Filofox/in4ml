@@ -21,6 +21,8 @@ class In4mlField extends in4mlElement{
 	public $value;
 	public $default;
 
+	public $placeholder;
+
 	protected $validators = array();
 	protected $filters = array();
 
@@ -85,6 +87,9 @@ class In4mlField extends in4mlElement{
 		}
 		if( $this->disabled ){
 			$values->SetAttribute( 'disabled', 'disabled' );
+		}
+		if( $this->placeholder ){
+			$values->SetAttribute( 'placeholder', $this->placeholder );
 		}
 
 		return $values;

@@ -96,6 +96,9 @@ class in4mlRendererPHP extends in4mlRenderer{
 			$values[] = $error_html;
 		}
 
+		if( isset( $element->placeholder ) ){
+			$element->AddClass( 'has-label' );
+		}
 		if( isset( $element->label ) ){
 			$element->AddClass( 'has-label' );
 		}
@@ -137,10 +140,14 @@ class in4mlRendererPHP extends in4mlRenderer{
 		}
 
 		// Load the template
-		if( isset( $this->templates[ strtolower( $element_render_values->GetElementCategory() ) ][ strtolower( $element_render_values->GetElementType() ) ] ) ){
-			$template = $this->templates[ strtolower( $element_render_values->GetElementCategory() ) ][ strtolower( $element_render_values->GetElementType() ) ];
+		if( $element->template ){
+			$template = $element->template;
 		} else {
-			throw new Exception( 'Template type ' . $element_render_values->GetElementCategory() . ':' . $element_render_values->GetElementType() . ' not found.' );
+			if( isset( $this->templates[ strtolower( $element_render_values->GetElementCategory() ) ][ strtolower( $element_render_values->GetElementType() ) ] ) ){
+				$template = $this->templates[ strtolower( $element_render_values->GetElementCategory() ) ][ strtolower( $element_render_values->GetElementType() ) ];
+			} else {
+				throw new Exception( 'Template type ' . $element_render_values->GetElementCategory() . ':' . $element_render_values->GetElementType() . ' not found.' );
+			}
 		}
 
 		return str_replace

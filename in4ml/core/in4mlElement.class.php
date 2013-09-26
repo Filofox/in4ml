@@ -19,7 +19,7 @@ class In4mlElement{
 	public $form_id;
 	public $form_type;
 
-	protected $template;
+	public $template;
 
 	protected $class = array();
 	protected $container_class = array();
@@ -132,7 +132,7 @@ class In4mlElement{
 	public function GetContainerClasses(){
 		return $this->container_class;
 	}
-	
+
 	/**
 	 * Override this to perform direct modification on the element before rendering
 	 */
