@@ -1094,11 +1094,13 @@ var in4mlFieldCheckboxMultiple = in4mlField.extend({
 var in4mlFieldFile = in4mlField.extend({
 	upload_codes_element:null,
 	files_count: 0,
+	advanced: false,
 	/**
 	 * Do this after initialisation
 	 */
 	onAfterInit:function( form, definition ){
 		if( definition.advanced == true ){
+			this.advanced = true;
 			var options =
 			{
 			};
@@ -1171,15 +1173,21 @@ var in4mlFieldFile = in4mlField.extend({
 		}
 	},
 	onHide:function(){
-		$$.AdvancedFileOnHide( this );
+		if( this.advanced ){
+			$$.AdvancedFileOnHide( this );
+		}
 		this.hidden = true;
 	},
 	onShow:function(){
-		$$.AdvancedFileOnShow( this );
+		if( this.advanced ){
+			$$.AdvancedFileOnShow( this );
+		}
 		this.hidden = false;
 	},
 	Reset:function(){
-		$$.AdvancedFileReset( this );
+		if( this.advanced ){
+			$$.AdvancedFileReset( this );
+		}
 	}
 });
 /**
