@@ -641,20 +641,7 @@ in4mlForm.prototype.HandleAjaxSubmitSuccess = function( status, response ){
 			this.file_fields[ i ].ClearQueue();
 		}
 	} else {
-		// Form errors
-		for( var i = 0; i < response.form_errors.length; i++ ){
-			this.SetFormError( response.form_errors[ i ] );
-		}
-		this.ShowErrors();
-		// Field errors
-		for( var field_name in response.field_errors ){
-			var field = this.GetField( field_name );
-			for( var i = 0; i < response.field_errors[ field_name ].length; i++ ){
-				field.SetError( response.field_errors[ field_name ][ i ] );
-			}
-			field.ShowErrors();
-		}
-		this.TriggerEvent( 'SubmitError', response );
+	  this.DisplayErrors(response);
 	}
 }
 /**
@@ -665,9 +652,23 @@ in4mlForm.prototype.HandleAjaxSubmitSuccess = function( status, response ){
  */
 in4mlForm.prototype.HandleAjaxSubmitError = function( request_object, error_code  ){
 	this.TriggerEvent( 'AfterSubmit' );
-	console.log( 'error' );
-	console.log( arguments );
+	this.DisplayErrors(request_object.responseJSON);
 	this.TriggerEvent( 'SubmitError' );
+}
+in4mlForm.prototype.DisplayErrors = function( response ){
+  // Form errors
+  for( var i = 0; i < response.form_errors.length; i++ ){
+	  this.SetFormError( response.form_errors[ i ] );
+  }
+  this.ShowErrors();
+  // Field errors
+  for( var field_name in response.field_errors ){
+	  var field = this.GetField( field_name );
+	  for( var i = 0; i < response.field_errors[ field_name ].length; i++ ){
+		  field.SetError( response.field_errors[ field_name ][ i ] );
+	  }
+	  field.ShowErrors();
+  }
 }
 /**
  * Do validation
