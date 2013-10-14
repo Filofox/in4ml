@@ -18,14 +18,14 @@ class in4mlFieldRadio extends in4mlField{
 	private $options = array();
 	private $options_elements = array();
 	private $options_element = null;
-	
+
 	public function __construct(){
 		// Automatically validates options
 		$this->AddValidator( in4ml::CreateValidator( 'Options' ) );
-		
+
 		$element = in4ml::CreateElement( 'Block:' . $this->container_type );
 		$element->AddClass( strtolower( $this->type ) );
-		
+
 		$this->options_element = $element;
 	}
 
@@ -48,18 +48,19 @@ class in4mlFieldRadio extends in4mlField{
 		$radio_button->label = $text;
 		$radio_button->field_value = $value;
 
+
 		if( $this->default == $value ){
 			$radio_button->default = $value;
 		}
 		$radio_button->form_id = $this->form_id;
 		$radio_button->index = count( $this->options_elements );
-		
+
 		$this->options_elements[] = $radio_button;
-		
+
 		$this->options_element->AddElement( $radio_button );
 	}
-		
-	
+
+
 	/**
 	 * Return list of options
 	 *
@@ -83,6 +84,9 @@ class in4mlFieldRadio extends in4mlField{
 
 		foreach( $this->container_class as $class ){
 			$this->options_element->AddClass( $class );
+		}
+		if( $this->container_id ){
+			$this->options_element->id = $this->container_id;
 		}
 
 		return $this->options_element;
