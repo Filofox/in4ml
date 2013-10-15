@@ -660,16 +660,22 @@ in4mlForm.prototype.DisplayErrors = function( response ){
   for( var i = 0; i < response.form_errors.length; i++ ){
 	  this.SetFormError( response.form_errors[ i ] );
   }
-  this.ShowErrors();
   // Field errors
   for( var field_name in response.field_errors ){
 	  var field = this.GetField( field_name );
 	  for( var i = 0; i < response.field_errors[ field_name ].length; i++ ){
 		  field.SetError( response.field_errors[ field_name ][ i ] );
 	  }
-	  field.ShowErrors();
+  }
+  this.RenderErrors();
+}
+in4mlForm.prototype.RenderErrors = function(){
+  this.ShowErrors();
+  for( var field_name in this.fields ){
+	  this.GetField( field_name ).ShowErrors();
   }
 }
+
 /**
  * Do validation
  */
