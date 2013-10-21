@@ -185,7 +185,7 @@ if( !class_exists( 'LibDate' ) ){
 			$date = array();
 
 			// Split and match for + and - (relative dates)
-			preg_match( '/(\+|-|)(\d*)\/(\+|-|)(\d*)\/(\+|-|)(\d*)/', $date_string, $matches );
+			preg_match( '/(\+|-|~|)(\d*)\/(\+|-|)(\d*)\/(\+|-|)(\d*)/', $date_string, $matches );
 
 			$current_date = date_create();
 
@@ -246,6 +246,9 @@ if( !class_exists( 'LibDate' ) ){
 
 			// Do any relative stuff
 			$this->SetRelativeDate( $relative_day, $relative_month, $relative_year );
+			if( $matches[ 1 ] == '~'){
+				$this->day = (int)$this->format( 't' );
+			}
 		}
 
 		/**
