@@ -13,27 +13,27 @@ require_once( in4ml::GetPathCore() . 'in4mlValidator.class.php' );
  * Optionally, check for minimum and/or maximum length
  */
 class in4mlValidatorNumeric extends in4mlValidator{
-	
+
 	public $min = null;
 	public $max = null;
 
 	/**
 	 * Perform validation
-	 * 
+	 *
 	 * @param		in4mlField		$field		The field to be validated
 	 *
 	 * @return		boolean						False if the field is not valid
 	 */
 	public function ValidateField( in4mlField $field ){
-		
+
 		$output = true;
-		
+
 		$value = $field->GetValue();
 
 		if( $value !== null && $value != '' ){
 			if( !is_numeric( $value ) ){
 				// Not a number
-				$field->SetError( "numeric:nan" );
+				$field->SetError( $this->GetErrorText( "numeric:nan" ) );
 				$output = false;
 			} else {
 
@@ -50,7 +50,7 @@ class in4mlValidatorNumeric extends in4mlValidator{
 					$output = false;
 				}
 			}
-		}		
+		}
 		return $output;
 	}
 }
