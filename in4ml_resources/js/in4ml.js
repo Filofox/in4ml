@@ -651,11 +651,15 @@ in4mlForm.prototype.HandleAjaxSubmitSuccess = function( status, response ){
  * @param		string		error_code			Code indicating error
  */
 in4mlForm.prototype.HandleAjaxSubmitError = function( request_object, error_code  ){
+	if( typeof request_object.responseJSON == 'undefined' ){
+	  request_object.responseJSON = jQuery.parseJSON(request_object.responseText);
+	}
 	this.TriggerEvent( 'AfterSubmit' );
+	this.TriggerEvent( 'SubmitError', request_object.responseJSON );
 	this.DisplayErrors(request_object.responseJSON);
-	this.TriggerEvent( 'SubmitError' );
 }
 in4mlForm.prototype.DisplayErrors = function( response ){
+console.log(response);
   // Form errors
   for( var i = 0; i < response.form_errors.length; i++ ){
 	  this.SetFormError( response.form_errors[ i ] );
@@ -962,7 +966,6 @@ var in4mlField = Class.extend({
 		}
 	},
 	ShowErrors: function(){
-		$$.AddClass( this.container, 'invalid' );
 
 		//if( !this.error_element ){
 		//	this.error_element = $$.Create( 'div', { 'class':'error' } );
@@ -978,6 +981,7 @@ var in4mlField = Class.extend({
 		//
 		//$$.SetHTML( this.error_element, html );
 		if( this.errors.length ){
+			$$.AddClass( this.container, 'invalid' );
 			$$.AddClass( this.element, 'invalid' );
 
 			var elements = '';
