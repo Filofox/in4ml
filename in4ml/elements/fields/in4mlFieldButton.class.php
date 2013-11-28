@@ -14,7 +14,7 @@ class in4mlFieldButton extends in4mlField{
 	public $type = 'Button';
 	public $id;
 	public $button_type = 'button';
-	
+
 	/**
 	 * Return a list of key/value pairs to be interpolated into template
 	 *
@@ -26,8 +26,9 @@ class in4mlFieldButton extends in4mlField{
 		$this->AddClass( strtolower( $this->button_type ) );
 
 		$values = parent::GetRenderValues();
-		
+
 		// Checkbox text
+		$values->label = $this->label;
 		$values->setAttribute( 'value', in4ml::Escape( $this->label ) );
 		$values->setAttribute( 'type', $this->button_type );
 		$values->setAttribute( 'id', $this->form->form_id . '_' . $this->id );
