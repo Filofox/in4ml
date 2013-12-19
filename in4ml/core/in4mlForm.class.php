@@ -226,7 +226,7 @@ class In4mlForm{
 							$temp_dir .= '/';
 						}
 
-						$target_dir = $temp_dir . 'in4ml_' . $code . '/';
+						$target_dir = $temp_dir . 'in4ml_' . $code . DIRECTORY_SEPARATOR;
 
 						$d = dir( $target_dir );
 						while (false !== ($entry = $d->read())) {
