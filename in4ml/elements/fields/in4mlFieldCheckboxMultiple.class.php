@@ -149,11 +149,13 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 
 			// Wrap the element in the container
 			$container->AddElement( $checkbox );
+			$this->options_elements[] = $checkbox;
 			$checkbox = $container;
+		} else {
+			$this->options_elements[] = $checkbox;
 		}
-
-		$this->options_elements[] = $checkbox;
 		$this->options_element->AddElement( $checkbox );
+
 	}
 
 	/**
