@@ -15,6 +15,8 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 	public $type = 'CheckboxMultiple';
 
 	protected $container_type = 'InlineLabel';
+	// Set to true to add container to dynamically-added options
+	public $container_dynamic = false;
 
 	public $text = '';
 	public $checked = "";
@@ -124,6 +126,31 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 		}
 		$checkbox->field_value = $value;
 		$checkbox->form_id = $this->form_id;
+
+		// If a container type is specified
+		if( $this->container_dynamic && $container_type = $this->GetContainerType() ){
+			$element = $checkbox;
+			// Create container element
+			$container = in4ml::CreateElement( 'Block:' . $container_type );
+
+			$container->AddClass( 'container' );
+			$container->AddClass( strtolower( $container_type ) );
+			$container->AddClass( strtolower( $element->type ) );
+
+			// Set some values
+			$container->label = $element->GetLabel();
+			$container->field_name = $element->name;
+			$container->prefix = $element->GetPrefix();
+			$container->suffix = $element->GetSuffix();
+			$container->notes = $element->GetNotes();
+
+			$container->form_id = $this->form_id;
+			$container->field_name = $element->name;
+
+			// Wrap the element in the container
+			$container->AddElement( $checkbox );
+			$checkbox = $container;
+		}
 
 		$this->options_elements[] = $checkbox;
 		$this->options_element->AddElement( $checkbox );
