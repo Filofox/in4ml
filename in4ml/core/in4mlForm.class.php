@@ -250,12 +250,12 @@ class In4mlForm{
 						);
 					}
 				}
-				if( isset( $_FILES[ $field->name ] ) && count( $_FILES[ $field->name ] ) > 0 ){
-
+				$field_name = str_replace( '[]', '', $field->name );
+				if( isset( $_FILES[ $field_name ] ) && count( $_FILES[ $field_name ] ) > 0 ){
 					// Check it's not an array of files
-					if( isset( $_FILES[ $field->name ][ 0 ] ) ){
+					if( isset( $_FILES[ $field_name  ][ 0 ] ) ){
 						// It's an array
-						foreach( $_FILES[ $field->name ] as $file ){
+						foreach( $_FILES[ $field_name  ] as $file ){
 							if( $file[ 'error' ] != 4 ){
 								$field->AddFile
 								(
@@ -268,15 +268,15 @@ class In4mlForm{
 							}
 						}
 					} else {
-						if( $_FILES[ $field->name ][ 'error' ] != 4 ){
+						if( $_FILES[ $field_name  ][ 'error' ] != 4 ){
 							// Just one file
 							$field->AddFile
 							(
-								$_FILES[ $field->name ][ 'name' ],
-								$_FILES[ $field->name ][ 'tmp_name' ],
-								$_FILES[ $field->name ][ 'type' ],
-								$_FILES[ $field->name ][ 'size' ],
-								$_FILES[ $field->name ][ 'error' ]
+								$_FILES[ $field_name ][ 'name' ],
+								$_FILES[ $field_name ][ 'tmp_name' ],
+								$_FILES[ $field_name ][ 'type' ],
+								$_FILES[ $field_name ][ 'size' ],
+								$_FILES[ $field_name ][ 'error' ]
 							);
 						}
 					}
