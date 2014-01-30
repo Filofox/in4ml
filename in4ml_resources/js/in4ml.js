@@ -251,14 +251,18 @@ var in4ml = {
 	/**
 	 * Add a callback for every form that's loaded
 	 */
-	onFormsReady:function( callback ){
+	onFormsReady:function( callback, global_only ){
+
 		this.ready_events_global.push( callback );
-		// Add to existing forms
-		for( var id in this.forms ){
-			this.forms[ form_id ].BindEvent(
-			  'Ready',
-			  callback
-			)
+
+		if( !( typeof global_only != 'undefined' && global_only == false ) ){
+		  // Add to existing forms
+		  for( var id in this.forms ){
+			  this.forms[ form_id ].BindEvent(
+				'Ready',
+				callback
+			  )
+		  }
 		}
 	}
 }
@@ -659,7 +663,7 @@ in4mlForm.prototype.HandleAjaxSubmitError = function( request_object, error_code
 	this.DisplayErrors(request_object.responseJSON);
 }
 in4mlForm.prototype.DisplayErrors = function( response ){
-console.log(response);
+//console.log(response);
   // Form errors
   for( var i = 0; i < response.form_errors.length; i++ ){
 	  this.SetFormError( response.form_errors[ i ] );
