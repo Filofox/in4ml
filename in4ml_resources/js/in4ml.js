@@ -251,18 +251,14 @@ var in4ml = {
 	/**
 	 * Add a callback for every form that's loaded
 	 */
-	onFormsReady:function( callback, global_only ){
-
+	onFormsReady:function( callback ){
 		this.ready_events_global.push( callback );
-
-		if( !( typeof global_only != 'undefined' && global_only == false ) ){
-		  // Add to existing forms
-		  for( var id in this.forms ){
-			  this.forms[ form_id ].BindEvent(
-				'Ready',
-				callback
-			  )
-		  }
+		// Add to existing forms
+		for( var id in this.forms ){
+			this.forms[ form_id ].BindEvent(
+			  'Ready',
+			  callback
+			)
 		}
 	}
 }
