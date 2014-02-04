@@ -2161,6 +2161,29 @@ JSLibInterface_jQuery.prototype.ConvertToDatePicker = function( element, options
 		new_element.datepicker( 'setDate', options.default_date );
 	}
 
+	$( new_element ).blur(
+	  $$.Bind(
+		function(event){
+		  var value = $$.GetValue( event.target ).trim().match( /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/ );
+		  if( value != null ){
+			// Check date
+			var date = new Date();
+			date.setDate( parseInt( value[ 1 ], 10 ) );
+			date.setMonth( ( parseInt( value[ 2 ], 10 ) - 1 ).toString() );
+			date.setFullYear( parseInt( value[ 3 ], 10 ) );
+
+			if ( isNaN( date.getTime() ) ) {
+			  // Invalid date
+			} else {
+			  $$.SetValue( $$.Find( 'input[type=hidden][name="' + $$.GetAttribute( element, 'name' ) + '[day]"]' ),  parseInt( value[ 1 ], 10 ) );
+			  $$.SetValue( $$.Find( 'input[type=hidden][name="' + $$.GetAttribute( element, 'name' ) + '[month]"]' ),  parseInt( value[ 2 ], 10 ) );
+			  $$.SetValue( $$.Find( 'input[type=hidden][name="' + $$.GetAttribute( element, 'name' ) + '[year]"]' ),  parseInt( value[ 3 ], 10 ) );
+			}
+		  }
+		},
+		element
+	  )
+	);
 	if( options.create ){
 		options.create( new_element.datepicker( 'getDate' ) );
 	}
