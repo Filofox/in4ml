@@ -255,7 +255,7 @@ var in4ml = {
 		this.ready_events_global.push( callback );
 		// Add to existing forms
 		for( var id in this.forms ){
-			this.forms[ form_id ].BindEvent(
+			this.forms[ id ].BindEvent(
 			  'Ready',
 			  callback
 			)
