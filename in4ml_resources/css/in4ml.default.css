@@ -167,7 +167,7 @@ form.in4ml div.container.captcha div.elements{
 	float:left;
 }
 
-.clearfix:after {
+form.in4ml .clearfix:after {
 	content: ".";
 	display: block;
 	clear: both;
@@ -176,14 +176,14 @@ form.in4ml div.container.captcha div.elements{
 	height: 0;
 }
 
-.clearfix {
+form.in4ml .clearfix {
 	display: inline-block;
 }
 
-html[xmlns] .clearfix {
+html[xmlns] form.in4ml .clearfix {
 	display: block;
 }
 
-* html .clearfix {
+* html form.in4ml .clearfix {
 	height: 1%;
 }
