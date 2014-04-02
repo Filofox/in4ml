@@ -133,6 +133,8 @@ if( !class_exists( 'LibDate' ) ){
 		 * @param		int		$years
 		 */
 		public function SetRelativeDate( $days = false, $months = false, $years = false ){
+
+			$base = strtotime($this->format( 'Y-m-01 00:00:01'));
 			if( $days ){
 				if( strpos( $days, '-' === false ) && strpos( $days, '+' === false ) ){
 					$days = '+' . $days;
@@ -141,7 +143,7 @@ if( !class_exists( 'LibDate' ) ){
 				(
 					strtotime(
 						$days . ' days',
-						$this->GetAsTimeStamp()
+						$base
 					)
 				);
 			}
@@ -153,7 +155,7 @@ if( !class_exists( 'LibDate' ) ){
 				(
 					strtotime(
 						$months . ' months',
-						$this->GetAsTimeStamp()
+						$base
 					)
 				);
 			}
@@ -165,7 +167,7 @@ if( !class_exists( 'LibDate' ) ){
 				(
 					strtotime(
 						$years . ' years',
-						$this->GetAsTimeStamp()
+						$base
 					)
 				);
 			}
@@ -177,7 +179,6 @@ if( !class_exists( 'LibDate' ) ){
 		 * User + or - to specify relative dates, otherwise absolute date assumed
 		 */
 		public function SetRelativeDateFromString( $date_string ){
-
 			// First, set date to 'now'
 			$this->SetFromTimestamp( date( 'U' ) );
 			$this->hours = $this->minutes = $this->seconds = 0;
@@ -245,7 +246,8 @@ if( !class_exists( 'LibDate' ) ){
 			}
 
 			// Do any relative stuff
-			$this->SetRelativeDate( $relative_day, $relative_month, $relative_year );
+			$this->SetRelativeDate( $relative_day, $relative_month, $relative_year, true );
+
 			if( $matches[ 1 ] == '~'){
 				$this->day = (int)$this->format( 't' );
 			}
