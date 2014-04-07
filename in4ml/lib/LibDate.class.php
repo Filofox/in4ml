@@ -143,7 +143,7 @@ if( !class_exists( 'LibDate' ) ){
 				(
 					strtotime(
 						$days . ' days',
-						$base
+						$this->GetAsTimeStamp()
 					)
 				);
 			}
