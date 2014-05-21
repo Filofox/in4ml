@@ -432,24 +432,28 @@ class in4ml{
 		$output = '<script type="text/javascript" src="' . self::GetPathResources() . 'js/in4ml.js"></script>' . "\n";
 
 		if( $advanced ){
-			if( self::Config( 'file_upload_library' ) ){
-				$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/in4ml-file-' . self::Config( 'file_upload_library' ) . '.js"></script>' . "\n";
-				// FIXME: This shouldn't be here
-				if( self::Config( 'file_upload_library' ) == 'plupload' ){
-					$output .= '<script type="text/javascript" src="http://bp.yahooapis.com/2.4.21/browserplus-min.js"></script>' . "\n";
-					$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/plupload/js/plupload.full.js"></script>' . "\n";
-					$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/plupload/js/jquery.plupload.queue/jquery.plupload.queue.js"></script>' . "\n";
-					$output .= '<link rel="stylesheet" type="text/css" href="' . in4ml::GetPathResources() . 'js/lib/plupload/js/jquery.plupload.queue/css/jquery.plupload.queue.css"/>' . "\n";
+			if( self::Config( 'include_upload' ) ){
+				if( self::Config( 'file_upload_library' ) ){
+					$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/in4ml-file-' . self::Config( 'file_upload_library' ) . '.js"></script>' . "\n";
+					// FIXME: This shouldn't be here
+					if( self::Config( 'file_upload_library' ) == 'plupload' ){
+						$output .= '<script type="text/javascript" src="http://bp.yahooapis.com/2.4.21/browserplus-min.js"></script>' . "\n";
+						$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/plupload/js/plupload.full.js"></script>' . "\n";
+						$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/plupload/js/jquery.plupload.queue/jquery.plupload.queue.js"></script>' . "\n";
+						$output .= '<link rel="stylesheet" type="text/css" href="' . in4ml::GetPathResources() . 'js/lib/plupload/js/jquery.plupload.queue/css/jquery.plupload.queue.css"/>' . "\n";
+					}
+		
+				} else {
+					$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/uploadify/jquery.uploadify.min.js"></script>' . "\n";
+					$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/uploadify/swfobject.js"></script>' . "\n";
+					$output .= '<link rel="stylesheet" type="text/css" href="' . in4ml::GetPathResources() . 'js/lib/uploadify/uploadify.css"/>' . "\n";
 				}
-	
-			} else {
-				$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/uploadify/jquery.uploadify.min.js"></script>' . "\n";
-				$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/uploadify/swfobject.js"></script>' . "\n";
-				$output .= '<link rel="stylesheet" type="text/css" href="' . in4ml::GetPathResources() . 'js/lib/uploadify/uploadify.css"/>' . "\n";
 			}
 	
 			// Make this smarter
-			$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/tiny_mce/tiny_mce.js"></script>' . "\n";
+			if( self::Config( 'include_tinymce' ) ){
+				$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/tiny_mce/tiny_mce.js"></script>' . "\n";
+			}
 		}
 
 
@@ -676,6 +680,9 @@ class in4mlConfig{
 	public $captcha_image_path = false;
 	public $captcha_codes_path = false;
 	public $file_upload_library = false;
+
+	public $include_tinymce = true;
+	public $include_upload = true;
 
 	// Override these settings in config file if necessary
 	public $default_renderer = 'PHP';
