@@ -469,8 +469,10 @@ class in4ml{
 				}
 			)
 		</script>
-		<link rel="stylesheet" type="text/css" href="' . in4ml::GetPathResources() . 'css/in4ml.default.css"/>
 		';
+		if( self::Config( 'include_default_css' ) ){
+			$output .= '		<link rel="stylesheet" type="text/css" href="' . in4ml::GetPathResources() . 'css/in4ml.default.css"/>';
+		}
 
 		return $output;
 
@@ -683,6 +685,7 @@ class in4mlConfig{
 
 	public $include_tinymce = true;
 	public $include_upload = true;
+	public $include_default_css = true;
 
 	// Override these settings in config file if necessary
 	public $default_renderer = 'PHP';
