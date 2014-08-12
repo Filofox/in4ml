@@ -1613,7 +1613,6 @@ in4mlValidatorRequired = function(){
 in4mlValidatorRequired.prototype.ValidateField = function( field ){
 
 	var output = true;
-
 	if(
 	  field.GetValue() == null
 	  ||
@@ -1753,7 +1752,20 @@ JSLibInterface_jQuery.prototype.Empty = function( element ){
  * @return		mixed
  */
 JSLibInterface_jQuery.prototype.GetAttribute = function( element, attribute ){
-	return jQuery( element ).attr( attribute );
+  if (typeof jQuery.prop == 'undefined' ) {
+	 return jQuery( element ).attr( attribute );
+  }
+  switch (attribute) {
+	case 'checked':
+	case 'selected':
+	case 'disabled':
+	{
+	  return jQuery( element ).prop( attribute );
+	}
+	default:{
+	  return jQuery( element ).attr( attribute );
+	}
+  }
 }
 /**
  * Set an attribute of an element
