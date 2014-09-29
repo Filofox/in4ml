@@ -134,19 +134,9 @@ if( !class_exists( 'LibDate' ) ){
 		 */
 		public function SetRelativeDate( $days = false, $months = false, $years = false ){
 
+			$current_day = $this->day;
 			$base = strtotime($this->format( 'Y-m-01 00:00:01'));
-			if( $days ){
-				if( strpos( $days, '-' === false ) && strpos( $days, '+' === false ) ){
-					$days = '+' . $days;
-				}
-				$this->SetFromTimestamp
-				(
-					strtotime(
-						$days . ' days',
-						$this->GetAsTimeStamp()
-					)
-				);
-			}
+			$set_day = false;
 			if( $months ){
 				if( strpos( $months, '-' === false ) && strpos( $months, '+' === false ) ){
 					$months = '+' . $months;
@@ -158,6 +148,7 @@ if( !class_exists( 'LibDate' ) ){
 						$base
 					)
 				);
+				$base = strtotime($this->format( 'Y-m-01 00:00:01'));
 			}
 			if( $years ){
 				if( strpos( $years, '-' === false ) && strpos( $years, '+' === false ) ){
@@ -170,6 +161,21 @@ if( !class_exists( 'LibDate' ) ){
 						$base
 					)
 				);
+				$base = strtotime($this->format( 'Y-m-01 00:00:01'));
+			}
+			if( $days ){
+				if( strpos( $days, '-' === false ) && strpos( $days, '+' === false ) ){
+					$days = '+' . $days;
+				}
+				$this->SetFromTimestamp
+				(
+					strtotime(
+						$days . ' days',
+						$base
+					)
+				);
+			} else {
+				$this->day = min( $current_day, (int)$this->format( 't' ) );
 			}
 		}
 
@@ -187,8 +193,6 @@ if( !class_exists( 'LibDate' ) ){
 
 			// Split and match for + and - (relative dates)
 			preg_match( '/(\+|-|~|)(\d*)\/(\+|-|)(\d*)\/(\+|-|)(\d*)/', $date_string, $matches );
-
-			$current_date = date_create();
 
 			if( count( $matches ) == 0 ){
 				throw new Exception( 'Invalid date' );
@@ -239,7 +243,8 @@ if( !class_exists( 'LibDate' ) ){
 						break;
 					}
 					default:{
-						$this->day = $day;
+						$this->day = 1;
+						$this->day = min( $day, (int)$this->format( 't' ) );
 						break;
 					}
 				}
