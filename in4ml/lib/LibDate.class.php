@@ -164,7 +164,7 @@ if( !class_exists( 'LibDate' ) ){
 				$base = strtotime($this->format( 'Y-m-01 00:00:01'));
 			}
 			if( $days ){
-				if( strpos( $days, '-' === false ) && strpos( $days, '+' === false ) ){
+				if( strpos( $days, '-' ) === false && strpos( $days, '+' ) === false ){
 					$days = '+' . $days;
 				}
 				$this->SetFromTimestamp
