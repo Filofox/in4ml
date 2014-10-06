@@ -151,7 +151,7 @@ if( !class_exists( 'LibDate' ) ){
 				$base = strtotime($this->format( 'Y-m-01 00:00:01'));
 			}
 			if( $years ){
-				if( strpos( $years, '-' === false ) && strpos( $years, '+' === false ) ){
+				if( strpos( $years, '-' ) === false && strpos( $years, '+' ) === false ){
 					$years = '+' . $years;
 				}
 				$this->SetFromTimestamp
