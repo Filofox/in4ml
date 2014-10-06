@@ -138,7 +138,7 @@ if( !class_exists( 'LibDate' ) ){
 			$base = strtotime($this->format( 'Y-m-01 00:00:01'));
 			$set_day = false;
 			if( $months ){
-				if( strpos( $months, '-' === false ) && strpos( $months, '+' === false ) ){
+				if( strpos( $months, '-' ) === false && strpos( $months, '+' ) === false ){
 					$months = '+' . $months;
 				}
 				$this->SetFromTimestamp
