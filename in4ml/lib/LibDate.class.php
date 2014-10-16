@@ -133,7 +133,6 @@ if( !class_exists( 'LibDate' ) ){
 		 * @param		int		$years
 		 */
 		public function SetRelativeDate( $days = false, $months = false, $years = false ){
-
 			$current_day = $this->day;
 			$base = strtotime($this->format( 'Y-m-01 00:00:01'));
 			$set_day = false;
@@ -166,6 +165,8 @@ if( !class_exists( 'LibDate' ) ){
 			if( $days ){
 				if( strpos( $days, '-' ) === false && strpos( $days, '+' ) === false ){
 					$days = '+' . $days;
+				} else {
+					$base = strtotime($this->format( 'Y-m-d 00:00:01'));
 				}
 				$this->SetFromTimestamp
 				(
