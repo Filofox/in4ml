@@ -1266,7 +1266,9 @@ var in4mlFieldRichText = in4mlField.extend({
  */
 var in4mlFieldSelect = in4mlField.extend({
 	AddOption:function( value, text ){
+console.log(1);
 	  var option = $$.Create( 'option', { value: value, text:text } );
+console.log(2);
 	  $$.Append( this.element, option );
 	},
 	SetOptions:function( options ){
@@ -1848,14 +1850,8 @@ JSLibInterface_jQuery.prototype.Create = function( type, properties ){
 					break;
 				}
 				case 'text':{
-				  var property = 'innerText';
-				  if (element.attr( 'textContent' ) != 'undefined' && element.attr( 'textContent' ) != false){
-					var property = 'textContent';
-				  }
-
-					element.attr
+					element.text
 					(
-						property,
 						value
 					);
 					break;
