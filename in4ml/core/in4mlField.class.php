@@ -22,6 +22,7 @@ class In4mlField extends in4mlElement{
 	public $default;
 
 	public $placeholder;
+	public $data; // Translates to data-[key] attributes on element
 
 	protected $validators = array();
 	protected $filters = array();
@@ -38,6 +39,7 @@ class In4mlField extends in4mlElement{
 	public $require_javascript = false;
 
 	public function __construct(){
+		
 		parent::__construct();
 
 		$this->AddClass( $this->name );
@@ -90,6 +92,11 @@ class In4mlField extends in4mlElement{
 		}
 		if( $this->placeholder ){
 			$values->SetAttribute( 'placeholder', $this->placeholder );
+		}
+		if( count( $this->data ) ){
+			foreach( $this->data as $key => $value ){
+				$values->SetAttribute( 'data-' . $key, $value );
+			}
 		}
 
 		return $values;
