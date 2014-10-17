@@ -1848,9 +1848,14 @@ JSLibInterface_jQuery.prototype.Create = function( type, properties ){
 					break;
 				}
 				case 'text':{
+				  var property = 'innerText';
+				  if (element.attr( 'textContent' ) != 'undefined' && element.attr( 'textContent' ) != false){
+					var property = 'textContent';
+				  }
+
 					element.attr
 					(
-						( ( jQuery.browser.mozilla ) ? 'textContent' : 'innerText' ),
+						property,
 						value
 					);
 					break;
