@@ -2,6 +2,10 @@
 
 $text = array
 (
+	'recaptcha' => array
+	(
+		'default' => 'reCAPTCHA field value not valid.'
+	),
 	'captcha' => array
 	(
 		'default' => 'CAPTCHA field value not valid.'

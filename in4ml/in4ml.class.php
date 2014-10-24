@@ -681,6 +681,10 @@ class in4mlConfig{
 	public $form_prefix;
 	public $captcha_image_path = false;
 	public $captcha_codes_path = false;
+
+	public $recaptcha_public_key = false;
+	public $recaptcha_private_key = false;
+
 	public $file_upload_library = false;
 
 	public $include_tinymce = true;
