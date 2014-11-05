@@ -1266,9 +1266,7 @@ var in4mlFieldRichText = in4mlField.extend({
  */
 var in4mlFieldSelect = in4mlField.extend({
 	AddOption:function( value, text ){
-console.log(1);
 	  var option = $$.Create( 'option', { value: value, text:text } );
-console.log(2);
 	  $$.Append( this.element, option );
 	},
 	SetOptions:function( options ){
