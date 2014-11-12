@@ -140,6 +140,9 @@ var in4ml = {
 
 	LoadFormSuccess:function( status, response, callback ){
 
+		if (typeof this.forms[response.form_id] != 'undefined' ){
+		  delete(this.forms[response.form_id]);
+		}
 		var container_id = 'in4ml_container_' + response.form_id;
 		if( $( 'div#' + container_id ).length > 0 ){
 		  $( 'div#' + container_id ).remove();
@@ -149,7 +152,6 @@ var in4ml = {
 		var div = $$.Create( 'div', {css:{'display':'none'}, id:container_id} );
 		$$.Append( document.body, div );
 		$( div ).html( response.form_html );
-
 		this.onFormReady( response.form_id, callback );
 
 	},
@@ -817,17 +819,21 @@ in4mlForm.prototype.AddValidator = function( validator_func ){
  * Call this when form is hidden
  */
 in4mlForm.prototype.onHide = function(){
+  $$.Trigger( this.element, 'BeforeHide' );
 	for( var index in this.fields ){
 		this.fields[ index ].onHide();
 	}
+  $$.Trigger( this.element, 'AfterHide' );
 }
 /**
  * Call this when form is shown after being hidden (e.g. display:none)
  */
 in4mlForm.prototype.onShow = function(){
+  $$.Trigger( this.element, 'BeforeShow' );
 	for( var index in this.fields ){
 		this.fields[ index ].onShow();
 	}
+  $$.Trigger( this.element, 'AfterShow' );
 }
 /**
  * Add an advanced file field to the list
