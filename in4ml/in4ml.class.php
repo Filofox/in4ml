@@ -465,7 +465,7 @@ class in4ml{
 			$$.Ready
 			(
 				function(){
-					in4ml.Init({"Error":' . json_encode( self::GetTextNamespace( 'Error' ) ) . '},"' .  self::GetPathResources() . '" );
+					in4ml.Init({"Error":' . self::json_encode( self::GetTextNamespace( 'Error' ) ) . '},"' .  self::GetPathResources() . '" );
 				}
 			)
 		</script>
@@ -476,6 +476,21 @@ class in4ml{
 
 		return $output;
 
+	}
+	
+	/**
+	 * Smarter json_encode -- throw exception on error
+	 *
+	 * $param		mixed		$data
+	 *
+	 * @return		string
+	 */ 
+	public static function json_encode( $data ){
+		$output = json_encode( $data );
+		if( function_exists( 'json_last_error' ) && json_last_error() !== 0 ){
+			throw new Exception( json_last_error_msg() );
+		}
+		return $output;
 	}
 
 	/**
@@ -802,4 +817,32 @@ class in4mlText{
 	}
 }
 
+if( !function_exists( 'json_last_error_msg' ) ){
+	function json_last_error_msg(){
+		switch( json_last_error() ){
+			case JSON_ERROR_NONE:{
+				$output = '';
+			}
+			case JSON_ERROR_DEPTH:{
+				$output = 'The maximum stack depth has been exceeded';
+			}
+			case JSON_ERROR_STATE_MISMATCH:{
+				$output = 'Invalid or malformed JSON';
+			}
+			case JSON_ERROR_CTRL_CHAR:{
+				$output = 'Control character error, possibly incorrectly encoded';
+			}
+			case JSON_ERROR_SYNTAX:{
+				$output = 'Syntax error';
+			}
+			case JSON_ERROR_UTF8:{
+				$output = 'Malformed UTF-8 characters, possibly incorrectly encoded';
+			}
+			default:{
+				$output = '';
+			}
+		}
+		return $output;
+	}
+}
 ?>

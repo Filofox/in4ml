@@ -519,7 +519,7 @@ class In4mlForm{
 			);
 		}
 
-		return json_encode( $definition );
+		return in4ml::json_encode( $definition );
 	}
 
 	/**
