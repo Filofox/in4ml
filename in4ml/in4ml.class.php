@@ -822,24 +822,31 @@ if( !function_exists( 'json_last_error_msg' ) ){
 		switch( json_last_error() ){
 			case JSON_ERROR_NONE:{
 				$output = '';
+				break;
 			}
 			case JSON_ERROR_DEPTH:{
 				$output = 'The maximum stack depth has been exceeded';
+				break;
 			}
 			case JSON_ERROR_STATE_MISMATCH:{
 				$output = 'Invalid or malformed JSON';
+				break;
 			}
 			case JSON_ERROR_CTRL_CHAR:{
 				$output = 'Control character error, possibly incorrectly encoded';
+				break;
 			}
 			case JSON_ERROR_SYNTAX:{
 				$output = 'Syntax error';
+				break;
 			}
 			case JSON_ERROR_UTF8:{
 				$output = 'Malformed UTF-8 characters, possibly incorrectly encoded';
+				break;
 			}
 			default:{
 				$output = '';
+				break;
 			}
 		}
 		return $output;
