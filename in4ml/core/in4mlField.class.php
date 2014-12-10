@@ -15,6 +15,7 @@ class In4mlField extends in4mlElement{
 	public $prefix;
 	public $suffix;
 	public $notes;
+	public $tabindex;
 
 	public $category = 'Field';
 
@@ -92,6 +93,9 @@ class In4mlField extends in4mlElement{
 		}
 		if( $this->placeholder ){
 			$values->SetAttribute( 'placeholder', $this->placeholder );
+		}
+		if( $this->tabindex ){
+			$values->SetAttribute( 'tabindex', $this->tabindex );
 		}
 		if( count( $this->data ) ){
 			foreach( $this->data as $key => $value ){
