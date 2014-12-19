@@ -326,6 +326,7 @@ in4mlForm = function( form_definition, ready_events ){
 	this.error_container = '<li>[[value]]</li>';
 
 	this.id = form_definition.id;
+	this.element_container_class = form_definition.element_container_class;
 
 	this.ready = false;
 	this.fields_initialised = false;
@@ -892,7 +893,7 @@ var in4mlField = Class.extend({
 		while( this.container == null && no_container == false ){
 			element = $$.FindParent( element );
 			var type = $$.GetAttribute( element, 'tagName' );
-			if( $$.HasClass( element, 'container' ) ){
+			if( $$.HasClass( element, form.element_container_class ) ){
 				this.container = element;
 			}else if( type  == 'FORM' || type == 'BODY' || typeof element == 'undefined' ){
 				no_container = true;
