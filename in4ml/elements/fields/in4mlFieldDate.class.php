@@ -59,7 +59,9 @@ class in4mlFieldDate extends in4mlField{
 		foreach( $this->container_class as $class ){
 			$element->AddClass( $class );
 		}
-		$element->AddClass( 'container' );
+		if( in4ml::Config()->default_container_class ){
+			$element->AddClass( in4ml::Config()->default_container_class );
+		}
 		if( $this->notes ){
 			$element->notes = $this->notes;
 		}

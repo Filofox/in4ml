@@ -205,8 +205,13 @@ class In4mlFormPHP extends In4mlForm{
 			// Create container element
 			$container = in4ml::CreateElement( 'Block:' . $container_type );
 
-			$container->AddClass( 'container' );
-			$container->AddClass( strtolower( $container_type ) );
+			if( in4ml::Config()->default_container_class ){
+				$container->AddClass( in4ml::Config()->default_container_class );
+			}
+
+			if( !in4ml::Config()->no_container_type_class ){
+				$container->AddClass( strtolower( $container_type ) );
+			}
 			$container->AddClass( strtolower( $element->type ) );
 
 			// Set some values

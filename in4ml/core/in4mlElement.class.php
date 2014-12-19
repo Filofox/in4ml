@@ -27,7 +27,9 @@ class In4mlElement{
 	protected $container_type = null;
 
 	function __construct(){
-		$this->AddClass( strtolower( $this->type ) );
+		if( !( in4ml::Config()->no_container_type_class && $this instanceof in4mlBlockContainer ) ){
+			$this->AddClass( strtolower( $this->type ) );
+		}
 	}
 
 	public function SetContainerType( $container_type ){

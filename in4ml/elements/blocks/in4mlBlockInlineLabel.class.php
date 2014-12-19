@@ -23,7 +23,9 @@ class in4mlBlockInlineLabel extends in4mlBlock{
 	public function __construct(){
 		parent::__construct();
 
-		$this->AddClass( 'container' );
+		if( in4ml::Config()->default_container_class ){
+			$this->AddClass( in4ml::Config()->default_container_class );
+		}
 	}
 
 	/**

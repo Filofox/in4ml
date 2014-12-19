@@ -711,6 +711,9 @@ class in4mlConfig{
 	public $default_renderer_template = false;
 	public $override_renderer_template = false;
 
+	public $default_container_class = 'container';
+	public $no_container_type_class = false;
+
 	public $lang = 'en';
 
 	/**

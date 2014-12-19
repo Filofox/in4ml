@@ -16,7 +16,9 @@ class in4mlElementRenderValues{
 		$this->element_category = $category;
 		$this->element_type = $type;
 		
-		$this->AddClass( strtolower( $this->element_type ) );
+		if( !( in4ml::Config()->no_container_type_class && strtolower( $this->element_type ) == 'container' ) ){
+			$this->AddClass( strtolower( $this->element_type ) );
+		}
 	}
 	
 	/**
