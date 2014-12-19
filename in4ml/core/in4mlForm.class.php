@@ -449,6 +449,7 @@ class In4mlForm{
 		$definition = array
 		(
 			'id' => $this->form_id,
+			'element_container_class' => in4ml::Config()->default_container_class,
 			'fields' => array(),
 			'ajax_submit' => $this->ajax_submit,
 			'auto_render' => $this->auto_render
