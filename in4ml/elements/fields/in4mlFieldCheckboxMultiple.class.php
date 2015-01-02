@@ -117,6 +117,7 @@ class in4mlFieldCheckboxMultiple extends in4mlField{
 
 		$checkbox->name = $this->name.'[' . $index . ']';
 		$checkbox->text = $text;
+		$checkbox->template = $this->template;
 
 		if( is_array( $this->value ) && in_array( $this->value[ $index ] ) ){
 			$checkbox->value = 1;
