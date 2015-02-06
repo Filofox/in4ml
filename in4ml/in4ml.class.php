@@ -172,6 +172,9 @@ class in4ml{
 	 * @return		string
 	 */
 	public static function GetPathi18n(){
+		if( self::Config( 'path_i18n' ) ){
+			return self::Config( 'path_i18n' );
+		}
 		return self::GetPathBase() . 'i18n/';
 	}
 	/**
@@ -715,6 +718,7 @@ class in4mlConfig{
 	public $no_container_type_class = false;
 
 	public $lang = 'en';
+	public $path_i18n = false;
 
 	/**
 	 * Catch invalid property set
