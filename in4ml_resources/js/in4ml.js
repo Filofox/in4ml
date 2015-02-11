@@ -549,6 +549,7 @@ in4mlForm.prototype.HandleSubmit = function(){
 	return is_valid;
 }
 in4mlForm.prototype.AbortSubmit = function(){
+	this.TriggerEvent( 'AbortSubmit' );
 	this.abort_submit = true;
 }
 in4mlForm.prototype.onUploadsComplete = function(){
