@@ -184,6 +184,55 @@ html[xmlns] form.in4ml .clearfix {
 	display: block;
 }
 
+form.in4ml .file-upload-advanced{
+	padding: 2px;
+	margin-bottom: 10px;
+	background-color: #eee;
+}
+form.in4ml .file-upload-advanced .file-select-button{
+	border: 1px solid #ccc;
+	padding: 10px;
+	display: inline-block;
+	background-color: white;
+}
+form.in4ml .file-upload-advanced .items_container{
+	background-color: white;
+}
+form.in4ml .file-upload-advanced .items_container p{
+	margin: 0;
+	padding: 5px;
+}
+form.in4ml .file-upload-advanced ul.items{
+	padding: 0;
+}
+form.in4ml .file-upload-advanced ul.items li{
+	padding: 7px 10px;
+	position: relative;
+}
+form.in4ml .file-upload-advanced ul.items li:hover{
+	background-color: #f6f6ff;
+}
+form.in4ml .file-upload-advanced ul.items li .button.remove{
+	border: 1px solid #ddd;
+	padding: 4px 10px;
+	margin: 0;
+	position: absolute;
+	right: 2px;
+	top: 2px;
+}
+form.in4ml .file-upload-advanced.in-progress ul.items li .button.remove{
+	display: none;
+}
+form.in4ml .file-upload-advanced .progress-outer{
+	background-color: #eee;
+	height: 15px;
+}
+form.in4ml .file-upload-advanced .progress .bar{
+	background-color: green;
+	height: 15px;
+	width: 0;
+}
+
 * html form.in4ml .clearfix {
 	height: 1%;
 }
