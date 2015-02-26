@@ -445,6 +445,9 @@ class in4ml{
 						$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/plupload/js/jquery.plupload.queue/jquery.plupload.queue.js"></script>' . "\n";
 						$output .= '<link rel="stylesheet" type="text/css" href="' . in4ml::GetPathResources() . 'js/lib/plupload/js/jquery.plupload.queue/css/jquery.plupload.queue.css"/>' . "\n";
 					}
+					if( self::Config( 'file_upload_library' ) == 'simple-ajax-uploader' ){
+						$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/simple-ajax-uploader/SimpleAjaxUploader.js"></script>' . "\n";
+					}
 		
 				} else {
 					$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/uploadify/jquery.uploadify.min.js"></script>' . "\n";
