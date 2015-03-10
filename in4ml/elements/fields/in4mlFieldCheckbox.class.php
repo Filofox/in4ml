@@ -35,6 +35,8 @@ class in4mlFieldCheckbox extends in4mlField{
 
 		$values->name = $this->name;
 
+		$values->form_id = $this->form_id;;
+
 		// Set value?
 		if( ( $render_value && $this->value ) || ( !$render_value && isset( $this->default ) && $this->default ) ){
 			$values->SetAttribute( 'checked', 'checked' );
