@@ -59,9 +59,17 @@ class in4mlValidatorConfirm extends in4mlValidator{
 	public function ModifyElement( in4mlField $element ){
 		$confirm_field = clone $element;
 		$confirm_field->name .= '_confirm';
-		$confirm_field->label = 'Confirm ' . $confirm_field->label;
+		if( $element->confirm_label ){
+			$confirm_field->label = $confirm_field->confirm_label;
+		} else {
+			$confirm_field->label = 'Confirm ' . $confirm_field->label;
+		}
 		if( isset( $confirm_field->placeholder ) && $confirm_field->placeholder != '' ){
-			$confirm_field->placeholder = 'Confirm ' . $confirm_field->placeholder;
+			if( $element->confirm_placeholder ){
+				$confirm_field->confirm_placeholder = $confirm_field->confirm_placeholder;
+			} else {
+				$confirm_field->placeholder = 'Confirm ' . $confirm_field->placeholder;
+			}
 		}
 		if( isset( $confirm_field->notes ) ){
 			$confirm_field->notes = null;

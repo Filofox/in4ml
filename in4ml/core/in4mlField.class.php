@@ -23,6 +23,8 @@ class In4mlField extends in4mlElement{
 	public $default;
 
 	public $placeholder;
+	public $confirm_label;
+	public $confirm_placeholder;
 	public $data; // Translates to data-[key] attributes on element
 
 	protected $validators = array();
