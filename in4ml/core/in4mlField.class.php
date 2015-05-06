@@ -74,6 +74,15 @@ class In4mlField extends in4mlElement{
 	public function GetFilters(){
 		return $this->filters;
 	}
+	
+	public function SetDisabled( $state ){
+		$this->disabled = (boolean)$state;
+		if( $this->disabled ){
+			$this->AddClass( 'disabled' );
+		} else {
+			$this->RemoveClass( 'disabled' );
+		}
+	}
 
 	/**
 	 * Return a list of key/value pairs to be interpolated into template

@@ -61,8 +61,11 @@ class in4mlRendererPHP extends in4mlRenderer{
 			foreach( $element->elements as $child_element ){
 				$elements[] = $this->RenderElement( $child_element, $render_values );
 
-				// Errors
+				if( $child_element->category == 'Field' && $child_element->disabled ){
+					$element->AddClass( 'disabled' );
+				}
 
+				// Errors
 				if( $child_element->category == 'Field' && $errors = $child_element->GetErrors() ){
 					$error_container = in4ml::CreateElement( 'Block:Error' );
 					$element->AddClass( 'invalid' );

@@ -118,6 +118,22 @@ class In4mlElement{
 	public function AddClass( $class ){
 		$this->class[] = $class;
 	}
+	
+	/**
+	 * Remove a class
+	 *
+	 * @param		string		$class
+	 */
+	public function RemoveClass( $class ){
+		$classes = array();
+		foreach( $this->class as $class ){
+			if( $class != $class ){
+				$classes[] = $class;
+			}
+		}
+		$this->class = $classes;
+	}
+
 	/**
 	 * Add a class to the element container
 	 *
