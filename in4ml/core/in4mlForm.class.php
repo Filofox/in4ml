@@ -767,7 +767,7 @@ class In4mlForm{
 				$pathinfo = pathinfo( $file );
 				// Delete file
 				if( file_exists( $file ) ){
-					unlink( $file );
+					//unlink( $file );
 				}
 				// Delete directory
 				if( is_dir( $pathinfo[ 'dirname' ] ) ){

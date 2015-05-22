@@ -20,6 +20,9 @@ class in4mlFieldFile extends in4mlField{
 	public $multiple = false;
 
 	public $advanced = false;
+	public $advanced_options = array(
+		'auto_upload' => false
+	);
 
 	/**
 	 * Add a file
@@ -40,7 +43,7 @@ class in4mlFieldFile extends in4mlField{
 	}
 
 	public function GetPropertiesForJSON(){
-		return array( 'advanced' => $this->advanced, 'multiple' => $this->multiple );
+		return array( 'advanced' => $this->advanced, 'advanced_options' => $this->advanced_options, 'multiple' => $this->multiple );
 	}
 
 	/**

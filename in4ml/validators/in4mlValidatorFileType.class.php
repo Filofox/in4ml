@@ -38,8 +38,9 @@ class in4mlValidatorFileType extends in4mlValidator{
 				} else {
 					$types = $this->types;
 				}
-
-				if( !in_array( $file[ 'mime_type' ], array_Keys( $types ) ) ){
+				// Drop anything after semi-colon (if present)
+				$mime_type_segments = explode( ';', $file[ 'mime_type' ] );
+				if( !in_array( $mime_type_segments[ 0 ], array_Keys( $types ) ) ){
 					$field->SetError( $this->GetErrorText( 'file:type', array( 'filetype' => $file[ 'mime_type' ], 'filename' => $file[ 'name' ], 'validtypes' => implode( ', ', $types ) ) ) );
 					$output = false;
 				}
