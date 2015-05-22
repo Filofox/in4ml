@@ -87,7 +87,7 @@ JSLibInterface_jQuery.prototype._EnableAdvancedFile = function( field ){
 		  url: in4ml.resources_path + 'php/upload.php?uploader=simple-ajax-uploader', // URL of server-side upload handler
 		  name: 'uploadfile', // Parameter name of the uploaded file
 		  progressUrl: in4ml.resources_path + 'js/lib/simple-ajax-uploader/extras/uploadProgress.php',
-		  autoSubmit:false,
+		  autoSubmit:this.options.auto_upload,
 		  onChange:
 			$.proxy(
 				function ( filename, extension, button ) {
@@ -125,6 +125,9 @@ JSLibInterface_jQuery.prototype._EnableAdvancedFile = function( field ){
 								}
 								if (!valid) {
 									this.ShowErrors();
+								} else {
+									// Trigger 'file added' event
+									$$.Trigger( this.element, 'FileAdded' );
 								}
 
 								this.SetFilesCount( this.uploader.getQueueSize() );
@@ -144,6 +147,8 @@ JSLibInterface_jQuery.prototype._EnableAdvancedFile = function( field ){
 					this.AddUploadedFileCode( response );
 					this.SetFilesCount( this.uploader.getQueueSize() );
 					if (this.uploader.getQueueSize() == 0) {
+						$$.Trigger( this.element, 'FileUploadsComplete', arguments );
+
 						this.advanced_container.removeClass( 'in-progress' );
 						this.onUploadsComplete( this );
 					} else {

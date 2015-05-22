@@ -1120,10 +1120,7 @@ var in4mlFieldFile = in4mlField.extend({
 	onAfterInit:function( form, definition ){
 		if( definition.advanced == true ){
 			this.advanced = true;
-			var options =
-			{
-			};
-			$$.ConvertToAdvancedFile( this, options );
+			$$.ConvertToAdvancedFile( this, definition.advanced_options );
 			form.AddFileField( this );
 		}
 	},
