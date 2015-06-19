@@ -657,6 +657,10 @@ class in4ml{
 					'mp3' => 'audio/mpeg',
 					'qt' => 'video/quicktime',
 					'mov' => 'video/quicktime',
+					'mv4' => 'video/mp4',
+					'mp4' => 'video/mp4',
+					'webm' => 'video/webm',
+					'ogv' => 'video/ogv',
 
 					// adobe
 					'pdf' => 'application/pdf',
