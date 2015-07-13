@@ -1,0 +1,1 @@
+This is a fairly comprehensive, but completely undocumented, form builder/validator for PHP and HTML/JavaScript. It uses a single definition file to create HTML forms that are then validated both in-browser and on the server.
