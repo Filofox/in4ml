@@ -1224,9 +1224,15 @@ var in4mlFieldRadio = in4mlField.extend({
 	// Set value (i.e. set which one is checked)
 	SetValue:function( value ){
 		// Uncheck all
-		$( this.container ).find( 'input.radiobutton' ).prop( 'checked', false );
-		// Check selected
-		$( $( this.container ).find( 'input.radiobutton[value=' + value + ']' ) ).prop( 'checked', true );
+		if ( typeof $( this.container ).find( 'input.radiobutton' ).prop == 'function' ) {
+		  $( this.container ).find( 'input.radiobutton' ).prop( 'checked', false );
+		  // Check selected
+		  $( $( this.container ).find( 'input.radiobutton[value=' + value + ']' ) ).prop( 'checked', true );
+		} else {
+		  $( this.container ).find( 'input.radiobutton' ).attr( 'checked', false );
+		  // Check selected
+		  $( $( this.container ).find( 'input.radiobutton[value=' + value + ']' ) ).attr( 'checked', true );
+		}
 	},
 	Reset:function(){
 	  // Do nothing
