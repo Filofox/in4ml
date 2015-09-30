@@ -472,9 +472,11 @@ class in4ml{
 			(
 				function(){
 					in4ml.Init({"Error":' . self::json_encode( self::GetTextNamespace( 'Error' ) ) . '},"' .  self::GetPathResources() . '" );
-			for( var i = 0; i < in4ml_forms.length; i++){
-				in4ml.RegisterForm( in4ml_forms[ i ] );
-			}
+					if( typeof in4ml_forms != "undefined" ){
+						for( var i = 0; i < in4ml_forms.length; i++){
+							in4ml.RegisterForm( in4ml_forms[ i ] );
+						}
+					}
 				}
 			)
 		</script>

@@ -27,7 +27,7 @@ class in4mlElementScriptDefinition extends in4mlElementScript{
 	public function GetRenderValues(){
 		$values = parent::GetRenderValues();
 
-		$values->code = 'var in4ml_forms = ((typeof in4ml_forms == "undefined")?[]:in4ml_forms);in4ml_forms.push( ' . $this->form->GetDefinitionAsJSON() . ' );';
+		$values->code = 'var in4ml_forms = ((typeof in4ml_forms == "undefined")?[]:in4ml_forms);in4ml_forms.push( ' . $this->form->GetDefinitionAsJSON() . ' );if(typeof in4ml !== "undefined"){in4ml.RegisterForm( in4ml_forms[ 0 ] );in4ml_forms=[]}';
 
 		return $values;
 	}
