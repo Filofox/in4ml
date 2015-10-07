@@ -432,7 +432,10 @@ class in4ml{
 	 */
 	public static function GetInitCode( $advanced = true ){
 
-		$output = '<script type="text/javascript" src="' . self::GetPathResources() . 'js/in4ml.js"></script>' . "\n";
+		$output = '';
+		if( self::Config( 'include_default_js' ) ){
+			$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/in4ml.js"></script>' . "\n";
+		}
 
 		if( $advanced ){
 			if( self::Config( 'include_upload' ) ){
@@ -720,6 +723,7 @@ class in4mlConfig{
 	public $include_tinymce = true;
 	public $include_upload = true;
 	public $include_default_css = true;
+	public $include_default_js = true;
 
 	// Override these settings in config file if necessary
 	public $default_renderer = 'PHP';
