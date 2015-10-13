@@ -409,6 +409,10 @@ in4mlForm.prototype.Init=function(){
 					var field = new in4mlFieldSelect( this, this.form_definition.fields[ i ] );
 					break;
 				}
+				case 'SelectMultiple':{
+					var field = new in4mlFieldSelectMultiple( this, this.form_definition.fields[ i ] );
+					break;
+				}
 				case 'File':{
 					var field = new in4mlFieldFile( this, this.form_definition.fields[ i ] );
 					break;
@@ -1276,6 +1280,21 @@ var in4mlFieldRichText = in4mlField.extend({
  * Select element
  */
 var in4mlFieldSelect = in4mlField.extend({
+	AddOption:function( value, text ){
+	  var option = $$.Create( 'option', { value: value, text:text } );
+	  $$.Append( this.element, option );
+	},
+	SetOptions:function( options ){
+	  this.ClearOptions();
+	  for( var i = 0; i < options.length; i++ ){
+		this.AddOption( options[ i ].value, options[ i ].text );
+	  }
+	},
+	ClearOptions:function(){
+	  $$.Empty( this.element );
+	}
+});
+var in4mlFieldSelectMultiple = in4mlField.extend({
 	AddOption:function( value, text ){
 	  var option = $$.Create( 'option', { value: value, text:text } );
 	  $$.Append( this.element, option );
