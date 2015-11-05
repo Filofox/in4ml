@@ -649,11 +649,12 @@ in4mlForm.prototype.HandleAjaxSubmitSuccess = function( status, response ){
 			this.file_fields[ i ].ClearQueue();
 		}
 	} else {
+      this.TriggerEvent( 'SubmitError', response );
 	  this.DisplayErrors(response);
 	}
 }
 /**
- * Catch successful AJAX submit
+ * Catch unsuccessful AJAX submit
  *
  * @param		object		request_object		XMLHTTP request object
  * @param		string		error_code			Code indicating error
