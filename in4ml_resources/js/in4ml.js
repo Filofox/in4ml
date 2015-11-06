@@ -70,7 +70,8 @@ var in4ml = {
 	ready_events:{},
 	ready_events_global:[],
 	abort_submit: false,
-
+    is_init:false,
+    uninit_forms:[],
 
 	/**
 	 * Initialise in4ml
@@ -80,6 +81,10 @@ var in4ml = {
 	Init:function( text, resources_path ){
 		this.text = new in4mlText( text );
 		this.resources_path = resources_path;
+        this.is_init = true;
+        for( var i = 0; i < this.uninit_forms.length; i++ ) {
+          this.uninit_forms[i].Init();
+        }
 	},
 
 	/**
@@ -102,7 +107,11 @@ var in4ml = {
 	  this.forms[ form_definition.id ] = form;
 	  // Delay execution due to IE8 DOM problems (can't modify DOM before page load complete)
 	  //setTimeout($$.Bind(form.Init,form),0);
-	  form.Init();
+      if ( this.is_init ) {
+    	  form.Init();
+      } else {
+        this.uninit_forms.push( form );
+      }
 	},
 	/**
 	 * Load a form via ajax
