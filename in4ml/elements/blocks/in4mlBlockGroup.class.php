@@ -34,6 +34,8 @@ class in4mlBlockGroup extends in4mlBlock{
 
 		if( $this->notes ){
 			$values->notes = $this->notes;
+		} else {
+			$values->notes = '';
 		}
 
 		return $values;
