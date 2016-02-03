@@ -437,6 +437,7 @@ in4mlForm.prototype.Init=function(){
 	}
 
     this.fields_initialised = true;
+	this.original_action = this.GetAction();
 	this.FieldReady();
 }
 in4mlForm.prototype.FieldReady=function(){
@@ -864,13 +865,32 @@ in4mlForm.prototype.GetAction = function(){
 	return $( this.element ).attr( 'action' );
 }
 /**
+ * Get form action
+ */
+in4mlForm.prototype.GetOriginalAction = function(){
+	return this.original_action;
+}
+/**
  * Set form action
  */
 in4mlForm.prototype.SetAction = function( action ){
-	if( typeof this.original_action == "undefined" ){
-		this.original_action = this.GetAction();
-	}
 	$( this.element ).attr( 'action', action );
+}
+/**
+ * Interpolate parameters into form action
+ */
+in4mlForm.prototype.SetActionParameters = function( parameters, remove_trailing_slash ){
+	var action = this.GetOriginalAction();
+	
+	for ( var index in parameters ) {
+	  var regex = new RegExp( '(:' + index + ')(/|$)' );
+	  action = action.replace( regex, parameters[ index ] + '$2' );
+	}
+	// Trim trailing slash?
+	if ( remove_trailing_slash && action.substr( -1 ) == '/' ) {
+		action = action.substr( 0, action.length-1 );
+	}
+	this.SetAction( action );
 }
 /**
  * Reset form action
