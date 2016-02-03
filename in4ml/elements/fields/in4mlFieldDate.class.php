@@ -134,6 +134,19 @@ class in4mlFieldDate extends in4mlField{
 	}
 
 	/**
+	 * Set field default value
+	 */
+	public function SetDefault( $value ){
+		if( $value instanceof DateTime ){
+			require_once( in4ml::GetPathLibrary() . 'LibDate.class.php' );
+			$this->value = new LibDate();
+			$this->value->SetFromTimestamp( $value->format( 'U' ) );
+		} else {
+			$this->default = $value;
+		}
+	}
+
+	/**
 	 * Set value - converts array to date object
 	 */
 	public function SetValue( $value ){
