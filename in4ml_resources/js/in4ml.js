@@ -1433,6 +1433,7 @@ var in4mlFieldDate = in4mlField.extend({
 			$$.SetValue( this.hidden_element_month, 0 );
 			$$.SetValue( this.hidden_element_year, 0 );
 		}
+		$$.Trigger( this.form.element, 'change' );
 		$$.Trigger( this.element, '_change' );
 	},
 	GetValue:function( get_as_object ){
