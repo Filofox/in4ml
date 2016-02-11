@@ -455,6 +455,7 @@ in4mlForm.prototype.FieldReady=function(){
 	  // Allows user to specify different action when submitting over Ajax
 	  if( typeof this.ajax_submit == 'string' ){
 		this.element.action = this.ajax_submit;
+		this.original_action = this.ajax_submit;
 	  }
 	  if( !this.ready_fired ){
 		this.ready_fired = true;
