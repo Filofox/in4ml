@@ -124,6 +124,13 @@ if( !class_exists( 'LibDate' ) ){
 				return null;
 			}
 		}
+		
+		/**
+		 * Return a PHP DateTime object
+		 */
+		public function GetAsDateTime(){
+			return new DateTime( $this->GetAsMySQLDateTime() );
+		}
 
 		/**
 		 * Change the date by a relative amount (i.e. number of days/weeks/months -- use negative values to go backwards)
