@@ -1098,11 +1098,11 @@ var in4mlFieldCaptcha = in4mlField.extend({
 var in4mlFieldCheckbox = in4mlField.extend({
 	// Set value
 	SetValue:function( value ){
-		$$.SetAttribute( this.element, 'checked', value );
+		this.element.checked = value;
 	},
 	// Set value
-	GetValue:function( value ){
-		return $$.GetAttribute( this.element, 'checked' );
+	GetValue:function(){
+		return this.element.checked;
 	},
 	Reset:function(){
 	  $$.SetAttribute( this.element, 'checked', $$.GetAttribute( this.element, 'defaultChecked' ) );
@@ -1116,7 +1116,7 @@ var in4mlFieldCheckboxMultiple = in4mlField.extend({
 	GetValue:function(){
 		var values = [];
 		for( var i = 0; i < this.element.length; i++ ){
-			if( $$.GetValue( this.element[ i ] ) == true ){
+			if( this.element[ i ].checked == true ){
 				values.push( $$.GetAttribute( this.element[ i ], 'value' ) );
 			}
 		}
@@ -1130,9 +1130,9 @@ var in4mlFieldCheckboxMultiple = in4mlField.extend({
 		}
 		for( var i = 0; i < this.element.length; i++ ){
 			if( typeof by_index[ $$.GetAttribute( this.element[ i ], 'value' ) ] != 'undefined' ){
-    	  		$$.SetAttribute( this.element[ i ], 'checked', true );
+    	  		this.element[ i ].checked = true;
 			} else {
-		  		$$.SetAttribute( this.element[ i ], 'checked', false );
+    	  		this.element[ i ].checked = false;
 			}
 		}
 	},
