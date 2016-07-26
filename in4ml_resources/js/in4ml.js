@@ -1098,11 +1098,11 @@ var in4mlFieldCaptcha = in4mlField.extend({
 var in4mlFieldCheckbox = in4mlField.extend({
 	// Set value
 	SetValue:function( value ){
-		this.element.checked = value;
+		this.element.checked[0] = value;
 	},
 	// Set value
 	GetValue:function(){
-		return this.element.checked;
+		return this.element[0].checked;
 	},
 	Reset:function(){
 	  $$.SetAttribute( this.element, 'checked', $$.GetAttribute( this.element, 'defaultChecked' ) );
