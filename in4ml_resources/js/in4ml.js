@@ -1098,7 +1098,7 @@ var in4mlFieldCaptcha = in4mlField.extend({
 var in4mlFieldCheckbox = in4mlField.extend({
 	// Set value
 	SetValue:function( value ){
-		this.element.checked[0] = value;
+		this.element[0].checked = value;
 	},
 	// Set value
 	GetValue:function(){
