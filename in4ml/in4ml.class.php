@@ -451,14 +451,14 @@ class in4ml{
 					if( self::Config( 'file_upload_library' ) == 'simple-ajax-uploader' ){
 						$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/simple-ajax-uploader/SimpleAjaxUploader.js"></script>' . "\n";
 					}
-		
+
 				} else {
 					$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/uploadify/jquery.uploadify.min.js"></script>' . "\n";
 					$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/uploadify/swfobject.js"></script>' . "\n";
 					$output .= '<link rel="stylesheet" type="text/css" href="' . in4ml::GetPathResources() . 'js/lib/uploadify/uploadify.css"/>' . "\n";
 				}
 			}
-	
+
 			// Make this smarter
 			if( self::Config( 'include_tinymce' ) ){
 				$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/tiny_mce/tiny_mce.js"></script>' . "\n";
@@ -480,6 +480,7 @@ class in4ml{
 							in4ml.RegisterForm( in4ml_forms[ i ] );
 						}
 					}
+					in4ml_forms = [];
 				}
 			)
 		</script>
@@ -491,14 +492,14 @@ class in4ml{
 		return $output;
 
 	}
-	
+
 	/**
 	 * Smarter json_encode -- throw exception on error
 	 *
 	 * $param		mixed		$data
 	 *
 	 * @return		string
-	 */ 
+	 */
 	public static function json_encode( $data ){
 		$output = json_encode( $data );
 		if( function_exists( 'json_last_error' ) && json_last_error() !== 0 ){
