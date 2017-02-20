@@ -1559,8 +1559,7 @@ in4mlValidatorEmail.prototype.ValidateField = function( field ){
 			if( matches !== null ){
 			  var value = $.trim( matches[2] );
 			}
-		  }
-		if( !in4mlUtilities.CheckRegexp( value, this.pattern, ['i'] ) ){
+		  }		if( !in4mlUtilities.CheckRegexp( value, this.pattern, ['i'] ) ){
 		  field.SetError( in4ml.GetErrorText( 'email', {email:value} ), this.error_message );
 		  output = false;
 		}
