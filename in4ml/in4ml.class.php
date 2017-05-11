@@ -461,7 +461,7 @@ class in4ml{
 
 			// Make this smarter
 			if( self::Config( 'include_tinymce' ) ){
-				$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/tiny_mce/tiny_mce.js"></script>' . "\n";
+				$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/tiny_mce/tiny_mce.js?1"></script>' . "\n";
 			}
 		}
 
