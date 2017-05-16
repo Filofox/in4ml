@@ -12,15 +12,16 @@ require_once( in4ml::GetPathCore() . 'in4mlBlock.class.php' );
  */
 class in4mlBlockForm extends in4mlBlock{
 	public $type = 'Form';
-	
+
 	public $action;
 	public $submit_method;
 	public $enctype;
 	public $form_id;
 	public $label;
+	public $data;
 
 	public $errors = array();
-	
+
 	public function Modify(){
 		if( $this->label ){
 			$legend = in4ml::CreateElement( 'General:Legend' );
@@ -39,9 +40,9 @@ class in4mlBlockForm extends in4mlBlock{
 	 */
 	public function GetRenderValues(){
 		$values = parent::GetRenderValues();
-		
+
 		$values->AddClass( 'in4ml' );
-		
+
 		$values->SetAttribute( 'action', $this->action );
 		$values->SetAttribute( 'method', $this->submit_method );
 		$values->SetAttribute( 'id', $this->form_id );
@@ -49,10 +50,16 @@ class in4mlBlockForm extends in4mlBlock{
 		if( $this->enctype ){
 			$values->SetAttribute( 'enctype', $this->enctype );
 		}
-		
+
+		if( count( $this->data ) ){
+			foreach( $this->data as $key => $value ){
+				$values->SetAttribute( 'data-' . $key, $value );
+			}
+		}
+
 		return $values;
 	}
-	
+
 	/**
 	 * Add an error for this field
 	 *
@@ -61,7 +68,7 @@ class in4mlBlockForm extends in4mlBlock{
 	public function SetError( $error_message ){
 		$this->errors[] = $error_message;
 	}
-	
+
 	/**
 	 * Return a list of errors for this field
 	 *
