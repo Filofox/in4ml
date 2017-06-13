@@ -50,6 +50,9 @@ class in4mlBlockForm extends in4mlBlock{
 		if( $this->enctype ){
 			$values->SetAttribute( 'enctype', $this->enctype );
 		}
+		if( $this->target ){
+			$values->SetAttribute( 'target', $this->target );
+		}
 
 		if( count( $this->data ) ){
 			foreach( $this->data as $key => $value ){

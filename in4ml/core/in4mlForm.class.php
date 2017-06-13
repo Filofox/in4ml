@@ -24,6 +24,7 @@ class In4mlForm{
 	protected $fields = array();
 	// Flat list of fragment elements
 	protected $fragments = array();
+	protected $target = false;
 
 	// Whether or not to use internationalisation
 	public $enable_i18n = false;

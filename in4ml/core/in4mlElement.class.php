@@ -18,6 +18,7 @@ class In4mlElement{
 	public $form;
 	public $form_id;
 	public $form_type;
+	public $target;
 
 	public $template;
 
@@ -118,7 +119,7 @@ class In4mlElement{
 	public function AddClass( $class ){
 		$this->class[] = $class;
 	}
-	
+
 	/**
 	 * Remove a class
 	 *
