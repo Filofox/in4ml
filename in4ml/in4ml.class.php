@@ -443,7 +443,7 @@ class in4ml{
 					$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/in4ml-file-' . self::Config( 'file_upload_library' ) . '.js"></script>' . "\n";
 					// FIXME: This shouldn't be here
 					if( self::Config( 'file_upload_library' ) == 'plupload' ){
-						$output .= '<script type="text/javascript" src="http://bp.yahooapis.com/2.4.21/browserplus-min.js"></script>' . "\n";
+						$output .= '<script type="text/javascript" src="//bp.yahooapis.com/2.4.21/browserplus-min.js"></script>' . "\n";
 						$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/plupload/js/plupload.full.js"></script>' . "\n";
 						$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/lib/plupload/js/jquery.plupload.queue/jquery.plupload.queue.js"></script>' . "\n";
 						$output .= '<link rel="stylesheet" type="text/css" href="' . in4ml::GetPathResources() . 'js/lib/plupload/js/jquery.plupload.queue/css/jquery.plupload.queue.css"/>' . "\n";
