@@ -113,6 +113,15 @@ class in4mlFieldSelect extends in4mlField{
 			if( isset( $option[ 'label' ] ) ){
 				$output .= '<optgroup' . ((isset( $option[ 'id' ] ))?' id="' . $option[ 'id' ] . '"':'') . ' label="' . $option[ 'label' ] . '">' . $this->BuildOptions( $option[ 'options' ] ) . '</optgroup>';
 			} else {
+				if( is_array( $this->value ) ){
+					if( count( $this->value ) ){
+						$value = (string)$this->value[0];
+					} else {
+						$value = '';
+					}
+				} else {
+					$value = (string)$this->value;
+				}
 				$output .= str_replace
 				(
 					array
@@ -125,7 +134,7 @@ class in4mlFieldSelect extends in4mlField{
 					(
 						in4ml::Escape( $option[ 'value' ] ),
 						$option[ 'text' ],
-						( ( (string)$option[ 'value' ] == (string)$this->value )?' selected="selected"':'' )
+						( ( (string)$option[ 'value' ] == $value )?' selected="selected"':'' )
 					),
 					$this->option_template
 				);
