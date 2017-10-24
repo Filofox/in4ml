@@ -81,6 +81,8 @@ class in4mlFieldRadio extends in4mlField{
 
 		$this->options_element->label = $this->label;
 		$this->options_element->notes = $this->notes;
+		$this->options_element->prefix = $this->prefix;
+		$this->options_element->suffix = $this->suffix;
 
 		foreach( $this->container_class as $class ){
 			$this->options_element->AddClass( $class );
