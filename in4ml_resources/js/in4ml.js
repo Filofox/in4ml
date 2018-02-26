@@ -882,7 +882,7 @@ in4mlForm.prototype.SetAction = function( action ){
  */
 in4mlForm.prototype.SetActionParameters = function( parameters, remove_trailing_slash ){
 	var action = this.GetOriginalAction();
-	
+
 	for ( var index in parameters ) {
 	  var regex = new RegExp( '(:' + index + ')(/|$)' );
 	  action = action.replace( regex, parameters[ index ] + '$2' );
@@ -2057,11 +2057,12 @@ JSLibInterface_jQuery.prototype.Ready = function( callback ){
   if( document.readyState != 'loading'){
 	callback();
   } else{
-	jQuery( document ).bind
+	jQuery( document ).one
 	(
 	  'ready',
 	  function( event ){
-		jQuery(document).unbind( 'ready', event );
+          console.log(123);
+//		jQuery(document).unbind( 'ready', event );
 		callback();
 	  }
 	);
