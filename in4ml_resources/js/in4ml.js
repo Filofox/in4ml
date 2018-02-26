@@ -2061,8 +2061,6 @@ JSLibInterface_jQuery.prototype.Ready = function( callback ){
 	(
 	  'ready',
 	  function( event ){
-          console.log(123);
-//		jQuery(document).unbind( 'ready', event );
 		callback();
 	  }
 	);
