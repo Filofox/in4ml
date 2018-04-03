@@ -15,6 +15,14 @@ class In4mlFormPHP extends In4mlForm{
 	// Stores details of fields
 	protected $definition = array();
 
+	public function AddFieldToDefinition( $field ){
+		if( count( $this->fields ) > 0 ){
+			throw new Exception( 'Cannot modify form after definition has been processed.' );
+		}
+		$this->definition[ 'elements' ][] = $field;
+	}
+
+
 	/**
 	 * Convert form definition into element objects
 	 */
