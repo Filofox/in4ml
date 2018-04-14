@@ -2057,11 +2057,13 @@ JSLibInterface_jQuery.prototype.Ready = function( callback ){
   if( document.readyState != 'loading'){
 	callback();
   } else{
-	jQuery( document ).one
+	jQuery( window ).load
 	(
 	  'ready',
 	  function( event ){
-		callback();
+          if( !in4ml.is_init ){
+              callback();
+          }
 	  }
 	);
   }
