@@ -434,7 +434,7 @@ class in4ml{
 
 		$output = '';
 		if( self::Config( 'include_default_js' ) ){
-			$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/in4ml.js?1"></script>' . "\n";
+			$output .= '<script type="text/javascript" src="' . self::GetPathResources() . 'js/in4ml.js?2"></script>' . "\n";
 		}
 
 		if( $advanced ){
