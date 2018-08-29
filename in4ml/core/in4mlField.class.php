@@ -42,7 +42,7 @@ class In4mlField extends in4mlElement{
 	public $require_javascript = false;
 
 	public function __construct(){
-		
+
 		parent::__construct();
 
 		$this->AddClass( $this->name );
@@ -74,7 +74,7 @@ class In4mlField extends in4mlElement{
 	public function GetFilters(){
 		return $this->filters;
 	}
-	
+
 	public function SetDisabled( $state ){
 		$this->disabled = (boolean)$state;
 		if( $this->disabled ){
@@ -108,7 +108,7 @@ class In4mlField extends in4mlElement{
 		if( $this->tabindex ){
 			$values->SetAttribute( 'tabindex', $this->tabindex );
 		}
-		if( count( $this->data ) ){
+		if( is_array( $this->data ) && count( $this->data ) ){
 			foreach( $this->data as $key => $value ){
 				$values->SetAttribute( 'data-' . $key, $value );
 			}

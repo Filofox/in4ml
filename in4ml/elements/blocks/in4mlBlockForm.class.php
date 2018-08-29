@@ -54,7 +54,7 @@ class in4mlBlockForm extends in4mlBlock{
 			$values->SetAttribute( 'target', $this->target );
 		}
 
-		if( count( $this->data ) ){
+		if( is_array( $this->data ) && count( $this->data ) ){
 			foreach( $this->data as $key => $value ){
 				$values->SetAttribute( 'data-' . $key, $value );
 			}
