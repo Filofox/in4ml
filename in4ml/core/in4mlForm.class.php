@@ -286,7 +286,7 @@ class In4mlForm{
 			} elseif( isset( $values[ $field->name ] ) ){
 				$value = $values[ $field->name ];
 				// Strip slashes if necessary
-				if( get_magic_quotes_gpc() == true ){
+				if( PHP_VERSION_ID < 70000 && get_magic_quotes_gpc() == true ){
 					$value = $this->stripslashes( $value );
 				}
 				$field->SetValue( $value );
