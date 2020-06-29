@@ -574,6 +574,9 @@ class in4ml{
 		if(is_numeric( $utf8 ) || is_bool($utf8)){
 			return $utf8;
 		}
+		if(is_bool( $utf8 )){
+			return $utf8;
+		}
 		for ($i = 0; $i < strlen($utf8); $i++) {
 			$char = $utf8[$i];
 			$ascii = ord($char);
